@@ -1,0 +1,12 @@
+#!/usr/bin/python
+
+import sys
+from PySide.QtGui import QApplication
+from neoman.view import test
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = test.TestWindow()
+    window.show()
+
+    sys.exit(app.exec_())
