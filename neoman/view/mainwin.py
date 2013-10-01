@@ -2,7 +2,7 @@ from PySide import QtGui
 from PySide import QtCore
 from neoman.model.nav import NavModel
 from neoman.model.device import NeoDevice
-from neoman.view.device import QDevice
+from neoman.view.device import DeviceWidget
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -13,23 +13,14 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle("YubiKey NEO Manager")
         self.setCentralWidget(self.build_ui())
 
-    @QtCore.Slot(object)
-    def open_page(self, target):
-        self._main.currentWidget().deleteLater()
-
-        if isinstance(target, NeoDevice):
-            widget = QDevice(target)
-        else:
-            widget = QtGui.QLabel(str(target))
-
-        self._main.addWidget(widget)
-
     def build_ui(self):
         widget = QtGui.QWidget()
         layout = QtGui.QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.build_nav())
         layout.addWidget(self.build_main())
+
+        self._nav.subpage.connect(self._main.setContent)
         widget.setLayout(layout)
 
         return widget
@@ -40,7 +31,6 @@ class MainWindow(QtGui.QMainWindow):
         layout.setSpacing(0)
 
         self._nav = NavTree()
-        self._nav.subpage.connect(self.open_page)
         layout.addWidget(self._nav)
 
         widget = QtGui.QWidget()
@@ -52,12 +42,42 @@ class MainWindow(QtGui.QMainWindow):
         return widget
 
     def build_main(self):
-        self._main = QtGui.QStackedWidget()
-        self._main.addWidget(QtGui.QLabel("Hello world"))
-        self._main.setMinimumSize(400, 400)
-        self._main.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                                 QtGui.QSizePolicy.Expanding)
+        self._main = ContentWidget()
         return self._main
+
+
+class ContentWidget(QtGui.QStackedWidget):
+
+    def __init__(self):
+        super(ContentWidget, self).__init__()
+
+        self._content = None
+
+        self.addWidget(QtGui.QLabel("HelloWorld"))
+
+        self._device_page = DeviceWidget()
+        self.addWidget(self._device_page)
+
+        self._app_page = QtGui.QLabel("app")
+        self.addWidget(self._app_page)
+
+        self.setMinimumSize(400, 400)
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding,
+                           QtGui.QSizePolicy.Expanding)
+
+    def setContent(self, content):
+        self._content = content
+
+        if isinstance(content, NeoDevice):
+            self._device_page.device = content
+            self.setCurrentWidget(self._device_page)
+        else:
+            self.setCurrentWidget(self._app_page)
+
+    def getContent(self):
+        return self._content
+
+    content = QtCore.Property(object, getContent, setContent)
 
 
 class NavTree(QtGui.QTreeView):

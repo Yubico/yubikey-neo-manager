@@ -1,7 +1,9 @@
 class NeoDevice(object):
-    def __init__(self, name, serial=None):
+
+    def __init__(self, name, serial=None, firmware=None):
         self._name = name
         self._serial = serial
+        self._firmware = firmware
 
     @property
     def name(self):
@@ -9,7 +11,11 @@ class NeoDevice(object):
 
     @property
     def serial(self):
-        return self._serial
+        return self._serial or "<unset>"
+
+    @property
+    def firmware(self):
+        return self._firmware or "<unknown>"
 
     def __str__(self):
         return self.name

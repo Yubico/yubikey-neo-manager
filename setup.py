@@ -37,7 +37,7 @@ setup(
     maintainer_email='ossmaint@yubico.com',
     url='https://github.com/Yubico/yubikey-neo-manager',
     license='BSD 2 clause',
-    packages=['neoman', 'neoman.view'],
+    packages=['neoman', 'neoman.model', 'neoman.view'],
     include_package_data=True,
     scripts=['scripts/neoman'],
     setup_requires=['nose>=1.0'],

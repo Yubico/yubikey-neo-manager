@@ -1,5 +1,5 @@
 from ctypes import Structure, POINTER, c_int, c_uint8, c_uint
-from .libloader import load_library
+from neoman.libloader import load_library
 
 try:
     _lib = load_library('ykpers-1')

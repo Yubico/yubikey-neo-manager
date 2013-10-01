@@ -3,7 +3,8 @@ from neoman.model.device import NeoDevice
 
 
 class NavModel(QtCore.QAbstractItemModel):
-    devices = [NeoDevice("Dain's NEO"), NeoDevice("Klas's NEO")]
+    devices = [NeoDevice("Dain's NEO", firmware="3.0.1"),
+               NeoDevice("Klas's NEO")]
     applets = ["OpenPGP", "YubiOath", "Yubico Bitcoin"]
 
     def __init__(self):
