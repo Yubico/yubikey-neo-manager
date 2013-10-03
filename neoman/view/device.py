@@ -1,5 +1,5 @@
 from PySide import QtGui, QtCore
-from neoman.model.device import NeoDevice
+from neoman.model.devices import DeviceWrapper
 
 
 class DeviceWidget(QtGui.QTabWidget):
@@ -11,15 +11,15 @@ class DeviceWidget(QtGui.QTabWidget):
 
     def setDevice(self, dev):
         self._dev = dev
-        self._name.setText("Name: %s" % dev.name)
-        self._serial.setText("Serial number: %s" % dev.serial)
-        self._firmware.setText("Firmware version: %s" % dev.firmware)
+        self._name.setText("Name: %s" % dev.device.serial)
+        self._serial.setText("Serial number: %s" % dev.device.serial)
+        self._firmware.setText("Firmware version: %s" % dev.device.version)
         #self.device.emit(dev)
 
     def getDevice(self):
         return self._dev
 
-    device = QtCore.Property(NeoDevice, getDevice, setDevice)
+    device = QtCore.Property(DeviceWrapper, getDevice, setDevice)
 
     def change_name(self):
         print "Change name"

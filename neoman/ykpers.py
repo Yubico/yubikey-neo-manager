@@ -1,4 +1,4 @@
-from ctypes import Structure, POINTER, c_int, c_uint8, c_uint
+from ctypes import Structure, POINTER, c_int, c_uint8, c_uint, c_ubyte
 from neoman.libloader import load_library
 
 try:
@@ -29,16 +29,25 @@ yk_release = define('yk_release', [], c_int)
 yk_open_first_key = define('yk_open_first_key', [], POINTER(YK_KEY))
 yk_close_key = define('yk_close_key', [POINTER(YK_KEY)], c_int)
 
+yk_get_status = define('yk_get_status', [
+    POINTER(YK_KEY), POINTER(YK_STATUS)], c_int)
+yk_get_serial = define('yk_get_serial', [
+    POINTER(YK_KEY), c_uint8, c_uint, POINTER(c_uint)], c_int)
+yk_write_device_config = define('yk_write_device_config',
+                                [POINTER(YK_KEY), POINTER(YK_DEVICE_CONFIG)],
+                                c_int)
+
 ykds_alloc = define('ykds_alloc', [], POINTER(YK_STATUS))
 ykds_free = define('ykds_free', [POINTER(YK_STATUS)], None)
 ykds_version_major = define('ykds_version_major', [POINTER(YK_STATUS)], c_int)
 ykds_version_minor = define('ykds_version_minor', [POINTER(YK_STATUS)], c_int)
 ykds_version_build = define('ykds_version_build', [POINTER(YK_STATUS)], c_int)
 
-yk_get_status = define('yk_get_status', [
-    POINTER(YK_KEY), POINTER(YK_STATUS)], c_int)
-yk_get_serial = define('yk_get_serial', [
-    POINTER(YK_KEY), c_uint8, c_uint, POINTER(c_uint)], c_int)
-
+ykp_alloc_device_config = define('ykp_alloc_device_config', [],
+                                 POINTER(YK_DEVICE_CONFIG))
+ykp_free_device_config = define('ykp_free_device_config',
+                                [POINTER(YK_DEVICE_CONFIG)], c_int)
+ykp_set_device_mode = define('ykp_set_device_mode', [POINTER(YK_DEVICE_CONFIG),
+                                                     c_ubyte], c_int)
 
 __all__ = [x for x in globals().keys() if x.lower().startswith('yk')]

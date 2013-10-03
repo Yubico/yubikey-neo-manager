@@ -1,7 +1,7 @@
 from PySide import QtGui
 from PySide import QtCore
 from neoman.model.nav import NavModel
-from neoman.model.device import NeoDevice
+from neoman.model.devices import DeviceWrapper
 from neoman.view.device import DeviceWidget
 
 
@@ -68,7 +68,7 @@ class ContentWidget(QtGui.QStackedWidget):
     def setContent(self, content):
         self._content = content
 
-        if isinstance(content, NeoDevice):
+        if isinstance(content, DeviceWrapper):
             self._device_page.device = content
             self.setCurrentWidget(self._device_page)
         else:
