@@ -52,7 +52,6 @@ class AvailableNeos(QtCore.QObject):
         super(AvailableNeos, self).__init__()
 
         self._neos = []
-
         self.discover_devices()
         self.startTimer(1000)
 
@@ -61,31 +60,25 @@ class AvailableNeos(QtCore.QObject):
         return self._neos
 
     def discover_devices(self):
+        for neo in self._neos:
+            del neo._dev
+        dead_neos = self._neos[:]
+
         single = open_first_device()
         discovered = [single] if single else []
 
-        attached = []
-        new_neos = []
-        dead_neos = []
-
-        for neo in self._neos:
-            del neo._dev
-
-            for dev in [dev for dev in discovered if dev not in attached]:
-                if dev.serial == neo.serial:
-                    neo._dev = dev
-                    attached.append(dev)
-                    break
-            else:
-                dead_neos.append(neo)
-
         new_neos = []
         for dev in discovered:
-            if dev not in attached:
+            for neo in self._neos:
+                if dev.serial == neo.serial:
+                    neo._dev = dev
+                    break
+            else:
                 new_neos.append(YubiKeyNeo(dev))
 
-        if len(dead_neos) != 0 or len(new_neos) != 0:
-            self._neos = [neo for neo in self._neos if neo not in dead_neos] \
+        dead_neos = [x for x in self._neos if not hasattr(x, '_dev')]
+        if new_neos or dead_neos:
+            self._neos = [x for x in self._neos if x not in dead_neos] \
                 + new_neos
             self.changed.emit(self._neos)
 
