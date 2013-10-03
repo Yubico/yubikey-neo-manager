@@ -2,11 +2,11 @@
 
 import sys
 from PySide.QtGui import QApplication
-from neoman.view import mainwin
+from neoman.view import main
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = mainwin.MainWindow()
+    window = main.MainWindow()
     window.show()
 
     sys.exit(app.exec_())
