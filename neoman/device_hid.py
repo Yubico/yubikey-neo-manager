@@ -46,8 +46,6 @@ class HIDDevice(BaseDevice):
         ykp_set_device_mode(config, mode)
         if not yk_write_device_config(self._dev, config):
             raise Exception("Failed writing device config!")
-        else:
-            print "Mode switched. Re-insert for this to take effect."
         ykp_free_device_config(config)
 
     def close(self):

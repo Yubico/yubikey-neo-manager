@@ -4,9 +4,12 @@ from neoman.device import open_first_device
 name_store = {}
 
 
-class YubiKeyNeo(object):
+class YubiKeyNeo(QtCore.QObject):
+    removed = QtCore.Signal()
 
     def __init__(self, device):
+        super(YubiKeyNeo, self).__init__()
+
         self._dev = device
         self._name = name_store.get(device.serial,
                                     "YubiKey %s" % device.serial)
@@ -64,26 +67,28 @@ class AvailableNeos(QtCore.QObject):
         return self._neos
 
     def discover_devices(self):
-        for neo in self._neos:
+        neos = self._neos[:]
+        for neo in neos:
             del neo._dev
-        dead_neos = self._neos[:]
 
         single = open_first_device()
         discovered = [single] if single else []
 
         new_neos = []
         for dev in discovered:
-            for neo in self._neos:
+            for neo in neos:
                 if dev.serial == neo.serial:
-                    neo._dev = dev
+                    neo._set_device(dev)
                     break
             else:
                 new_neos.append(YubiKeyNeo(dev))
 
-        dead_neos = [x for x in self._neos if not hasattr(x, '_dev')]
+        dead_neos = [x for x in neos if not hasattr(x, '_dev')]
+        for neo in dead_neos:
+            neos.remove(neo)
+            neo.removed.emit()
         if new_neos or dead_neos:
-            self._neos = [x for x in self._neos if x not in dead_neos] \
-                + new_neos
+            self._neos = neos + new_neos
             self.changed.emit(self._neos)
 
     def timerEvent(self, event):

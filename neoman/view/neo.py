@@ -15,18 +15,26 @@ class NeoPage(QtGui.QTabWidget):
 
     def __init__(self):
         super(NeoPage, self).__init__()
+        self._neo = None
+
         self.add_settings_tab()
         self.add_apps_tab()
 
     def setNeo(self, neo):
+        if self._neo:
+            self._neo.removed.disconnect(self.neo_removed)
         self._neo = neo
         self._name.setText("Name: %s" % neo.name)
         self._serial.setText("Serial number: %s" % neo.serial)
         self._firmware.setText("Firmware version: %s" %
                                '.'.join(map(str, neo.version)))
+        neo.removed.connect(self.neo_removed)
 
     def getNeo(self):
         return self._neo
+
+    def neo_removed(self):
+        self._neo = None
 
     neo = QtCore.Property(YubiKeyNeo, getNeo, setNeo)
 
