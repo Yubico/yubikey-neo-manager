@@ -1,12 +1,15 @@
 from PySide import QtCore
 from neoman.device import open_first_device
 
+name_store = {}
+
 
 class YubiKeyNeo(object):
 
     def __init__(self, device):
         self._dev = device
-        self._name = "YubiKey %s" % device.serial
+        self._name = name_store.get(device.serial,
+                                    "YubiKey %s" % device.serial)
         self._mode = device.mode
         self._serial = device.serial
         self._version = device.version
@@ -28,6 +31,7 @@ class YubiKeyNeo(object):
     @name.setter
     def name(self, new_name):
         self._name = new_name
+        name_store[self.serial] = new_name
 
     @property
     def mode(self):
