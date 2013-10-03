@@ -1,8 +1,13 @@
 from ykneomgr import *
 from ctypes import byref, c_char_p
-from neoman.device import BaseDevice, MODE_CCID
+from neoman.device import BaseDevice
 
 assert ykneomgr_global_init(0) == 0
+
+
+def check(status):
+    if status != 0:
+        raise Exception("Error: %d" % status)
 
 
 class CCIDDevice(BaseDevice):
@@ -11,6 +16,7 @@ class CCIDDevice(BaseDevice):
         self._dev = dev
         self._locked = True
         self._serial = ykneomgr_get_serialno(dev)
+        self._mode = 0xf & ykneomgr_get_mode(dev)
         self._version = [
             ykneomgr_get_version_major(dev),
             ykneomgr_get_version_minor(dev),
@@ -23,7 +29,7 @@ class CCIDDevice(BaseDevice):
 
     @property
     def mode(self):
-        return MODE_CCID
+        return self._mode
 
     @property
     def serial(self):
@@ -34,9 +40,11 @@ class CCIDDevice(BaseDevice):
         return self._version
 
     def unlock(self):
-        status = ykneomgr_secure(self._dev)
-        if status != 0:
-            raise Exception("Failed to unlock device. Error: %d" % status)
+        check(ykneomgr_secure(self._dev))
+
+    def set_mode(self, mode):
+        check(ykneomgr_modeswitch(self._dev, mode))
+        self._mode = mode
 
     def list_apps(self):
         if self.locked:
@@ -55,8 +63,6 @@ class CCIDDevice(BaseDevice):
 
 def open_first_device():
     dev = ykneomgr_init()
-    status = ykneomgr_discover(dev)
-    if status != 0:
-        raise Exception("Unable to open YubiKey NEO. Error: %d", status)
+    check(ykneomgr_discover(dev))
 
     return CCIDDevice(dev)

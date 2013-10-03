@@ -1,8 +1,8 @@
 from PySide import QtGui
 from PySide import QtCore
-from neoman.model.nav import NavModel
-from neoman.model.devices import DeviceWrapper
-from neoman.view.device import DeviceWidget
+from neoman.model.neo import YubiKeyNeo
+from neoman.view.nav import NavTree
+from neoman.view.neo import NeoPage
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -55,8 +55,8 @@ class ContentWidget(QtGui.QStackedWidget):
 
         self.addWidget(QtGui.QLabel("HelloWorld"))
 
-        self._device_page = DeviceWidget()
-        self.addWidget(self._device_page)
+        self._neo_page = NeoPage()
+        self.addWidget(self._neo_page)
 
         self._app_page = QtGui.QLabel("app")
         self.addWidget(self._app_page)
@@ -68,9 +68,9 @@ class ContentWidget(QtGui.QStackedWidget):
     def setContent(self, content):
         self._content = content
 
-        if isinstance(content, DeviceWrapper):
-            self._device_page.device = content
-            self.setCurrentWidget(self._device_page)
+        if isinstance(content, YubiKeyNeo):
+            self._neo_page.neo = content
+            self.setCurrentWidget(self._neo_page)
         else:
             self.setCurrentWidget(self._app_page)
 
@@ -78,19 +78,3 @@ class ContentWidget(QtGui.QStackedWidget):
         return self._content
 
     content = QtCore.Property(object, getContent, setContent)
-
-
-class NavTree(QtGui.QTreeView):
-
-    def __init__(self):
-        super(NavTree, self).__init__()
-
-        self.setHeaderHidden(True)
-        self.setModel(NavModel())
-        self.expandAll()
-
-    subpage = QtCore.Signal(object)
-
-    def currentChanged(self, current, previous):
-        if current.flags() & QtCore.Qt.ItemIsSelectable:
-            self.subpage.emit(current.internalPointer())

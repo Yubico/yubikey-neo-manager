@@ -33,6 +33,8 @@ ykneomgr_listapps = define('ykneomgr_listapps',
 
 ykneomgr_get_serialno = define('ykneomgr_get_serialno',
                                [POINTER(ykneomgr_dev)], c_uint)
+ykneomgr_get_mode = define('ykneomgr_get_mode', [POINTER(ykneomgr_dev)],
+                           c_uint8)
 ykneomgr_get_version_major = define('ykneomgr_get_version_major',
                                     [POINTER(ykneomgr_dev)], c_uint8)
 ykneomgr_get_version_minor = define('ykneomgr_get_version_minor',

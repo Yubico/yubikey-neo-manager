@@ -1,5 +1,21 @@
-from PySide import QtCore, QtGui
-from neoman.model.devices import Devices
+from PySide import QtGui, QtCore
+from neoman.model.neo import AvailableNeos, YubiKeyNeo
+
+
+class NavTree(QtGui.QTreeView):
+
+    def __init__(self):
+        super(NavTree, self).__init__()
+
+        self.setHeaderHidden(True)
+        self.setModel(NavModel())
+        self.expandAll()
+
+    subpage = QtCore.Signal(object)
+
+    def currentChanged(self, current, previous):
+        if current.flags() & QtCore.Qt.ItemIsSelectable:
+            self.subpage.emit(current.internalPointer())
 
 
 class NavModel(QtCore.QAbstractItemModel):
@@ -12,20 +28,20 @@ class NavModel(QtCore.QAbstractItemModel):
             "NEO Apps": self.createIndex(1, 0, "NEO Apps")
         }
 
-        self.devices = Devices()
-        self.dev_list = list(self.devices)
-        self.devices.changed.connect(self.data_changed)
+        self.available_neos = AvailableNeos()
+        self.neo_list = self.available_neos.neos
+        self.available_neos.changed.connect(self.data_changed)
 
     @QtCore.Slot(list)
-    def data_changed(self, new_devs):
+    def data_changed(self, new_neos):
         parent = self.categories['Devices']
 
         self.beginRemoveRows(parent, 0, self.rowCount(parent) - 1)
-        self.dev_list = []
+        self.neo_list = []
         self.endRemoveRows()
 
-        self.beginInsertRows(parent, 0, len(new_devs) - 1)
-        self.dev_list = new_devs
+        self.beginInsertRows(parent, 0, len(new_neos) - 1)
+        self.neo_list = new_neos
         self.endInsertRows()
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
@@ -34,7 +50,7 @@ class NavModel(QtCore.QAbstractItemModel):
             return self.categories[node]
         category = parent.internalPointer()
         if category == "Devices":
-            return self.createIndex(row, column, self.dev_list[row])
+            return self.createIndex(row, column, self.neo_list[row])
         return self.createIndex(row, column, self.applets[row])
 
     def parent(self, index):
@@ -43,7 +59,7 @@ class NavModel(QtCore.QAbstractItemModel):
         node = index.internalPointer()
         if node in self.categories:
             return QtCore.QModelIndex()
-        if hasattr(node, 'device'):
+        if isinstance(node, YubiKeyNeo):
             return self.categories['Devices']
         return self.categories['NEO Apps']
 
@@ -55,7 +71,7 @@ class NavModel(QtCore.QAbstractItemModel):
             return 2
         node = parent.internalPointer()
         if node in self.categories:
-            return len(self.dev_list if node == "Devices" else self.applets)
+            return len(self.neo_list if node == "Devices" else self.applets)
         return 0
 
     def data(self, index, role=QtCore.Qt.DisplayRole):

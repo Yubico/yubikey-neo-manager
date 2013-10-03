@@ -38,12 +38,12 @@ class HIDDevice(BaseDevice):
     def version(self):
         return self._version
 
-    def switch_mode(self):
+    def set_mode(self, mode):
         if self.version[0] < 3:
             raise Exception("Mode Switching requires version >= 3")
 
         config = ykp_alloc_device_config()
-        ykp_set_device_mode(config, 0x81)
+        ykp_set_device_mode(config, mode)
         if not yk_write_device_config(self._dev, config):
             raise Exception("Failed writing device config!")
         else:
