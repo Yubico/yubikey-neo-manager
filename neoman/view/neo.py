@@ -18,56 +18,36 @@ class NeoPage(QtGui.QTabWidget):
         super(NeoPage, self).__init__()
         self._neo = None
 
-        self.add_settings_tab()
-        self.add_apps_tab()
+        settings = SettingsTab()
+        self.neo.connect(settings.set_neo)
+        self.addTab(settings, "Settings")
+
+        apps = AppsTab()
+        self.neo.connect(apps.set_neo)
+        self.addTab(apps, "Installed apps")
 
     def setNeo(self, neo):
-        if self._neo:
-            self._neo.removed.disconnect(self.neo_removed)
         self._neo = neo
-        self._name.setText("Name: %s" % neo.name)
-        self._serial.setText("Serial number: %s" % neo.serial)
-        self._firmware.setText("Firmware version: %s" %
-                               '.'.join(map(str, neo.version)))
-        neo.removed.connect(self.neo_removed)
+        if neo:
+            has_ccid = neo.mode in [MODE_CCID, MODE_HID_CCID]
+            self.setTabEnabled(1, has_ccid)
+            self.setTabToolTip(1, None if has_ccid else "Requires CCID mode")
         self.neo.emit(neo)
 
     def getNeo(self):
         return self._neo
 
-    def neo_removed(self):
+
+class SettingsTab(QtGui.QWidget):
+
+    def __init__(self):
+        super(SettingsTab, self).__init__()
+
         self._neo = None
-        self.neo.emit(None)
-
-    def change_name(self):
-        name, ok = QtGui.QInputDialog.getText(
-            self, "Name", "Change the name of the device.",
-            text=self._neo.name)
-        if ok:
-            self._neo.name = name
-            self._name.setText("Name: %s" % name)
-
-    def manage_keys(self):
-        print "Manage transport keys"
-
-    def change_mode(self):
-        current = MODES.index(MODE_NAMES[self._neo.mode])
-        res = QtGui.QInputDialog.getItem(
-            self, "Set mode", "Set the connection mode used by your YubiKey "
-            "NEO.\nFor this setting to take effect, you will need to unplug, "
-            "and re-attach your YubiKey.", MODES, current, False)
-        if res[1]:
-            res = next((mode for mode, name in MODE_NAMES.items()
-                        if name == res[0]))
-            if self._neo.mode != res:
-                self._neo.device.set_mode(res)
-
-    def add_settings_tab(self):
         self._name = QtGui.QLabel()
         self._serial = QtGui.QLabel()
         self._firmware = QtGui.QLabel()
 
-        settings = QtGui.QWidget()
         layout = QtGui.QVBoxLayout()
 
         name_row = QtGui.QHBoxLayout()
@@ -92,15 +72,60 @@ class NeoPage(QtGui.QTabWidget):
         layout.addWidget(button)
 
         layout.addStretch()
-        settings.setLayout(layout)
-        self.addTab(settings, "Settings")
+        self.setLayout(layout)
 
-    def add_apps_tab(self):
-        apps = QtGui.QWidget()
+    @QtCore.Slot(YubiKeyNeo)
+    def set_neo(self, neo):
+        self._neo = neo
+        if not neo:
+            return
+
+        self._name.setText("Name: %s" % neo.name)
+        self._serial.setText("Serial number: %s" % neo.serial)
+        self._firmware.setText("Firmware version: %s" %
+                               '.'.join(map(str, neo.version)))
+
+    def change_name(self):
+        name, ok = QtGui.QInputDialog.getText(
+            self, "Name", "Change the name of the device.",
+            text=self._neo.name)
+        if ok:
+            self._neo.name = name
+            self._name.setText("Name: %s" % name)
+
+    def manage_keys(self):
+        print "Manage transport keys"
+
+    def change_mode(self):
+        current = MODES.index(MODE_NAMES[self._neo.mode])
+        res = QtGui.QInputDialog.getItem(
+            self, "Set mode", "Set the connection mode used by your YubiKey "
+            "NEO.\nFor this setting to take effect, you will need to unplug, "
+            "and re-attach your YubiKey.", MODES, current, False)
+        if res[1]:
+            res = next((mode for mode, name in MODE_NAMES.items()
+                        if name == res[0]))
+            if self._neo.mode != res:
+                self._neo.device.set_mode(res)
+
+
+class AppsTab(QtGui.QWidget):
+
+    def __init__(self):
+        super(AppsTab, self).__init__()
+
         layout = QtGui.QVBoxLayout()
-
         layout.addWidget(QtGui.QLabel("No apps installed!"))
 
         layout.addStretch()
-        apps.setLayout(layout)
-        self.addTab(apps, "Installed apps")
+        self.setLayout(layout)
+
+    @QtCore.Slot(YubiKeyNeo)
+    def set_neo(self, neo):
+        self._neo = neo
+        if not neo or neo.mode not in [MODE_CCID, MODE_HID_CCID]:
+            return
+
+        apps = neo.device.list_apps()
+        for app in apps:
+            self.layout().addWidget(QtGui.QLabel(app))

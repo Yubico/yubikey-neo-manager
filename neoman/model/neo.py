@@ -4,7 +4,6 @@ from neoman.storage import settings
 
 
 class YubiKeyNeo(QtCore.QObject):
-    removed = QtCore.Signal()
 
     def __init__(self, device):
         super(YubiKeyNeo, self).__init__()
@@ -93,7 +92,6 @@ class AvailableNeos(QtCore.QObject):
         dead_neos = [x for x in neos if not hasattr(x, '_dev')]
         for neo in dead_neos:
             neos.remove(neo)
-            neo.removed.emit()
         if new_neos or dead_neos:
             self._neos = neos + new_neos
             self.changed.emit(self._neos)

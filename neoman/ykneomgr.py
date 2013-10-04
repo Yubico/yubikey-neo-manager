@@ -23,7 +23,8 @@ ykneomgr_init = define('ykneomgr_init', [], POINTER(ykneomgr_dev))
 ykneomgr_done = define('ykneomgr_done', [POINTER(ykneomgr_dev)])
 ykneomgr_discover = define('ykneomgr_discover', [POINTER(ykneomgr_dev)],
                            ykneomgr_rc)
-ykneomgr_secure = define('ykneomgr_secure', [POINTER(ykneomgr_dev)],
+ykneomgr_secure = define('ykneomgr_secure',
+                         [POINTER(ykneomgr_dev), c_char_p],
                          ykneomgr_rc)
 ykneomgr_modeswitch = define('ykneomgr_modeswitch',
                              [POINTER(ykneomgr_dev), c_uint8], ykneomgr_rc)

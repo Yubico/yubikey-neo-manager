@@ -3,6 +3,7 @@ from neoman.model.neo import AvailableNeos, YubiKeyNeo
 
 
 class NavTree(QtGui.QTreeView):
+    subpage = QtCore.Signal(object)
 
     def __init__(self):
         super(NavTree, self).__init__()
@@ -11,11 +12,23 @@ class NavTree(QtGui.QTreeView):
         self.setModel(NavModel())
         self.expandAll()
 
-    subpage = QtCore.Signal(object)
+        self.current = None
+
+        self.model().rowsInserted.connect(self._data_changed)
+        self._data_changed()
 
     def currentChanged(self, current, previous):
         if current.flags() & QtCore.Qt.ItemIsSelectable:
-            self.subpage.emit(current.internalPointer())
+            self.current = current.internalPointer()
+            self.subpage.emit(self.current)
+        else:
+            self.current = None
+            self.subpage.emit(None)
+
+    def _data_changed(self):
+        if not self.current and self.model().neo_list:
+            self.setCurrentIndex(
+                self.model().index(0, 0, self.model().categories['Devices']))
 
 
 class NavModel(QtCore.QAbstractItemModel):

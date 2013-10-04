@@ -1,6 +1,9 @@
 from ykneomgr import *
-from ctypes import byref, c_char_p
+from ctypes import byref, c_char_p, create_string_buffer
 from neoman.device import BaseDevice
+
+DEFAULT_KEY = "404142434445464748494a4b4c4d4e4f".decode('hex')
+
 
 assert ykneomgr_global_init(0) == 0
 
@@ -39,8 +42,8 @@ class CCIDDevice(BaseDevice):
     def version(self):
         return self._version
 
-    def unlock(self):
-        check(ykneomgr_secure(self._dev))
+    def unlock(self, key=DEFAULT_KEY):
+        check(ykneomgr_secure(self._dev, key))
 
     def set_mode(self, mode):
         check(ykneomgr_modeswitch(self._dev, mode))

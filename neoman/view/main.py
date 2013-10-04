@@ -28,6 +28,7 @@ class MainWindow(QtGui.QMainWindow):
         layout.addWidget(self.build_main())
 
         self._nav.subpage.connect(self._main.setContent)
+        self._main.setContent(self._nav.current)
         widget.setLayout(layout)
 
         return widget
@@ -70,7 +71,6 @@ class ContentWidget(QtGui.QStackedWidget):
 
         self._neo_page = NeoPage()
         self.addWidget(self._neo_page)
-        self._neo_page.neo.connect(self._neo_changed)
 
         self._app_page = QtGui.QLabel("app")
         self.addWidget(self._app_page)
@@ -79,22 +79,15 @@ class ContentWidget(QtGui.QStackedWidget):
         self.setSizePolicy(QtGui.QSizePolicy.Expanding,
                            QtGui.QSizePolicy.Expanding)
 
-    @QtCore.Slot(YubiKeyNeo)
-    def _neo_changed(self, neo):
-        print "changed", neo
-        if not neo:
-            self.setCurrentWidget(self._start_page)
-
+    @QtCore.Slot(object)
     def setContent(self, content):
         self._content = content
 
-        if isinstance(content, YubiKeyNeo):
+        if not content:
+            self._neo_page.setNeo(None)
+            self.setCurrentWidget(self._start_page)
+        elif isinstance(content, YubiKeyNeo):
             self._neo_page.setNeo(content)
             self.setCurrentWidget(self._neo_page)
         else:
             self.setCurrentWidget(self._app_page)
-
-    def getContent(self):
-        return self._content
-
-    content = QtCore.Property(object, getContent, setContent)
