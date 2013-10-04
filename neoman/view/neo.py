@@ -12,6 +12,7 @@ MODE_NAMES = {
 
 
 class NeoPage(QtGui.QTabWidget):
+    neo = QtCore.Signal(YubiKeyNeo)
 
     def __init__(self):
         super(NeoPage, self).__init__()
@@ -29,14 +30,14 @@ class NeoPage(QtGui.QTabWidget):
         self._firmware.setText("Firmware version: %s" %
                                '.'.join(map(str, neo.version)))
         neo.removed.connect(self.neo_removed)
+        self.neo.emit(neo)
 
     def getNeo(self):
         return self._neo
 
     def neo_removed(self):
         self._neo = None
-
-    neo = QtCore.Property(YubiKeyNeo, getNeo, setNeo)
+        self.neo.emit(None)
 
     def change_name(self):
         name, ok = QtGui.QInputDialog.getText(
