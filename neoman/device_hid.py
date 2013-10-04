@@ -11,7 +11,10 @@ class HIDDevice(BaseDevice):
         self._dev = dev
 
         ser = c_uint()
-        self._serial = ser.value if yk_get_serial(dev, 0, 0, byref(ser)) else 0
+        if yk_get_serial(dev, 0, 0, byref(ser)):
+            self._serial = ser.value
+        else:
+            self._serial = None
 
         status = ykds_alloc()
         try:

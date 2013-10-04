@@ -1,7 +1,6 @@
 from PySide import QtCore
 from neoman.device import open_first_device
-
-name_store = {}
+from neoman.storage import settings
 
 
 class YubiKeyNeo(QtCore.QObject):
@@ -11,11 +10,11 @@ class YubiKeyNeo(QtCore.QObject):
         super(YubiKeyNeo, self).__init__()
 
         self._dev = device
-        self._name = name_store.get(device.serial,
-                                    "YubiKey %s" % device.serial)
         self._mode = device.mode
         self._serial = device.serial
         self._version = device.version
+
+        self._group = self._serial if self._serial else "NOSERIAL"
 
     def _set_device(self, device):
         assert self.serial == device.serial
@@ -23,18 +22,26 @@ class YubiKeyNeo(QtCore.QObject):
         self._dev = device
         self._mode = device.mode
 
+    def __setitem__(self, key, value):
+        settings.setValue('%s/%s' % (self._group, key), value)
+
+    def __getitem__(self, key):
+        return self.get(key)
+
+    def get(self, key, default=None):
+        return settings.value('%s/%s' % (self._group, key), default)
+
     @property
     def device(self):
         return self._dev
 
     @property
     def name(self):
-        return self._name
+        return self.get('name', 'YubiKey NEO')
 
     @name.setter
     def name(self, new_name):
-        self._name = new_name
-        name_store[self.serial] = new_name
+        self['name'] = new_name
 
     @property
     def mode(self):

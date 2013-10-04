@@ -3,6 +3,7 @@ from PySide import QtCore
 from neoman.model.neo import YubiKeyNeo
 from neoman.view.nav import NavTree
 from neoman.view.neo import NeoPage
+from neoman.storage import settings
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -12,6 +13,11 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setWindowTitle("YubiKey NEO Manager")
         self.setCentralWidget(self.build_ui())
+
+        self.resize(settings.value('window/size', QtCore.QSize(400, 400)))
+        pos = settings.value('window/pos')
+        if pos:
+            self.move(pos)
 
     def build_ui(self):
         widget = QtGui.QWidget()
@@ -44,6 +50,11 @@ class MainWindow(QtGui.QMainWindow):
     def build_main(self):
         self._main = ContentWidget()
         return self._main
+
+    def closeEvent(self, event):
+        settings.setValue('window/size', self.size())
+        settings.setValue('window/pos', self.pos())
+        event.accept()
 
 
 class ContentWidget(QtGui.QStackedWidget):
