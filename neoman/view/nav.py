@@ -1,5 +1,6 @@
 from PySide import QtGui, QtCore
 from neoman.model.neo import AvailableNeos, YubiKeyNeo
+from neoman.model.applet import APPLETS
 
 
 class NavTree(QtGui.QTreeView):
@@ -32,7 +33,6 @@ class NavTree(QtGui.QTreeView):
 
 
 class NavModel(QtCore.QAbstractItemModel):
-    applets = ["OpenPGP", "YubiOath", "Yubico Bitcoin"]
 
     def __init__(self):
         super(NavModel, self).__init__()
@@ -41,6 +41,7 @@ class NavModel(QtCore.QAbstractItemModel):
             "NEO Apps": self.createIndex(1, 0, "NEO Apps")
         }
 
+        self.applets = APPLETS
         self.available_neos = AvailableNeos()
         self.neo_list = self.available_neos.neos
         self.available_neos.changed.connect(self.data_changed)

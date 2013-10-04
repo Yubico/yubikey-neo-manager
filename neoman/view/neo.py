@@ -1,6 +1,7 @@
 from PySide import QtGui, QtCore
 from neoman.device import MODE_HID, MODE_CCID, MODE_HID_CCID
 from neoman.model.neo import YubiKeyNeo
+from neoman.model.applet import get_applet
 
 
 MODES = ["OTP", "CCID", "OTP+CCID"]
@@ -67,9 +68,9 @@ class SettingsTab(QtGui.QWidget):
         button.clicked.connect(self.manage_keys)
         layout.addWidget(button)
 
-        button = QtGui.QPushButton("Change connection mode")
-        button.clicked.connect(self.change_mode)
-        layout.addWidget(button)
+        self._mode_btn = QtGui.QPushButton("Change connection mode")
+        self._mode_btn.clicked.connect(self.change_mode)
+        layout.addWidget(self._mode_btn)
 
         layout.addStretch()
         self.setLayout(layout)
@@ -84,6 +85,7 @@ class SettingsTab(QtGui.QWidget):
         self._serial.setText("Serial number: %s" % neo.serial)
         self._firmware.setText("Firmware version: %s" %
                                '.'.join(map(str, neo.version)))
+        self._mode_btn.setText("Change connection mode [%s]" % MODES[neo.mode])
 
     def change_name(self):
         name, ok = QtGui.QInputDialog.getText(
@@ -103,10 +105,12 @@ class SettingsTab(QtGui.QWidget):
             "NEO.\nFor this setting to take effect, you will need to unplug, "
             "and re-attach your YubiKey.", MODES, current, False)
         if res[1]:
-            res = next((mode for mode, name in MODE_NAMES.items()
-                        if name == res[0]))
-            if self._neo.mode != res:
-                self._neo.device.set_mode(res)
+            m = next((mode for mode, name in MODE_NAMES.items()
+                      if name == res[0]))
+            if self._neo.mode != m:
+                self._neo.device.set_mode(m)
+                self._mode_btn.setText(
+                    "Change connection mode [%s]" % res[0])
 
 
 class AppsTab(QtGui.QWidget):
@@ -126,6 +130,6 @@ class AppsTab(QtGui.QWidget):
         if not neo or neo.mode not in [MODE_CCID, MODE_HID_CCID]:
             return
 
-        apps = neo.device.list_apps()
-        for app in apps:
-            self.layout().addWidget(QtGui.QLabel(app))
+        self._apps = map(get_applet, neo.device.list_apps())
+        for app in self._apps:
+            self.layout().addWidget(QtGui.QLabel(app.name))
