@@ -1,9 +1,11 @@
 from PySide import QtGui
 from PySide import QtCore
 from neoman.model.neo import YubiKeyNeo
+from neoman.model.applet import Applet
 from neoman.view.nav import NavTree
 from neoman.view.welcome import WelcomePage
 from neoman.view.neo import NeoPage
+from neoman.view.applet import AppletPage
 from neoman.storage import settings
 
 
@@ -72,7 +74,7 @@ class ContentWidget(QtGui.QStackedWidget):
         self._neo_page = NeoPage()
         self.addWidget(self._neo_page)
 
-        self._app_page = QtGui.QLabel("app")
+        self._app_page = AppletPage()
         self.addWidget(self._app_page)
 
         self.setMinimumSize(400, 400)
@@ -89,5 +91,6 @@ class ContentWidget(QtGui.QStackedWidget):
         elif isinstance(content, YubiKeyNeo):
             self._neo_page.setNeo(content)
             self.setCurrentWidget(self._neo_page)
-        else:
+        elif isinstance(content, Applet):
+            self._app_page.setApplet(content)
             self.setCurrentWidget(self._app_page)
