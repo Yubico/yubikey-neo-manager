@@ -119,7 +119,9 @@ class AppsTab(QtGui.QWidget):
         super(AppsTab, self).__init__()
 
         layout = QtGui.QVBoxLayout()
-        layout.addWidget(QtGui.QLabel("No apps installed!"))
+        self._apps_list = QtGui.QListView()
+        self._apps_list.setModel(QtGui.QStringListModel([]))
+        layout.addWidget(self._apps_list)
 
         layout.addStretch()
         self.setLayout(layout)
@@ -130,6 +132,6 @@ class AppsTab(QtGui.QWidget):
         if not neo or neo.mode not in [MODE_CCID, MODE_HID_CCID]:
             return
 
-        self._apps = map(get_applet, neo.device.list_apps())
-        for app in self._apps:
-            self.layout().addWidget(QtGui.QLabel(app.name))
+        self._apps = filter(None, map(get_applet, neo.device.list_apps()))
+        self._apps_list.model().setStringList(
+            map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))
