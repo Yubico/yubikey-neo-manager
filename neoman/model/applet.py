@@ -17,7 +17,7 @@ APPLETS = [
 ]
 
 HIDDEN = [
-    "a0000000035350"
+    "a0000000035350"  # Security Domain
 ]
 
 

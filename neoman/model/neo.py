@@ -75,7 +75,8 @@ class AvailableNeos(QtCore.QObject):
     def discover_devices(self):
         neos = self._neos[:]
         for neo in neos:
-            del neo._dev
+            if hasattr(neo, '_dev'):
+                del neo._dev
 
         single = open_first_device()
         discovered = [single] if single else []
