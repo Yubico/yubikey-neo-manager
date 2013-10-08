@@ -1,4 +1,4 @@
-from PySide import QtCore
+from PySide import QtCore, QtGui
 from neoman.device import open_first_device
 from neoman.storage import settings
 
@@ -98,4 +98,5 @@ class AvailableNeos(QtCore.QObject):
             self.changed.emit(self._neos)
 
     def timerEvent(self, event):
-        self.discover_devices()
+        if QtGui.QApplication.activeWindow():  # Only when the window has focus
+            self.discover_devices()
