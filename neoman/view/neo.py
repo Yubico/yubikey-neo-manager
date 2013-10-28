@@ -134,9 +134,18 @@ class SettingsTab(QtGui.QWidget):
             m = next((mode for mode, name in MODE_NAMES.items()
                       if name == res[0]))
             if self._neo.mode != m:
-                self._neo.device.set_mode(m)
+                self._neo.set_mode(m)
                 self._mode_btn.setText(
                     "Change connection mode [%s]" % res[0])
+
+                remove_dialog = QtGui.QMessageBox(self)
+                remove_dialog.setWindowTitle("Change mode")
+                remove_dialog.setIcon(QtGui.QMessageBox.Information)
+                remove_dialog.setText(
+                    "\nRemove your YubiKey NEO now.\n")
+                remove_dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
+                self._neo.removed.connect(remove_dialog.accept)
+                remove_dialog.exec_()
 
 
 class AppsTab(QtGui.QWidget):
