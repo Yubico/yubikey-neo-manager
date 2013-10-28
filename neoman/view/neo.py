@@ -132,6 +132,6 @@ class AppsTab(QtGui.QWidget):
         if not neo or neo.mode not in [MODE_CCID, MODE_HID_CCID]:
             return
 
-        self._apps = filter(None, map(get_applet, neo.device.list_apps()))
+        self._apps = filter(None, map(get_applet, neo.list_apps()))
         self._apps_list.model().setStringList(
             map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))

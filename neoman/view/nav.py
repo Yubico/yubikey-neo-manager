@@ -43,8 +43,11 @@ class NavModel(QtCore.QAbstractItemModel):
 
         self.applets = APPLETS
         self.available_neos = AvailableNeos()
-        self.neo_list = self.available_neos.neos
+        self.neo_list = []
         self.available_neos.changed.connect(self.data_changed)
+        self.available_neos.start()
+        QtCore.QCoreApplication.instance().aboutToQuit.connect(
+            self.available_neos.stop)
 
     @QtCore.Slot(list)
     def data_changed(self, new_neos):
