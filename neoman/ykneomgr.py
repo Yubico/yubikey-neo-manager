@@ -1,4 +1,5 @@
-from ctypes import Structure, POINTER, c_int, c_uint, c_uint8, c_char_p
+from ctypes import (Structure, POINTER,
+                    c_int, c_uint, c_uint8, c_char_p, c_size_t)
 from neoman.libloader import load_library
 
 _lib = load_library('ykneomgr')
@@ -19,18 +20,26 @@ ykneomgr_dev = type('ykneomgr_dev', (Structure,), {})
 
 ykneomgr_global_init = define('ykneomgr_global_init', [ykneomgr_initflags],
                               ykneomgr_rc)
-ykneomgr_init = define('ykneomgr_init', [], POINTER(ykneomgr_dev))
+ykneomgr_init = define('ykneomgr_init', [
+                       POINTER(POINTER(ykneomgr_dev))], ykneomgr_rc)
 ykneomgr_done = define('ykneomgr_done', [POINTER(ykneomgr_dev)])
 ykneomgr_discover = define('ykneomgr_discover', [POINTER(ykneomgr_dev)],
                            ykneomgr_rc)
-ykneomgr_secure = define('ykneomgr_secure',
-                         [POINTER(ykneomgr_dev), c_char_p],
-                         ykneomgr_rc)
+ykneomgr_authenticate = define('ykneomgr_authenticate',
+                               [POINTER(ykneomgr_dev), c_char_p],
+                               ykneomgr_rc)
 ykneomgr_modeswitch = define('ykneomgr_modeswitch',
                              [POINTER(ykneomgr_dev), c_uint8], ykneomgr_rc)
-ykneomgr_listapps = define('ykneomgr_listapps',
-                           [POINTER(ykneomgr_dev), POINTER(c_char_p)],
-                           ykneomgr_rc)
+ykneomgr_applet_list = define('ykneomgr_applet_list',
+                              [POINTER(ykneomgr_dev), c_char_p,
+                               POINTER(c_size_t)],
+                              ykneomgr_rc)
+ykneomgr_applet_delete = define('ykneomgr_applet_delete',
+                                [POINTER(ykneomgr_dev), c_char_p, c_size_t],
+                                ykneomgr_rc)
+ykneomgr_applet_install = define('ykneomgr_applet_install',
+                                 [POINTER(ykneomgr_dev), c_char_p],
+                                 ykneomgr_rc)
 
 ykneomgr_get_serialno = define('ykneomgr_get_serialno',
                                [POINTER(ykneomgr_dev)], c_uint)

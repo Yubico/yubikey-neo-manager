@@ -1,5 +1,5 @@
 from ykneomgr import *
-from ctypes import byref, c_char_p, create_string_buffer
+from ctypes import POINTER, byref, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
 
 DEFAULT_KEY = "404142434445464748494a4b4c4d4e4f".decode('hex')
@@ -43,7 +43,7 @@ class CCIDDevice(BaseDevice):
         return self._version
 
     def unlock(self, key=DEFAULT_KEY):
-        check(ykneomgr_secure(self._dev, key))
+        check(ykneomgr_authenticate(self._dev, key))
 
     def set_mode(self, mode):
         check(ykneomgr_modeswitch(self._dev, mode))
@@ -52,10 +52,11 @@ class CCIDDevice(BaseDevice):
     def list_apps(self):
         if self.locked:
             self.unlock()
-        applist = c_char_p()
-        ykneomgr_listapps(self._dev, byref(applist))
+        applist = create_string_buffer(1024)
+        size = c_size_t()
+        ykneomgr_applet_list(self._dev, applist, byref(size))
+        apps = applist.raw[:size.value - 1].split('\0')
 
-        apps = applist.value.split()
         return apps
 
     def close(self):
@@ -65,7 +66,8 @@ class CCIDDevice(BaseDevice):
 
 
 def open_first_device():
-    dev = ykneomgr_init()
+    dev = POINTER(ykneomgr_dev)()
+    ykneomgr_init(byref(dev))  # TODO: check rc
     check(ykneomgr_discover(dev))
 
     return CCIDDevice(dev)
