@@ -88,6 +88,7 @@ class SettingsTab(QtGui.QWidget):
 
         button = QtGui.QPushButton("Manage transport keys")
         button.clicked.connect(self.manage_keys)
+        button.setDisabled(True)  # TODO: Remove when implemented.
         layout.addWidget(button)
 
         self._mode_btn = QtGui.QPushButton("Change connection mode")

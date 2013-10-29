@@ -28,7 +28,7 @@ from PySide import QtCore, QtGui
 from neoman.device import open_first_device
 from neoman.storage import settings
 
-DEFAULT_KEY = "404142434445ff4748494a4b4c4d4e4f"
+DEFAULT_KEY = "404142434445464748494a4b4c4d4e4f"
 
 
 class YubiKeyNeo(QtCore.QObject):
