@@ -69,7 +69,9 @@ class CCIDDevice(BaseDevice):
         return self._version
 
     def unlock(self, key=DEFAULT_KEY):
+        self._locked = True
         check(ykneomgr_authenticate(self._dev, key))
+        self._locked = False
 
     def set_mode(self, mode):
         check(ykneomgr_modeswitch(self._dev, mode))
@@ -93,7 +95,7 @@ class CCIDDevice(BaseDevice):
 
 def open_first_device():
     dev = POINTER(ykneomgr_dev)()
-    ykneomgr_init(byref(dev))  # TODO: check rc
+    check(ykneomgr_init(byref(dev)))
     check(ykneomgr_discover(dev))
 
     return CCIDDevice(dev)
