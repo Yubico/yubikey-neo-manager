@@ -49,16 +49,12 @@ class NeoPage(QtGui.QTabWidget):
         self.neo.connect(settings.set_neo)
         self.addTab(settings, "Settings")
 
-        apps = AppsTab()
+        apps = AppsTab(self, 1)
         self.neo.connect(apps.set_neo)
         self.addTab(apps, "Installed apps")
 
     def setNeo(self, neo):
         self._neo = neo
-        if neo:
-            has_ccid = neo.mode in [MODE_CCID, MODE_HID_CCID]
-            self.setTabEnabled(1, has_ccid)
-            self.setTabToolTip(1, None if has_ccid else "Requires CCID mode")
         self.neo.emit(neo)
 
     def getNeo(self):
@@ -150,10 +146,14 @@ class SettingsTab(QtGui.QWidget):
 
 class AppsTab(QtGui.QWidget):
 
-    def __init__(self):
+    def __init__(self, parent, index):
         super(AppsTab, self).__init__()
 
+        self.parent = parent
+        self.index = index
+
         layout = QtGui.QVBoxLayout()
+        self._apps = []
         self._apps_list = QtGui.QListView()
         self._apps_list.setModel(QtGui.QStringListModel([]))
         layout.addWidget(self._apps_list)
@@ -161,12 +161,44 @@ class AppsTab(QtGui.QWidget):
         layout.addStretch()
         self.setLayout(layout)
 
+        parent.currentChanged.connect(self.changed)
+
+    def changed(self, index):
+        if index != self.index:
+            return
+
+        while self._neo.locked:
+            try:
+                self._neo.unlock()
+            except Exception:
+                pw, ok = QtGui.QInputDialog.getText(
+                    self, "Transport key required",
+                    "Managing apps on this YubiKey NEO requires a password")
+                if not ok:
+                    self.parent.setCurrentIndex(0)
+                    return
+                self._neo.key = pw
+
+        self._apps = filter(None, map(get_applet, self._neo.list_apps()))
+        self._apps_list.model().setStringList(
+            map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))
+
     @QtCore.Slot(YubiKeyNeo)
     def set_neo(self, neo):
         self._neo = neo
-        if not neo or neo.mode not in [MODE_CCID, MODE_HID_CCID]:
+        if not neo or not neo.has_ccid:
+            self.parent.setTabEnabled(self.index, False)
+            self.parent.setTabToolTip(self.index, "Requires CCID mode")
             return
 
-        self._apps = filter(None, map(get_applet, neo.list_apps()))
-        self._apps_list.model().setStringList(
-            map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))
+        self.parent.setTabEnabled(self.index, True)
+        self.parent.setTabToolTip(self.index, None)
+
+        if neo.locked:
+            try:
+                neo.unlock()
+                self._apps = filter(None, map(get_applet, neo.list_apps()))
+                self._apps_list.model().setStringList(
+                    map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))
+            except:
+                pass

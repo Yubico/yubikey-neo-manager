@@ -111,7 +111,7 @@ class ContentWidget(QtGui.QStackedWidget):
     def setContent(self, content):
         self._content = content
 
-        if not content:
+        if content is None:
             self._neo_page.setNeo(None)
             self.setCurrentWidget(self._start_page)
         elif isinstance(content, YubiKeyNeo):

@@ -28,6 +28,8 @@ from PySide import QtCore, QtGui
 from neoman.device import open_first_device
 from neoman.storage import settings
 
+DEFAULT_KEY = "404142434445ff4748494a4b4c4d4e4f"
+
 
 class YubiKeyNeo(QtCore.QObject):
     removed = QtCore.Signal()
@@ -44,17 +46,35 @@ class YubiKeyNeo(QtCore.QObject):
 
         self._group = self._serial if self._serial else "NOSERIAL"
 
+        if device.has_ccid:
+            device.key = self.key.decode('hex')
+
     def _set_device(self, device):
         assert self.serial == device.serial
         assert self.version == device.version
         self._dev = device
         self._mode = device.mode
+        if device.has_ccid:
+            device.key = self.key.decode('hex')
 
     def __setitem__(self, key, value):
         settings.setValue('%s/%s' % (self._group, key), value)
 
+    def __delitem__(self, key):
+        settings.remove('%s/%s' % (self._group, key))
+
     def __getitem__(self, key):
         return self.get(key)
+
+    def __nonzero__(self):
+        return True
+
+    def __len__(self):
+        try:
+            settings.beginGroup('%s' % self._group)
+            return len(settings.allKeys())
+        finally:
+            settings.endGroup()
 
     def __getattr__(self, name):
         try:
@@ -75,6 +95,27 @@ class YubiKeyNeo(QtCore.QObject):
     @name.setter
     def name(self, new_name):
         self['name'] = new_name
+
+    @property
+    def key(self):
+        return self.get('key', DEFAULT_KEY)
+
+    @key.setter
+    def key(self, new_key):
+        self['key'] = new_key
+        try:
+            self._mutex.lock()
+            self._dev.key = new_key.decode('hex')
+        finally:
+            self._mutex.unlock()
+
+    def set_key(self, new_key):
+        try:
+            self._mutex.lock()
+            print "NOT IMPLEMENTED"
+            #TODO: change key
+        finally:
+            self._mutex.unlock()
 
     @property
     def mode(self):

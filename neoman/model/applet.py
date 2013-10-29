@@ -28,10 +28,14 @@
 
 class Applet(object):
 
-    def __init__(self, aid, name, description):
+    def __init__(self, aid, name, description, latest_version="unknown",
+                 cap_file=None, tabs=None):
         self.aid = aid
         self.name = name
         self.description = description
+        self.latest_version = latest_version
+        self.cap_file = cap_file
+        self.tabs = tabs if tabs else {}
 
     def __str__(self):
         return self.name

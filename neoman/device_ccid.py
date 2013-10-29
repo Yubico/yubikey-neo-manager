@@ -28,8 +28,6 @@ from ykneomgr import *
 from ctypes import POINTER, byref, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
 
-DEFAULT_KEY = "404142434445464748494a4b4c4d4e4f".decode('hex')
-
 
 assert ykneomgr_global_init(0) == 0
 
@@ -43,6 +41,7 @@ class CCIDDevice(BaseDevice):
 
     def __init__(self, dev):
         self._dev = dev
+        self._key = None
         self._locked = True
         self._serial = ykneomgr_get_serialno(dev)
         self._mode = 0xf & ykneomgr_get_mode(dev)
@@ -51,6 +50,14 @@ class CCIDDevice(BaseDevice):
             ykneomgr_get_version_minor(dev),
             ykneomgr_get_version_build(dev)
         ]
+
+    @property
+    def key(self):
+        return self._key
+
+    @key.setter
+    def key(self, new_key):
+        self._key = new_key
 
     @property
     def locked(self):
@@ -68,9 +75,11 @@ class CCIDDevice(BaseDevice):
     def version(self):
         return self._version
 
-    def unlock(self, key=DEFAULT_KEY):
+    def unlock(self):
         self._locked = True
-        check(ykneomgr_authenticate(self._dev, key))
+        if not self._key:
+            raise Exception("No transport key provided!")
+        check(ykneomgr_authenticate(self._dev, self._key))
         self._locked = False
 
     def set_mode(self, mode):
