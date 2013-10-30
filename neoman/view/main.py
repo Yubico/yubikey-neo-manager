@@ -52,7 +52,6 @@ class MainWindow(QtGui.QMainWindow):
     def build_ui(self):
         widget = QtGui.QWidget()
         layout = QtGui.QHBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.build_nav())
         layout.addWidget(self.build_main())
 
@@ -65,7 +64,6 @@ class MainWindow(QtGui.QMainWindow):
     def build_nav(self):
         layout = QtGui.QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
 
         self._nav = NavTree()
         layout.addWidget(self._nav)

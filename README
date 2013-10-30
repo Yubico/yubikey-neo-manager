@@ -5,3 +5,20 @@ Tool for managing your YubiKey NEO configuration.
 Dependencies
 ------------
 YubiKey NEO Manager requires libykneomgr as well as libykpers-1.
+
+Building binaries
+-----------------
+Binaries for Windows and OSX are built using PyInstaller.
+
+Windows:
+For Windows you will need python, PySide, PyInstaller and Pywin32 installed
+(32 or 64-bit versions depending on the architecture of the binary your are
+building).
+
+Run "pyinstaller.exe -w scripts/neoman" from the main project folder.
+Copy the ykpers and ykneomgr DLL files to the resulting dist/neoman/ folder.
+
+OSX:
+For OSX you need python, pyside and pyinstaller installed.
+
+Run "pyinstaller -w scripts/neoman" from the main project directory.

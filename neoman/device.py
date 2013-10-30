@@ -60,10 +60,8 @@ def open_first_device():
         from neoman.device_ccid import open_first_device as open_ccid
         return open_ccid()
     except:
-        print "exception in ccid"
         try:
             from neoman.device_hid import open_first_device as open_hid
             return open_hid()
         except Exception as e:
-            print "exception in hid", e
             return None
