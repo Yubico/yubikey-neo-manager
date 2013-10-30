@@ -168,21 +168,25 @@ class AppsTab(QtGui.QWidget):
         if index != self.index:
             return
 
-        while self._neo.locked:
-            try:
-                self._neo.unlock()
-            except Exception:
-                pw, ok = QtGui.QInputDialog.getText(
-                    self, "Transport key required",
-                    "Managing apps on this YubiKey NEO requires a password")
-                if not ok:
-                    self.parent.setCurrentIndex(0)
-                    return
-                self._neo.key = pw
+        try:
+            while self._neo.locked:
+                try:
+                    self._neo.unlock()
+                except Exception:
+                    pw, ok = QtGui.QInputDialog.getText(
+                        self, "Transport key required",
+                        "Managing apps on this YubiKey NEO requires a "
+                        "password")
+                    if not ok:
+                        self.parent.setCurrentIndex(0)
+                        return
+                    self._neo.key = pw
 
-        self._apps = filter(None, map(get_applet, self._neo.list_apps()))
-        self._apps_list.model().setStringList(
-            map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))
+            self._apps = filter(None, map(get_applet, self._neo.list_apps()))
+            self._apps_list.model().setStringList(
+                map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))
+        except AttributeError:
+            pass
 
     @QtCore.Slot(YubiKeyNeo)
     def set_neo(self, neo):

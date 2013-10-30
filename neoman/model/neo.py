@@ -159,7 +159,11 @@ class AvailableNeos(QtCore.QThread):
                 neo._mutex.lock()
                 neo._dev = None
 
-        single = open_first_device()
+        for _ in range(3):  # Seems to fail sometimes, retry.
+            single = open_first_device()
+            if single:
+                break
+
         discovered = [single] if single else []
 
         new_neos = []
