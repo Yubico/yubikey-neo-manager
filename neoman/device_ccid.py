@@ -24,7 +24,7 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-from ykneomgr import *
+from neoman.ykneomgr import *
 from ctypes import POINTER, byref, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
 

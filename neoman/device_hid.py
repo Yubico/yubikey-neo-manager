@@ -24,7 +24,7 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-from ykpers import *
+from neoman.ykpers import *
 from ctypes import byref, c_uint
 from neoman.device import BaseDevice, MODE_HID
 
@@ -86,6 +86,8 @@ class HIDDevice(BaseDevice):
 def open_first_device():
     dev = yk_open_first_key()
     if not dev:
-        raise Exception("Unable to open YubiKey!")
+        raise Exception("Unable to open YubiKey NEO!")
+    if dev.version[0] < 3:
+        raise Exception("Device is not a YubiKey NEO!")
 
     return HIDDevice(dev)
