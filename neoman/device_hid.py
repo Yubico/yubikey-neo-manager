@@ -87,7 +87,9 @@ def open_first_device():
     dev = yk_open_first_key()
     if not dev:
         raise Exception("Unable to open YubiKey NEO!")
-    if dev.version[0] < 3:
+
+    hid_device = HIDDevice(dev)
+    if hid_device.version[0] < 3:
         raise Exception("Device is not a YubiKey NEO!")
 
-    return HIDDevice(dev)
+    return hid_device
