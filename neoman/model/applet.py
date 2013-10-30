@@ -44,7 +44,7 @@ class Applet(object):
 APPLETS = [
     Applet("a0000005272001", "YubiKey", "YubiKey OTP applet."),
     Applet("a0000005272101", "YubiOATH", "YubiOATH applet."),
-    Applet("a0000005272102", "Yubico Bitcoin", "Yubico bitcoin applet."),
+    #Applet("a0000005272102", "Yubico Bitcoin", "Yubico bitcoin applet."),
     Applet("d27600012401", "OpenPGP", "Open PGP applet.")
 ]
 
