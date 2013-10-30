@@ -27,6 +27,7 @@
 import sys
 from PySide import QtGui, QtCore
 from neoman.view.main import MainWindow
+from neoman.model.neo import AvailableNeos
 
 QtCore.QCoreApplication.setOrganizationName('Yubico')
 QtCore.QCoreApplication.setOrganizationDomain('yubico.com')
@@ -35,6 +36,12 @@ QtCore.QCoreApplication.setApplicationName('YubiKey NEO Manager')
 
 def main():
     app = QtGui.QApplication(sys.argv)
+
+    available_neos = AvailableNeos()
+    available_neos.start()
+    app.aboutToQuit.connect(available_neos.stop)
+    app.available_neos = available_neos
+
     window = MainWindow()
     window.show()
 

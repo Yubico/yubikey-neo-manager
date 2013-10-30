@@ -139,12 +139,21 @@ class AvailableNeos(QtCore.QThread):
     def __init__(self):
         super(AvailableNeos, self).__init__()
 
+        self._mutex = QtCore.QMutex()
+
         self._neos = []
         self._running = True
 
     def stop(self):
         self._running = False
         self.wait()
+
+    def get(self):
+        try:
+            self._mutex.lock()
+            return self._neos[:]
+        finally:
+            self._mutex.unlock()
 
     def run(self):
         while self._running:
@@ -153,7 +162,7 @@ class AvailableNeos(QtCore.QThread):
             self.msleep(1000)
 
     def discover_devices(self):
-        neos = self._neos[:]
+        neos = self.get()
         for neo in neos:
             if neo._dev:
                 neo._mutex.lock()
@@ -182,5 +191,8 @@ class AvailableNeos(QtCore.QThread):
             neo.removed.emit()
             neo._mutex.unlock()
         if new_neos or dead_neos:
+            self._mutex.lock()
             self._neos = neos + new_neos
-            self.changed.emit(self._neos)
+            neos_copy = self._neos[:]
+            self._mutex.unlock()
+            self.changed.emit(neos_copy)

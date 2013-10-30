@@ -88,7 +88,10 @@ class SettingsTab(QtGui.QWidget):
 
         button = QtGui.QPushButton("Manage transport keys")
         button.clicked.connect(self.manage_keys)
-        button.setDisabled(True)  # TODO: Remove when implemented.
+        # TODO: Remove when implemented:
+        button.setDisabled(True)
+        button.setToolTip("Not yet supported")
+
         layout.addWidget(button)
 
         self._mode_btn = QtGui.QPushButton("Change connection mode")
@@ -157,14 +160,20 @@ class AppsTab(QtGui.QWidget):
         self._apps = []
         self._apps_list = QtGui.QListView()
         self._apps_list.setModel(QtGui.QStringListModel([]))
+        self._apps_list.setEditTriggers(QtGui.QListView.NoEditTriggers)
+        self._apps_list.doubleClicked.connect(self.open_app)
         layout.addWidget(self._apps_list)
 
         layout.addStretch()
         self.setLayout(layout)
 
-        parent.currentChanged.connect(self.changed)
+        parent.currentChanged.connect(self.tab_changed)
 
-    def changed(self, index):
+    def open_app(self, index):
+        #print index.data()
+        pass
+
+    def tab_changed(self, index):
         if index != self.index:
             return
 
