@@ -79,7 +79,7 @@ class LibraryLoader(object):
     def __init__(self):
         self.other_dirs = []
 
-    def load_library(self, libname):
+    def load_library(self, libname, version=None):
         """Given the name of a library, load it."""
         paths = self.getpaths(libname)
 
@@ -282,13 +282,16 @@ class _WindowsLibrary(object):
 class WindowsLibraryLoader(LibraryLoader):
     name_formats = ["%s.dll", "lib%s.dll", "%slib.dll"]
 
-    def load_library(self, libname):
+    def load_library(self, libname, version=None):
         try:
-            result = LibraryLoader.load_library(self, libname)
+            result = LibraryLoader.load_library(self, libname, version)
         except ImportError:
             result = None
             if os.path.sep not in libname:
-                for name in self.name_formats:
+                formats = self.name_formats[:]
+                if version:
+                    formats.append("lib%%s-%s.dll" % version)
+                for name in formats:
                     try:
                         result = getattr(ctypes.cdll, name % libname)
                         if result:

@@ -27,10 +27,7 @@
 from ctypes import Structure, POINTER, c_int, c_uint8, c_uint, c_ubyte
 from neoman.libloader import load_library
 
-try:
-    _lib = load_library('ykpers-1')
-except ImportError:
-    _lib = load_library('ykpers-1-1')
+_lib = load_library('ykpers-1', '1')
 
 
 def define(name, args, res):

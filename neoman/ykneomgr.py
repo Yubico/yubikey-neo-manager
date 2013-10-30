@@ -28,10 +28,7 @@ from ctypes import (Structure, POINTER,
                     c_int, c_uint, c_uint8, c_char_p, c_size_t)
 from neoman.libloader import load_library
 
-try:
-    _lib = load_library('ykneomgr')
-except ImportError:
-    _lib = load_library('ykneomgr-0')
+_lib = load_library('ykneomgr', '0')
 
 
 ykneomgr_rc = c_int
