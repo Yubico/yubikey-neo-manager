@@ -27,10 +27,21 @@
 
 from setuptools import setup
 from release import release
+import re
+
+VERSION_PATTERN = re.compile(r"(?m)^__version__\s*=\s*['\"](.+)['\"]$")
+
+
+def get_version():
+    """Return the current version as defined by neoman/__init__.py."""
+
+    with open('neoman/__init__.py', 'r') as f:
+        match = VERSION_PATTERN.search(f.read())
+        return match.group(1)
 
 setup(
     name='yubikey-neo-manager',
-    version='0.0.1',
+    version=get_version(),
     author='Dain Nilsson',
     author_email='dain@yubico.com',
     maintainer='Yubico Open Source Maintainers',
