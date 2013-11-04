@@ -48,14 +48,23 @@ class NavTree(QtGui.QTreeView):
         if current.flags() & QtCore.Qt.ItemIsSelectable:
             self.current = current.internalPointer()
             self.subpage.emit(self.current)
-        else:
+        elif not self.model().neo_list:
             self.current = None
             self.subpage.emit(None)
+        elif isinstance(self.current, YubiKeyNeo):
+            pass
+        else:
+            self.current = self.model().neo_list[0]
+            self.subpage.emit(self.current)
 
     def _data_changed(self):
         if not self.current and self.model().neo_list:
             self.setCurrentIndex(
                 self.model().index(0, 0, self.model().categories['Devices']))
+        elif isinstance(self.current, YubiKeyNeo) \
+                and self.current not in self.model().neo_list:
+            self.current = None
+            self.subpage.emit(None)
 
 
 class NavModel(QtCore.QAbstractItemModel):
@@ -68,9 +77,9 @@ class NavModel(QtCore.QAbstractItemModel):
         }
 
         self.applets = APPLETS
-        self.neo_list = []
-        QtCore.QCoreApplication.instance().available_neos.changed \
-            .connect(self.data_changed)
+        available = QtCore.QCoreApplication.instance().available_neos
+        available.changed.connect(self.data_changed)
+        self.neo_list = available.get()
 
     @QtCore.Slot(list)
     def data_changed(self, new_neos):

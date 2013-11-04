@@ -27,9 +27,15 @@
 from PySide import QtGui
 
 
+TEXT = """No device found.
+
+Please insert a YubiKey NEO to continue...
+"""
+
+
 class WelcomePage(QtGui.QLabel):
 
     def __init__(self):
         super(WelcomePage, self).__init__()
 
-        self.setText("YubiKey NEO Manager")
+        self.setText(TEXT)
