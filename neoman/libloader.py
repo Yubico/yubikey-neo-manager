@@ -81,6 +81,12 @@ class LibraryLoader(object):
 
     def load_library(self, libname, version=None):
         """Given the name of a library, load it."""
+
+        try:
+            return self.load(ctypes.util.find_library(libname))
+        except ImportError:
+            pass
+
         paths = self.getpaths(libname)
 
         for path in paths:
