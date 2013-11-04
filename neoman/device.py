@@ -37,7 +37,7 @@ class BaseDevice(object):
 
     @property
     def has_ccid(self):
-        return self.mode in [MODE_CCID, MODE_HID_CCID]
+        return self.mode & 0x0f in [MODE_CCID, MODE_HID_CCID]
 
     @property
     def serial(self):
@@ -52,7 +52,7 @@ class BaseDevice(object):
             self.close()
 
     def __str__(self):
-        return "NEO[mode=%d, serial=%s]" % (self.mode, self.serial)
+        return "NEO[mode=%x, serial=%s]" % (self.mode, self.serial)
 
 
 def open_first_device():

@@ -130,7 +130,7 @@ class YubiKeyNeo(QtCore.QObject):
         return self._version
 
     def __str__(self):
-        return "%s[%d]" % (self.name, self.mode)
+        return "%s[%x]" % (self.name, self.mode)
 
 
 class AvailableNeos(QtCore.QThread):

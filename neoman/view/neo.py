@@ -28,14 +28,19 @@ from PySide import QtGui, QtCore
 from neoman.device import MODE_HID, MODE_CCID, MODE_HID_CCID
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import get_applet
+from collections import OrderedDict
+
+MODES = OrderedDict([
+    ("OTP", 0x00),
+    ("CCID", 0x01),
+    ("CCID with touch eject", 0x81),
+    ("OTP+CCID", 0x02),
+    ("OTP+CCID with touch eject", 0x82)
+])
 
 
-MODES = ["OTP", "CCID", "OTP+CCID"]
-MODE_NAMES = {
-    MODE_HID: MODES[0],
-    MODE_CCID: MODES[1],
-    MODE_HID_CCID: MODES[2]
-}
+def name_for_mode(mode):
+    return next((n for n, m in MODES.items() if m == mode), None)
 
 
 class NeoPage(QtGui.QTabWidget):
@@ -111,7 +116,8 @@ class SettingsTab(QtGui.QWidget):
         self._serial.setText("Serial number: %s" % neo.serial)
         self._firmware.setText("Firmware version: %s" %
                                '.'.join(map(str, neo.version)))
-        self._mode_btn.setText("Change connection mode [%s]" % MODES[neo.mode])
+        self._mode_btn.setText(
+            "Change connection mode [%s]" % name_for_mode(neo.mode))
 
     def change_name(self):
         name, ok = QtGui.QInputDialog.getText(
@@ -125,16 +131,15 @@ class SettingsTab(QtGui.QWidget):
         print "Manage transport keys"
 
     def change_mode(self):
-        current = MODES.index(MODE_NAMES[self._neo.mode])
+        current = MODES.keys().index(name_for_mode(self._neo.mode))
         res = QtGui.QInputDialog.getItem(
             self, "Set mode", "Set the connection mode used by your YubiKey "
             "NEO.\nFor this setting to take effect, you will need to unplug, "
-            "and re-attach your YubiKey.", MODES, current, False)
+            "and re-attach your YubiKey.", MODES.keys(), current, False)
         if res[1]:
-            m = next((mode for mode, name in MODE_NAMES.items()
-                      if name == res[0]))
-            if self._neo.mode != m:
-                self._neo.set_mode(m)
+            mode = MODES[res[0]]
+            if self._neo.mode != mode:
+                self._neo.set_mode(mode)
                 self._mode_btn.setText(
                     "Change connection mode [%s]" % res[0])
 
@@ -170,7 +175,7 @@ class AppsTab(QtGui.QWidget):
         parent.currentChanged.connect(self.tab_changed)
 
     def open_app(self, index):
-        #print index.data()
+        # print index.data()
         pass
 
     def tab_changed(self, index):

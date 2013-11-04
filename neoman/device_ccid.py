@@ -44,7 +44,7 @@ class CCIDDevice(BaseDevice):
         self._key = None
         self._locked = True
         self._serial = ykneomgr_get_serialno(dev)
-        self._mode = 0xf & ykneomgr_get_mode(dev)
+        self._mode = ykneomgr_get_mode(dev)
         self._version = [
             ykneomgr_get_version_major(dev),
             ykneomgr_get_version_minor(dev),
