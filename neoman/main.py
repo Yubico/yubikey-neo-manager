@@ -24,10 +24,22 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+import os
 import sys
 from PySide import QtGui, QtCore
 from neoman.view.main import MainWindow
 from neoman.model.neo import AvailableNeos
+from neoman import __version__ as version
+
+
+if getattr(sys, 'frozen', False):
+    # we are running in a PyInstaller bundle
+    basedir = sys._MEIPASS
+else:
+    # we are running in a normal Python environment
+    basedir = os.path.dirname(__file__)
+    print basedir
+
 
 QtCore.QCoreApplication.setOrganizationName('Yubico')
 QtCore.QCoreApplication.setOrganizationDomain('yubico.com')
@@ -43,6 +55,8 @@ def main():
     app.available_neos = available_neos
 
     window = MainWindow()
+    window.setWindowTitle("YubiKey NEO Manager (%s)" % version)
+    window.setWindowIcon(QtGui.QIcon(os.path.join(basedir, 'neoman.png')))
     window.show()
 
     sys.exit(app.exec_())

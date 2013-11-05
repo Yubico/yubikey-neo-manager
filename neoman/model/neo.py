@@ -130,7 +130,7 @@ class YubiKeyNeo(QtCore.QObject):
         return self._version
 
     def __str__(self):
-        return "%s[%x]" % (self.name, self.mode)
+        return self.name
 
 
 class AvailableNeos(QtCore.QThread):
@@ -168,11 +168,9 @@ class AvailableNeos(QtCore.QThread):
                 neo._mutex.lock()
                 neo._dev = None
 
-        for _ in range(3):  # Seems to fail sometimes, retry.
-            single = open_first_device()
-            if single:
-                break
+        single = open_first_device()
 
+        # Currently only a single device is supported.
         discovered = [single] if single else []
 
         new_neos = []

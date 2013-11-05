@@ -117,7 +117,7 @@ class NavModel(QtCore.QAbstractItemModel):
 
     def rowCount(self, parent=QtCore.QModelIndex()):
         if not parent.isValid():
-            return 2
+            return 1  # NEO apps disabled for now 2
         node = parent.internalPointer()
         if node in self.categories:
             return len(self.neo_list if node == "Devices" else self.applets)

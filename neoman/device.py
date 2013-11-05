@@ -56,12 +56,14 @@ class BaseDevice(object):
 
 
 def open_first_device():
-    try:
-        from neoman.device_ccid import open_first_device as open_ccid
-        return open_ccid()
-    except:
+    for _ in range(3):  # Retry a few times as this sometimes fails.
         try:
-            from neoman.device_hid import open_first_device as open_hid
-            return open_hid()
-        except Exception as e:
-            return None
+            from neoman.device_ccid import open_first_device as open_ccid
+            return open_ccid()
+        except Exception:
+            pass
+    try:
+        from neoman.device_hid import open_first_device as open_hid
+        return open_hid()
+    except Exception as e:
+        return None

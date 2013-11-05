@@ -4,7 +4,7 @@ Tool for managing your YubiKey NEO configuration.
 
 Dependencies
 ------------
-YubiKey NEO Manager requires libykneomgr as well as libykpers-1.
+YubiKey NEO Manager requires PySide, libykneomgr and libykpers-1.
 
 Building binaries
 -----------------

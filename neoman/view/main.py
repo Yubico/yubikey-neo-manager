@@ -26,7 +26,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from PySide import QtGui
 from PySide import QtCore
-from neoman import __version__ as version
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import Applet
 from neoman.view.nav import NavTree
@@ -41,7 +40,6 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        self.setWindowTitle("YubiKey NEO Manager (%s)" % version)
         self.setCentralWidget(self.build_ui())
 
         self.resize(settings.value('window/size', QtCore.QSize(400, 400)))

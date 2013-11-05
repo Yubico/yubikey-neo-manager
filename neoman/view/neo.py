@@ -56,7 +56,7 @@ class NeoPage(QtGui.QTabWidget):
 
         apps = AppsTab(self, 1)
         self.neo.connect(apps.set_neo)
-        self.addTab(apps, "Installed apps")
+        # self.addTab(apps, "Installed apps")  # TODO: Reenable
 
     def setNeo(self, neo):
         self._neo = neo
@@ -93,11 +93,8 @@ class SettingsTab(QtGui.QWidget):
 
         button = QtGui.QPushButton("Manage transport keys")
         button.clicked.connect(self.manage_keys)
-        # TODO: Remove when implemented:
-        button.setDisabled(True)
-        button.setToolTip("Not yet supported")
-
-        layout.addWidget(button)
+        # TODO: Re-add when implemented:
+        # layout.addWidget(button)
 
         self._mode_btn = QtGui.QPushButton("Change connection mode")
         self._mode_btn.clicked.connect(self.change_mode)
