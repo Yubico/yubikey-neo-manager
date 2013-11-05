@@ -4,4 +4,3 @@ include NEWS
 include ChangeLog
 include neoman/neoman.png
 include scripts/*.1
-recursive-include neoman/view *.qml
