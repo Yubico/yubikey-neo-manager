@@ -82,11 +82,6 @@ class LibraryLoader(object):
     def load_library(self, libname, version=None):
         """Given the name of a library, load it."""
 
-        try:
-            return self.load(ctypes.util.find_library(libname))
-        except ImportError:
-            pass
-
         paths = self.getpaths(libname)
 
         for path in paths:
@@ -186,6 +181,13 @@ class DarwinLibraryLoader(LibraryLoader):
 
 class PosixLibraryLoader(LibraryLoader):
     _ld_so_cache = None
+
+    def load_library(self, libname, version=None):
+        try:
+            return self.load(ctypes.util.find_library(libname))
+        except ImportError:
+            return super(PosixLibraryLoader, self).load_library(
+                libname, version)
 
     def _create_ld_so_cache(self):
         # Recreate search path followed by ld.so.  This is going to be
