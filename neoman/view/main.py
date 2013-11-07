@@ -42,7 +42,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setCentralWidget(self.build_ui())
 
-        self.resize(settings.value('window/size', QtCore.QSize(400, 400)))
+        self.resize(settings.value('window/size', QtCore.QSize(0, 0)))
         pos = settings.value('window/pos')
         if pos:
             self.move(pos)
@@ -100,7 +100,7 @@ class ContentWidget(QtGui.QStackedWidget):
         self._app_page = AppletPage()
         self.addWidget(self._app_page)
 
-        self.setMinimumSize(400, 400)
+        self.setMinimumSize(400, 180)
         self.setSizePolicy(QtGui.QSizePolicy.Expanding,
                            QtGui.QSizePolicy.Expanding)
 
