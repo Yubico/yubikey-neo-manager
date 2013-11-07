@@ -6,6 +6,12 @@ Dependencies
 ------------
 YubiKey NEO Manager requires PySide, libykneomgr and libykpers-1.
 
+Running tests
+-------------
+Tests can be run using the "nosetests" command, from the python-nose package.
+Anternatively "python setup.py test" can be used, but this will cause PySide
+to be compiled from source, requiring the python-dev package.
+
 Building binaries
 -----------------
 Binaries for Windows and OSX are built using PyInstaller.
