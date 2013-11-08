@@ -1,7 +1,7 @@
 # -*- mode: python -*-
 import os
 import sys
-from shutil import copy2 as copy
+from glob import glob
 
 NAME = "YubiKey NEO Manager"
 
@@ -20,11 +20,18 @@ a = Analysis(['scripts/neoman'],
              hiddenimports=[],
              hookspath=None,
              runtime_hooks=None)
+
+# DLLs and dylibs should go here.
+libs = glob('lib/*.dll') + glob('lib/*.dylib') + glob('lib/*.so')
+for filename in libs:  
+    a.datas.append((filename[4:], filename, 'DATA'))
+a.datas.append(('neoman.png', 'neoman/neoman.png', 'DATA'))
+
 pyz = PYZ(a.pure)
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,
-          name='%s.exe' % NAME,
+          name=NAME if not WIN else '%s.exe' % NAME,
           debug=False,
           strip=None,
           upx=True,
@@ -37,17 +44,7 @@ coll = COLLECT(exe,
                upx=True,
                name=NAME)
 
-output_dir = os.path.join(DISTPATH, NAME)
 if OSX:
-    output_dir += '.app/Content/MacOS/'
-else:
-    output_dir += os.path.sep
-
-copy('neoman/neoman.png', output_dir)
-    
-if WIN:
-    for filename in glob.glob(r'lib/*.dll'):
-        copy(filename, output_dir)
-elif MAC:
-    for filename in glob.glob(r'lib/*.dylib'):
-        copy(filename, output_dir)
+    app = BUNDLE(coll,
+                 name="%s.app" % NAME,
+                 icon=ICON)
