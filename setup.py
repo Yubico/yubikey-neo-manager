@@ -27,6 +27,7 @@
 
 from setuptools import setup
 from release import release
+from pyinstaller import pyinstaller
 import re
 
 VERSION_PATTERN = re.compile(r"(?m)^__version__\s*=\s*['\"](.+)['\"]$")
@@ -55,7 +56,7 @@ setup(
     install_requires=['PySide'],
     test_suite='nose.collector',
     tests_require=[''],
-    cmdclass={'release': release},
+    cmdclass={'release': release, 'pyinstaller': pyinstaller},
     classifiers=[
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
