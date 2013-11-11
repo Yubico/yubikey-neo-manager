@@ -2,6 +2,7 @@
 import os
 import sys
 from glob import glob
+from getpass import getpass
 
 NAME = "YubiKey NEO Manager"
 
