@@ -38,7 +38,12 @@ if getattr(sys, 'frozen', False):
 else:
     # we are running in a normal Python environment
     basedir = os.path.dirname(__file__)
-    print basedir
+
+# Font fix for OSX Mavericks
+if sys.platform == 'darwin':
+    from platform import mac_ver
+    if tuple(mac_ver()[0].split('.')) >= (10, 9):
+        QtGui.QFont.insertSubstitution(".Lucida Grande UI", "Lucida Grande")
 
 
 QtCore.QCoreApplication.setOrganizationName('Yubico')
