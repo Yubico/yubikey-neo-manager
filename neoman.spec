@@ -23,8 +23,8 @@ a = Analysis(['scripts/neoman'],
 
 # DLLs and dylibs should go here.
 libs = glob('lib/*.dll') + glob('lib/*.dylib') + glob('lib/*.so')
-for filename in libs:  
-    a.datas.append((filename[4:], filename, 'DATA'))
+for filename in libs:
+    a.datas.append((filename[4:], filename, 'BINARY'))
 a.datas.append(('neoman.png', 'neoman/neoman.png', 'DATA'))
 
 pyz = PYZ(a.pure)
@@ -35,7 +35,7 @@ exe = EXE(pyz,
           debug=False,
           strip=None,
           upx=True,
-          console=False , icon=ICON)
+          console=False, icon=ICON)
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
@@ -48,3 +48,10 @@ if OSX:
     app = BUNDLE(coll,
                  name="%s.app" % NAME,
                  icon=ICON)
+
+if WIN:
+    if not os.path.isfile("neoman.pfx"):
+        print "neoman.pfx not found, not signing executable!"
+    else:
+        os.system("signtool.exe sign /f neoman.pfx /p %s /t http://timestamp.verisign.com/scripts/timstamp.dll \"%s\"" %
+                 (getpass('Enter password for PFX file: '), exe.name))
