@@ -37,6 +37,14 @@ exe = EXE(pyz,
           strip=None,
           upx=True,
           console=False, icon=ICON)
+
+if WIN:
+    if not os.path.isfile("neoman.pfx"):
+        print "neoman.pfx not found, not signing executable!"
+    else:
+        os.system("signtool.exe sign /f neoman.pfx /p %s /t http://timestamp.verisign.com/scripts/timstamp.dll \"%s\"" %
+                 (getpass('Enter password for PFX file: '), exe.name))
+
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
@@ -50,9 +58,4 @@ if OSX:
                  name="%s.app" % NAME,
                  icon=ICON)
 
-if WIN:
-    if not os.path.isfile("neoman.pfx"):
-        print "neoman.pfx not found, not signing executable!"
-    else:
-        os.system("signtool.exe sign /f neoman.pfx /p %s /t http://timestamp.verisign.com/scripts/timstamp.dll \"%s\"" %
-                 (getpass('Enter password for PFX file: '), exe.name))
+
