@@ -104,8 +104,8 @@ class CCIDDevice(BaseDevice):
 
 def open_first_device():
     dev = POINTER(ykneomgr_dev)()
+    check(ykneomgr_init(byref(dev)))
     try:
-        check(ykneomgr_init(byref(dev)))
         check(ykneomgr_discover(dev))
     except Exception:
         ykneomgr_done(dev)
