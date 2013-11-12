@@ -46,7 +46,6 @@ class MainWindow(QtGui.QMainWindow):
         pos = settings.value('window/pos')
         if pos:
             self.move(pos)
-        self.raise_()
 
     def build_ui(self):
         widget = QtGui.QWidget()

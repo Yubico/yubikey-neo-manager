@@ -63,5 +63,6 @@ def main():
     window.setWindowTitle("YubiKey NEO Manager (%s)" % version)
     window.setWindowIcon(QtGui.QIcon(os.path.join(basedir, 'neoman.png')))
     window.show()
+    window.raise_()
 
     sys.exit(app.exec_())
