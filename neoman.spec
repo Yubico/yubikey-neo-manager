@@ -123,3 +123,6 @@ if OSX:
     app = BUNDLE(coll,
                  name="%s.app" % NAME,
                  icon=ICON)
+
+    from shutil import copy2 as copy
+    copy('resources/qt.conf', 'dist/%s.app/Contents/Resources/' % NAME)
