@@ -100,7 +100,7 @@ class ContentWidget(QtGui.QStackedWidget):
         self._app_page = AppletPage()
         self.addWidget(self._app_page)
 
-        self.setMinimumSize(400, 180)
+        self.setMinimumSize(420, 180)
         self.setSizePolicy(QtGui.QSizePolicy.Expanding,
                            QtGui.QSizePolicy.Expanding)
 
