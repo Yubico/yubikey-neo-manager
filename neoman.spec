@@ -2,6 +2,7 @@
 # -*- encoding: utf-8 -*-
 import os
 import sys
+import re
 from glob import glob
 from getpass import getpass
 
@@ -29,22 +30,22 @@ for filename in libs:
     a.datas.append((filename[4:], filename, 'BINARY'))
 a.datas.append(('neoman.png', 'neoman/neoman.png', 'DATA'))
 
+# Read version string
+with open('neoman/__init__.py', 'r') as f:
+    match = re.search(r"(?m)^__version__\s*=\s*['\"](.+)['\"]$", f.read())
+    ver_str = match.group(1)
+
 # Read version information on Windows.
 VERSION = None
 if WIN:
     VERSION = 'build/file_version_info.txt'
 
-    #Read version string
-    with open('neoman/__init__.py', 'r') as f:
-        import re
-	match = re.search(r"(?m)^__version__\s*=\s*['\"](.+)['\"]$", f.read())
-    ver_str = match.group(1)
     ver_tup = tuple(map(int, ver_str.split('.')))
     while len(ver_tup) < 4:
         ver_tup += (0,)
     assert len(ver_tup) == 4
 
-    #Write version info.
+    # Write version info.
     with open(VERSION, 'w') as f:
         f.write("""
 VSVersionInfo(
@@ -119,6 +120,7 @@ coll = COLLECT(exe,
                upx=True,
                name=NAME)
 
+# Create .app for OSX
 if OSX:
     app = BUNDLE(coll,
                  name="%s.app" % NAME,
@@ -126,3 +128,18 @@ if OSX:
 
     from shutil import copy2 as copy
     copy('resources/qt.conf', 'dist/%s.app/Contents/Resources/' % NAME)
+
+# Create zip
+import platform
+import zipfile
+os_name = 'win%s' % platform.architecture()[
+    0][:2] if WIN else 'mac' if OSX else 'linux'
+zip_file = 'dist/yubikey-neo-manager-%s-%s.zip' % (ver_str, os_name)
+zip = zipfile.ZipFile(zip_file, 'w')
+for root, dirs, files in os.walk('dist'):
+    if root == ('./%s.app' if OSX else './%s') % NAME:
+        for file in files:
+            path = os.path.join(root, file)
+            zip.write(path, path[5:])
+zip.close()
+print "zip file written:", zip_file
