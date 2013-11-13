@@ -137,7 +137,7 @@ os_name = 'win%s' % platform.architecture()[
 zip_file = 'dist/yubikey-neo-manager-%s-%s.zip' % (ver_str, os_name)
 zip = zipfile.ZipFile(zip_file, 'w')
 for root, dirs, files in os.walk('dist'):
-    if root == ('./%s.app' if OSX else './%s') % NAME:
+    if root.endswith('%s.app' % NAME if OSX else NAME):
         for file in files:
             path = os.path.join(root, file)
             zip.write(path, path[5:])
