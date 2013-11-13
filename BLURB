@@ -1,0 +1,7 @@
+Author: Yubico
+Basename: yubikey-neo-manager
+Homepage: http://opensource.yubico.com/yubikey-neo-manager/
+License: BSD-2-Clause
+Name: YubiKey NEO Manager
+Project: yubikey-neo-manager
+Summary: Graphical user interface to manage YubiKey NEOs
