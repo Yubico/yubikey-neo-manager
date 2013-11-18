@@ -29,7 +29,8 @@ from ctypes import POINTER, byref, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
 
 
-assert ykneomgr_global_init(0) == 0
+if ykneomgr_global_init(0) != 0:
+    raise Exception("Unable to initialize ykneomgr")
 
 
 def check(status):

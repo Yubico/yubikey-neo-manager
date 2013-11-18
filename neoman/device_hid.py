@@ -28,7 +28,8 @@ from neoman.ykpers import *
 from ctypes import byref, c_uint
 from neoman.device import BaseDevice, MODE_HID
 
-assert yk_init()
+if not yk_init():
+    raise Exception("Unable to initialize ykpers")
 
 
 class HIDDevice(BaseDevice):
