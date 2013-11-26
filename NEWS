@@ -1,3 +1,7 @@
+* Version 0.0.2 (unreleased)
+
+  * Better support for platform specific packaging.
+
 * Version 0.0.1 (released 2013-11-13)
 
   * Initial release supporting mode changing.
