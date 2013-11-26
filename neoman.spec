@@ -102,6 +102,7 @@ exe = EXE(pyz,
           strip=None,
           upx=True,
           console=False,
+          append_pkg=not OSX,
           version=VERSION,
           icon=ICON)
 
