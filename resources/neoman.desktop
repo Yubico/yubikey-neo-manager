@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=YubiKey NEO Manager
+GenericName=YubiKey NEO Manager
+Comment=Graphical interface YubiKey NEO management
+Exec=neoman
+Icon=neoman
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=YubiKey;NEO;Manager
