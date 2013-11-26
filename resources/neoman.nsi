@@ -1,4 +1,6 @@
-!include "MUI.nsh"
+!include "MUI2.nsh"
+
+!define MUI_ICON "neoman.ico"
 
 ; The name of the installer
 Name "YubiKey NEO Manager"
