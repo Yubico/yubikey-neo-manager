@@ -50,7 +50,8 @@ class YubiKeyNeo(QtCore.QObject):
             device.key = self.key.decode('hex')
 
     def _set_device(self, device):
-        if self.serial != device.serial or self.version == device.version:
+        if self.serial != device.serial or self.version != device.version:
+            print self.serial, self.version, device.serial, device.version
             raise ValueError("New device must have same serial/version.")
         self._dev = device
         self._mode = device.mode
