@@ -1,5 +1,4 @@
 include release.py
-include pyinstaller.py
 include COPYING
 include NEWS
 include ChangeLog
