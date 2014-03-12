@@ -26,6 +26,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from PySide import QtGui, QtCore
 from neoman.model.applet import Applet
+from neoman.model.neo import YubiKeyNeo
+from neoman import messages as m
 
 
 class AppletPage(QtGui.QTabWidget):
@@ -37,7 +39,7 @@ class AppletPage(QtGui.QTabWidget):
 
         overview = OverviewTab()
         self.applet.connect(overview.set_applet)
-        self.addTab(overview, "Overview")
+        self.addTab(overview, m.overview)
 
     def setApplet(self, applet):
         self._applet = applet
@@ -49,18 +51,85 @@ class OverviewTab(QtGui.QWidget):
     def __init__(self):
         super(OverviewTab, self).__init__()
         self._applet = None
+        self._neo = None
         self._name = QtGui.QLabel()
         self._aid = QtGui.QLabel()
+        self._status = QtGui.QLabel()
+
+        available = QtCore.QCoreApplication.instance().available_neos
+        available.changed.connect(self.data_changed)
+        self._neo_selector = QtGui.QComboBox()
+        self._neo_selector.activated.connect(self.neo_selected)
+        for neo in available.get():
+            self._neo_selector.addItem(neo.name, neo)
+
+        top_row = QtGui.QHBoxLayout()
+        top_row.addWidget(self._name)
+        top_row.addWidget(self._neo_selector)
+
+        self._install_button = QtGui.QPushButton()
+        self._install_button.clicked.connect(self.install_button_click)
+
+        status_row = QtGui.QHBoxLayout()
+        status_row.addWidget(self._status)
+        status_row.addWidget(self._install_button)
 
         layout = QtGui.QVBoxLayout()
-        layout.addWidget(self._name)
+        layout.addLayout(top_row)
+        layout.addLayout(status_row)
         layout.addWidget(self._aid)
         layout.addStretch()
 
         self.setLayout(layout)
 
+    def install_button_click(self):
+        installed = any(map(lambda x: x.startswith(self._applet.aid),
+                            self._neo.list_apps()))
+        if installed:
+            if QtGui.QMessageBox.Ok != QtGui.QMessageBox.warning(
+                self, m.delete_app_confirm, m.delete_app_confirm,
+                    QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel):
+                return
+            self._neo.delete_app(self._applet.aid)
+        else:
+            pass  # TODO
+        self.neo_or_applet_changed(self._neo, self._applet)
+
     @QtCore.Slot(Applet)
     def set_applet(self, applet):
         self._applet = applet
-        self._name.setText("Name: %s" % applet.name)
-        self._aid.setText("AID: %s" % applet.aid)
+        self._name.setText(m.name_1 % applet.name)
+        self._aid.setText(m.aid_1 % applet.aid)
+        self.neo_or_applet_changed(self._neo, applet)
+
+    @QtCore.Slot(YubiKeyNeo)
+    def set_neo(self, neo):
+        self._neo = neo
+        self._neo_selector.setCurrentIndex(self._neo_selector.findData(neo))
+        self.neo_or_applet_changed(neo, self._applet)
+
+    def neo_or_applet_changed(self, neo, applet):
+        installed = neo and applet and any((x.startswith(applet.aid)
+                                            for x in neo.list_apps()))
+        self._status.setText(m.status_1 %
+                             (m.installed if installed else m.not_installed))
+        self._install_button.setText(m.uninstall if installed else m.install)
+
+    @QtCore.Slot(int)
+    def neo_selected(self, index):
+        self.set_neo(self._neo_selector.itemData(index))
+
+    @QtCore.Slot(list)
+    def data_changed(self, new_neos):
+        self._neo_selector.clear()
+        for neo in new_neos:
+            self._neo_selector.addItem(neo.name, neo)
+        if self._neo in new_neos:
+            self._neo_selector.setCurrentIndex(new_neos.index(self._neo))
+        else:
+            self._neo = None if not new_neos else new_neos[0]
+            self.neo_or_applet_changed(self._neo, self._applet)
+
+
+# class SettingsTab
+# - Manage app specific settings against NEOs which have it installed.

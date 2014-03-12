@@ -42,14 +42,18 @@ class Applet(object):
 
 
 APPLETS = [
-    Applet("a0000005272001", "YubiKey", "YubiKey OTP applet."),
+    #Applet("a0000005273001", "Manager", "YubiKey NEO Manager applet."),
+    Applet("a0000005272001", "YubiKey OTP", "YubiKey OTP applet."),
     Applet("a0000005272101", "YubiOATH", "YubiOATH applet."),
+    Applet("a0000005272201", "U2F", "Yubico U2F applet."),
     #Applet("a0000005272102", "Yubico Bitcoin", "Yubico bitcoin applet."),
     Applet("d27600012401", "OpenPGP", "Open PGP applet.")
 ]
 
 HIDDEN = [
-    "a0000000035350"  # Security Domain
+    "a0000000035350",  # Security Domain
+    "a000000527300101",  # Manager
+    "d2760000850101"  # NDEF
 ]
 
 
@@ -61,6 +65,6 @@ def get_applet(aid):
     if aid in HIDDEN:
         return None
     for applet in APPLETS:
-        if applet.aid == aid:
+        if aid.startswith(applet.aid):
             return applet
     return Applet(aid, "Unknown", "Unknown applet")

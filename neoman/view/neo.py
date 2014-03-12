@@ -25,22 +25,22 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from PySide import QtGui, QtCore
-from neoman.device import MODE_HID, MODE_CCID, MODE_HID_CCID
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import get_applet
 from collections import OrderedDict
+from neoman import messages as m
 
 MODES = OrderedDict([
-    ("OTP", 0x00),
-    ("CCID", 0x01),
-    ("CCID with touch eject", 0x81),
-    ("OTP+CCID", 0x02),
-    ("OTP+CCID with touch eject", 0x82)
+    (m.hid, 0x00),
+    (m.ccid, 0x01),
+    (m.ccid_touch_eject, 0x81),
+    (m.hid_ccid, 0x02),
+    (m.hid_ccid_touch_eject, 0x82)
 ])
 
 
 def name_for_mode(mode):
-    return next((n for n, m in MODES.items() if m == mode), None)
+    return next((n for n, md in MODES.items() if md == mode), None)
 
 
 class NeoPage(QtGui.QTabWidget):
@@ -52,11 +52,11 @@ class NeoPage(QtGui.QTabWidget):
 
         settings = SettingsTab()
         self.neo.connect(settings.set_neo)
-        self.addTab(settings, "Settings")
+        self.addTab(settings, m.settings)
 
         apps = AppsTab(self, 1)
         self.neo.connect(apps.set_neo)
-        # self.addTab(apps, "Installed apps")  # TODO: Reenable
+        self.addTab(apps, m.installed_apps)
 
     def setNeo(self, neo):
         self._neo = neo
@@ -80,7 +80,7 @@ class SettingsTab(QtGui.QWidget):
 
         name_row = QtGui.QHBoxLayout()
         name_row.addWidget(self._name)
-        button = QtGui.QPushButton("Change name")
+        button = QtGui.QPushButton(m.change_name)
         button.clicked.connect(self.change_name)
         name_row.addWidget(button)
 
@@ -91,12 +91,12 @@ class SettingsTab(QtGui.QWidget):
         layout.addLayout(name_row)
         layout.addLayout(details_row)
 
-        button = QtGui.QPushButton("Manage transport keys")
+        button = QtGui.QPushButton(m.manage_keys)
         button.clicked.connect(self.manage_keys)
         # TODO: Re-add when implemented:
         # layout.addWidget(button)
 
-        self._mode_btn = QtGui.QPushButton("Change connection mode")
+        self._mode_btn = QtGui.QPushButton(m.change_mode)
         self._mode_btn.clicked.connect(self.change_mode)
         layout.addWidget(self._mode_btn)
 
@@ -109,42 +109,36 @@ class SettingsTab(QtGui.QWidget):
         if not neo:
             return
 
-        self._name.setText("Name: %s" % neo.name)
-        self._serial.setText("Serial number: %s" % neo.serial)
-        self._firmware.setText("Firmware version: %s" %
-                               '.'.join(map(str, neo.version)))
-        self._mode_btn.setText(
-            "Change connection mode [%s]" % name_for_mode(neo.mode))
+        self._name.setText(m.name_1 % neo.name)
+        self._serial.setText(m.serial_1 % neo.serial)
+        self._firmware.setText(m.firmware_1 % '.'.join(map(str, neo.version)))
+        self._mode_btn.setText(m.change_mode_1 % name_for_mode(neo.mode))
 
     def change_name(self):
         name, ok = QtGui.QInputDialog.getText(
-            self, "Name", "Change the name of the device.",
-            text=self._neo.name)
+            self, m.name, m.change_name_desc, text=self._neo.name)
         if ok:
             self._neo.name = name
-            self._name.setText("Name: %s" % name)
+            self._name.setText(m.name_1 % name)
 
     def manage_keys(self):
-        print "Manage transport keys"
+        print m.manage_keys
 
     def change_mode(self):
         current = MODES.keys().index(name_for_mode(self._neo.mode))
         res = QtGui.QInputDialog.getItem(
-            self, "Set mode", "Set the connection mode used by your YubiKey "
-            "NEO.\nFor this setting to take effect, you will need to unplug, "
-            "and re-attach your YubiKey.", MODES.keys(), current, False)
+            self, m.change_mode, m.change_mode_desc, MODES.keys(), current,
+            False)
         if res[1]:
             mode = MODES[res[0]]
             if self._neo.mode != mode:
                 self._neo.set_mode(mode)
-                self._mode_btn.setText(
-                    "Change connection mode [%s]" % res[0])
+                self._mode_btn.setText(m.change_mode_1 % res[0])
 
                 remove_dialog = QtGui.QMessageBox(self)
-                remove_dialog.setWindowTitle("Change mode")
+                remove_dialog.setWindowTitle(m.change_mode)
                 remove_dialog.setIcon(QtGui.QMessageBox.Information)
-                remove_dialog.setText(
-                    "\nRemove your YubiKey NEO now.\n")
+                remove_dialog.setText(m.remove_device)
                 remove_dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
                 self._neo.removed.connect(remove_dialog.accept)
                 remove_dialog.exec_()
@@ -172,7 +166,7 @@ class AppsTab(QtGui.QWidget):
         parent.currentChanged.connect(self.tab_changed)
 
     def open_app(self, index):
-        # print index.data()
+        print index.data()
         pass
 
     def tab_changed(self, index):
@@ -185,9 +179,7 @@ class AppsTab(QtGui.QWidget):
                     self._neo.unlock()
                 except Exception:
                     pw, ok = QtGui.QInputDialog.getText(
-                        self, "Transport key required",
-                        "Managing apps on this YubiKey NEO requires a "
-                        "password")
+                        self, m.key_required, m.key_required_desc)
                     if not ok:
                         self.parent.setCurrentIndex(0)
                         return
@@ -204,7 +196,7 @@ class AppsTab(QtGui.QWidget):
         self._neo = neo
         if not neo or not neo.has_ccid:
             self.parent.setTabEnabled(self.index, False)
-            self.parent.setTabToolTip(self.index, "Requires CCID mode")
+            self.parent.setTabToolTip(self.index, m.requires_ccid)
             return
 
         self.parent.setTabEnabled(self.index, True)

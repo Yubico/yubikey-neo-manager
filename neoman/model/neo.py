@@ -25,7 +25,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from PySide import QtCore, QtGui
-from neoman.device import open_first_device
+from neoman.device import open_all_devices
 from neoman.storage import settings
 
 DEFAULT_KEY = "404142434445464748494a4b4c4d4e4f"
@@ -169,10 +169,7 @@ class AvailableNeos(QtCore.QThread):
                 neo._mutex.lock()
                 neo._dev = None
 
-        single = open_first_device()
-
-        # Currently only a single device is supported.
-        discovered = [single] if single else []
+        discovered = open_all_devices()
 
         new_neos = []
         for dev in discovered:

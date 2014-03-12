@@ -67,3 +67,27 @@ def open_first_device():
         return open_hid()
     except Exception as e:
         return None
+
+
+def open_all_devices():
+    devices = []
+    has_composite = False
+    try:
+        from neoman.device_ccid import open_all_devices as open_ccid_all
+        for dev in open_ccid_all():
+            has_composite = has_composite or dev.mode & 0xf == MODE_HID_CCID
+            devices.append(dev)
+    except Exception:
+        pass
+    try:
+        from neoman.device_hid import open_first_device as open_hid
+        dev = open_hid()
+        # Avoid adding any HID devices which do not expose a serial if we know
+        # there are composite devices (as to not add them twice).
+        if not dev.serial and has_composite:
+            dev.close()
+        else:
+            devices.append(dev)
+    except Exception:
+        pass
+    return devices

@@ -27,6 +27,7 @@
 from PySide import QtGui, QtCore
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import APPLETS
+from neoman import messages as m
 
 
 class NavTree(QtGui.QTreeView):
@@ -60,7 +61,7 @@ class NavTree(QtGui.QTreeView):
     def _data_changed(self):
         if not self.current and self.model().neo_list:
             self.setCurrentIndex(
-                self.model().index(0, 0, self.model().categories['Devices']))
+                self.model().index(0, 0, self.model().categories[m.devices]))
         elif isinstance(self.current, YubiKeyNeo) \
                 and self.current not in self.model().neo_list:
             self.current = None
@@ -72,8 +73,8 @@ class NavModel(QtCore.QAbstractItemModel):
     def __init__(self):
         super(NavModel, self).__init__()
         self.categories = {
-            "Devices": self.createIndex(0, 0, "Devices"),
-            "NEO Apps": self.createIndex(1, 0, "NEO Apps")
+            m.devices: self.createIndex(0, 0, m.devices),
+            m.apps: self.createIndex(1, 0, m.apps)
         }
 
         self.applets = APPLETS
@@ -83,7 +84,7 @@ class NavModel(QtCore.QAbstractItemModel):
 
     @QtCore.Slot(list)
     def data_changed(self, new_neos):
-        parent = self.categories['Devices']
+        parent = self.categories[m.devices]
 
         self.beginRemoveRows(parent, 0, self.rowCount(parent) - 1)
         self.neo_list = []
@@ -95,10 +96,10 @@ class NavModel(QtCore.QAbstractItemModel):
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
         if not parent.isValid():
-            node = "Devices" if row == 0 else "NEO Apps"
+            node = m.devices if row == 0 else m.apps
             return self.categories[node]
         category = parent.internalPointer()
-        if category == "Devices":
+        if category == m.devices:
             return self.createIndex(row, column, self.neo_list[row])
         return self.createIndex(row, column, self.applets[row])
 
@@ -109,18 +110,18 @@ class NavModel(QtCore.QAbstractItemModel):
         if node in self.categories:
             return QtCore.QModelIndex()
         if isinstance(node, YubiKeyNeo):
-            return self.categories['Devices']
-        return self.categories['NEO Apps']
+            return self.categories[m.devices]
+        return self.categories[m.apps]
 
     def columnCount(self, parent=QtCore.QModelIndex()):
         return 1
 
     def rowCount(self, parent=QtCore.QModelIndex()):
         if not parent.isValid():
-            return 1  # NEO apps disabled for now 2
+            return 2  # NEO apps disabled for now 2
         node = parent.internalPointer()
         if node in self.categories:
-            return len(self.neo_list if node == "Devices" else self.applets)
+            return len(self.neo_list if node == m.devices else self.applets)
         return 0
 
     def data(self, index, role=QtCore.Qt.DisplayRole):

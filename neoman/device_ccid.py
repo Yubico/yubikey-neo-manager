@@ -27,9 +27,10 @@
 from neoman.ykneomgr import *
 from ctypes import POINTER, byref, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
+import os
 
 
-if ykneomgr_global_init(0) != 0:
+if ykneomgr_global_init(1 if os.environ.has_key('NEOMAN_DEBUG') else 0) != 0:
     raise Exception("Unable to initialize ykneomgr")
 
 
@@ -44,7 +45,7 @@ class CCIDDevice(BaseDevice):
         self._dev = dev
         self._key = None
         self._locked = True
-        self._serial = ykneomgr_get_serialno(dev)
+        self._serial = ykneomgr_get_serialno(dev) or None
         self._mode = ykneomgr_get_mode(dev)
         self._version = [
             ykneomgr_get_version_major(dev),
@@ -90,12 +91,24 @@ class CCIDDevice(BaseDevice):
     def list_apps(self):
         if self.locked:
             self.unlock()
-        applist = create_string_buffer(1024)
         size = c_size_t()
+        ykneomgr_applet_list(self._dev, None, byref(size))
+        applist = create_string_buffer(size.value)
         ykneomgr_applet_list(self._dev, applist, byref(size))
-        apps = applist.raw[:size.value - 1].split('\0')
+        apps = applist.raw.strip('\0').split('\0')
 
         return apps
+
+    def delete_app(self, aid):
+        if self.locked:
+            self.unlock()
+        aid_bytes = aid.decode('hex')
+        check(ykneomgr_applet_delete(self._dev, aid_bytes, len(aid_bytes)))
+
+    def install_app(self, path):
+        if self.locked:
+            self.unlock()
+        check(ykneomgr_applet_install(self._dev, create_string_buffer(path)))
 
     def close(self):
         if hasattr(self, '_dev'):
@@ -113,3 +126,22 @@ def open_first_device():
         raise
 
     return CCIDDevice(dev)
+
+
+def open_all_devices():
+    dev = POINTER(ykneomgr_dev)()
+    check(ykneomgr_init(byref(dev)))
+    size = c_size_t()
+    check(ykneomgr_list_devices(dev, None, byref(size)))
+    devlist = create_string_buffer(size.value)
+    check(ykneomgr_list_devices(dev, devlist, byref(size)))
+    names = devlist.raw.strip('\0').split('\0')
+    devices = []
+    for name in names:
+        if not dev:
+            dev = POINTER(ykneomgr_dev)()
+            check(ykneomgr_init(byref(dev)))
+        if ykneomgr_connect(dev, create_string_buffer(name)) == 0:
+            devices.append(CCIDDevice(dev))
+            dev = None
+    return devices

@@ -29,8 +29,7 @@ import sys
 from PySide import QtGui, QtCore
 from neoman.view.main import MainWindow
 from neoman.model.neo import AvailableNeos
-from neoman import __version__ as version
-
+from neoman import __version__ as version, messages as m
 
 if getattr(sys, 'frozen', False):
     # we are running in a PyInstaller bundle
@@ -46,13 +45,14 @@ if sys.platform == 'darwin':
         QtGui.QFont.insertSubstitution(".Lucida Grande UI", "Lucida Grande")
 
 
-QtCore.QCoreApplication.setOrganizationName('Yubico')
-QtCore.QCoreApplication.setOrganizationDomain('yubico.com')
-QtCore.QCoreApplication.setApplicationName('YubiKey NEO Manager')
-
-
 def main():
     app = QtGui.QApplication(sys.argv)
+
+    m._translate(app)
+
+    QtCore.QCoreApplication.setOrganizationName(m.organization)
+    QtCore.QCoreApplication.setOrganizationDomain(m.domain)
+    QtCore.QCoreApplication.setApplicationName(m.app_name)
 
     available_neos = AvailableNeos()
     available_neos.start()
@@ -60,7 +60,7 @@ def main():
     app.available_neos = available_neos
 
     window = MainWindow()
-    window.setWindowTitle("YubiKey NEO Manager (%s)" % version)
+    window.setWindowTitle(m.win_title_1 % version)
     window.setWindowIcon(QtGui.QIcon(os.path.join(basedir, 'neoman.png')))
     window.show()
     window.raise_()
