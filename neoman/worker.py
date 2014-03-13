@@ -65,5 +65,3 @@ class Worker(QtCore.QObject):
             self.work_done.emit(result)
             self.work_done.disconnect(callback)
             self.work_done_0.emit()
-
-

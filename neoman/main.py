@@ -46,27 +46,35 @@ if sys.platform == 'darwin':
         QtGui.QFont.insertSubstitution(".Lucida Grande UI", "Lucida Grande")
 
 
+class NeomanApplication(QtGui.QApplication):
+
+    def __init__(self, argv):
+        super(NeomanApplication, self).__init__(argv)
+
+        m._translate(self)
+
+        QtCore.QCoreApplication.setOrganizationName(m.organization)
+        QtCore.QCoreApplication.setOrganizationDomain(m.domain)
+        QtCore.QCoreApplication.setApplicationName(m.app_name)
+
+        self.available_neos = AvailableNeos()
+        self.available_neos.start()
+        self.aboutToQuit.connect(self.available_neos.stop)
+
+        self.worker = Worker()
+        self.aboutToQuit.connect(self.worker.work_thread.quit)
+
+        self.window = self._create_window()
+
+    def _create_window(self):
+        window = MainWindow()
+        window.setWindowTitle(m.win_title_1 % version)
+        window.setWindowIcon(QtGui.QIcon(os.path.join(basedir, 'neoman.png')))
+        window.show()
+        window.raise_()
+        return window
+
+
 def main():
-    app = QtGui.QApplication(sys.argv)
-
-    m._translate(app)
-
-    QtCore.QCoreApplication.setOrganizationName(m.organization)
-    QtCore.QCoreApplication.setOrganizationDomain(m.domain)
-    QtCore.QCoreApplication.setApplicationName(m.app_name)
-
-    available_neos = AvailableNeos()
-    available_neos.start()
-    app.aboutToQuit.connect(available_neos.stop)
-    app.available_neos = available_neos
-
-    window = MainWindow()
-    window.setWindowTitle(m.win_title_1 % version)
-    window.setWindowIcon(QtGui.QIcon(os.path.join(basedir, 'neoman.png')))
-    window.show()
-    window.raise_()
-
-    app.worker = Worker()
-    app.aboutToQuit.connect(app.worker.work_thread.quit)
-
+    app = NeomanApplication(sys.argv)
     sys.exit(app.exec_())
