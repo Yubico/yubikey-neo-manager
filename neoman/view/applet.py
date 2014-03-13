@@ -28,6 +28,7 @@ from PySide import QtGui, QtCore
 from neoman.model.applet import Applet
 from neoman.model.neo import YubiKeyNeo
 from neoman import messages as m
+from functools import partial
 
 
 class AppletPage(QtGui.QTabWidget):
@@ -85,14 +86,19 @@ class OverviewTab(QtGui.QWidget):
     def install_button_click(self):
         installed = any(map(lambda x: x.startswith(self._applet.aid),
                             self._neo.list_apps()))
+        worker = QtCore.QCoreApplication.instance().worker
+        cb = lambda _: self.neo_or_applet_changed(self._neo, self._applet)
         if installed:
             if QtGui.QMessageBox.Ok != QtGui.QMessageBox.warning(
-                self, m.delete_app_confirm, m.delete_app_confirm,
+                self, m.delete_app_confirm, m.delete_app_desc,
                     QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel):
                 return
-            self._neo.delete_app(self._applet.aid)
+            work = partial(self._neo.delete_app, self._applet.aid)
+            worker.post(m.deleting_1 % self._applet.name, work, cb)
         else:
-            pass  # TODO
+            work = partial(self._neo.install_app, self._applet.cap_file)
+            worker.post(m.installing_1 % self._applet.name, work, cb)
+
         self.neo_or_applet_changed(self._neo, self._applet)
 
     @QtCore.Slot(Applet)

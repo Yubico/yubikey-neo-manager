@@ -29,6 +29,7 @@ import sys
 from PySide import QtGui, QtCore
 from neoman.view.main import MainWindow
 from neoman.model.neo import AvailableNeos
+from neoman.worker import Worker
 from neoman import __version__ as version, messages as m
 
 if getattr(sys, 'frozen', False):
@@ -64,5 +65,8 @@ def main():
     window.setWindowIcon(QtGui.QIcon(os.path.join(basedir, 'neoman.png')))
     window.show()
     window.raise_()
+
+    app.worker = Worker()
+    app.aboutToQuit.connect(app.worker.work_thread.quit)
 
     sys.exit(app.exec_())

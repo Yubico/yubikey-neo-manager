@@ -41,8 +41,9 @@ def check(status):
 
 class CCIDDevice(BaseDevice):
 
-    def __init__(self, dev):
+    def __init__(self, dev, dev_str=None):
         self._dev = dev
+        self._dev_str = dev_str
         self._key = None
         self._locked = True
         self._serial = ykneomgr_get_serialno(dev) or None
@@ -128,7 +129,7 @@ def open_first_device():
     return CCIDDevice(dev)
 
 
-def open_all_devices():
+def open_all_devices(existing=None):
     dev = POINTER(ykneomgr_dev)()
     check(ykneomgr_init(byref(dev)))
     size = c_size_t()
@@ -137,11 +138,15 @@ def open_all_devices():
     check(ykneomgr_list_devices(dev, devlist, byref(size)))
     names = devlist.raw.strip('\0').split('\0')
     devices = []
+    for d in existing or []:
+        if getattr(d, '_dev_str', None) in names:
+            devices.append(d)
+            names.remove(d._dev_str)
     for name in names:
         if not dev:
             dev = POINTER(ykneomgr_dev)()
             check(ykneomgr_init(byref(dev)))
         if ykneomgr_connect(dev, create_string_buffer(name)) == 0:
-            devices.append(CCIDDevice(dev))
+            devices.append(CCIDDevice(dev, name))
             dev = None
     return devices

@@ -27,8 +27,20 @@
 from PySide import QtCore, QtGui
 from neoman.device import open_all_devices
 from neoman.storage import settings
+from functools import wraps
 
 DEFAULT_KEY = "404142434445464748494a4b4c4d4e4f"
+
+
+def with_mutex(mutex, func):
+    @wraps(func)
+    def inner(*args, **kwargs):
+        try:
+            mutex.lock()
+            return func(*args, **kwargs)
+        finally:
+            mutex.unlock()
+    return inner
 
 
 class YubiKeyNeo(QtCore.QObject):
@@ -82,7 +94,10 @@ class YubiKeyNeo(QtCore.QObject):
             self._mutex.lock()
             if not self._dev:
                 raise AttributeError(name)
-            return getattr(self._dev, name)
+            attr = getattr(self._dev, name)
+            if hasattr(attr, '__call__'):
+                attr = with_mutex(self._mutex, attr)
+            return attr
         finally:
             self._mutex.unlock()
 

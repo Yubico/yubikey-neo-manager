@@ -24,28 +24,46 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-import os
-from PySide import QtCore
-
-__all__ = [
-    'CONFIG_HOME',
-    'settings',
-    'capstore'
-]
-
-CONFIG_HOME = os.path.join(os.path.expanduser('~'), '.neoman')
-
-settings = QtCore.QSettings(os.path.join(CONFIG_HOME, 'settings.ini'),
-                            QtCore.QSettings.IniFormat)
+from PySide import QtGui, QtCore
 
 
-class AppletCapStore(object):
+class Worker(QtCore.QObject):
+    work_signal = QtCore.Signal(tuple)
+    work_done = QtCore.Signal(object)
+    work_done_0 = QtCore.Signal()
 
-    def __init__(self, basedir):
-        self._dir = basedir
+    def __init__(self):
+        super(Worker, self).__init__()
 
-    def get_filename(self, aid, version):
-        fname = os.path.join(self._dir, aid, '%s.cap' % version)
-        return fname if os.path.isfile(fname) else None
+        self.work_signal.connect(self.work)
 
-capstore = AppletCapStore(os.path.join(CONFIG_HOME, 'applets'))
+        self.busy = QtGui.QProgressDialog('', None, 0, 0)
+        self.busy.setWindowModality(QtCore.Qt.WindowModal)
+        self.busy.setMinimumDuration(0)
+        self.busy.setAutoClose(True)
+        self.work_done_0.connect(self.busy.reset)
+
+        self.work_thread = QtCore.QThread()
+        self.moveToThread(self.work_thread)
+        self.work_thread.start()
+
+    def post(self, title, fn, callback=None):
+        self.busy.setLabelText(title)
+        self.busy.show()
+        self.work_signal.emit((fn, callback))
+
+    @QtCore.Slot(tuple)
+    def work(self, job):
+        QtCore.QThread.msleep(10)  # Needed to yield
+        (fn, callback) = job
+        try:
+            result = fn()
+        except Exception as e:
+            result = e
+        if callback:
+            self.work_done.connect(callback)
+            self.work_done.emit(result)
+            self.work_done.disconnect(callback)
+            self.work_done_0.emit()
+
+

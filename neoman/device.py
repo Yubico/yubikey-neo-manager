@@ -69,12 +69,12 @@ def open_first_device():
         return None
 
 
-def open_all_devices():
+def open_all_devices(existing=None):
     devices = []
     has_composite = False
     try:
         from neoman.device_ccid import open_all_devices as open_ccid_all
-        for dev in open_ccid_all():
+        for dev in open_ccid_all(existing):
             has_composite = has_composite or dev.mode & 0xf == MODE_HID_CCID
             devices.append(dev)
     except Exception:

@@ -25,27 +25,39 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from neoman.storage import CONFIG_HOME
+import os
+
 
 class Applet(object):
 
     def __init__(self, aid, name, description, latest_version="unknown",
-                 cap_file=None, tabs=None):
+                 cap_url=None, tabs=None):
+        self._caps = os.path.join(CONFIG_HOME, 'applets')
         self.aid = aid
         self.name = name
         self.description = description
         self.latest_version = latest_version
-        self.cap_file = cap_file
-        self.tabs = tabs if tabs else {}
+        self.cap_url = cap_url
+        self.tabs = tabs or {}
 
     def __str__(self):
         return self.name
+
+    @property
+    def cap_file(self):
+        fn = os.path.join(self._caps, self.aid, '%s.cap' % self.latest_version)
+        if os.path.isfile(fn):
+            return fn
+        else:
+            raise ValueError("File Not Found: %s" % fn)
 
 
 APPLETS = [
     #Applet("a0000005273001", "Manager", "YubiKey NEO Manager applet."),
     Applet("a0000005272001", "YubiKey OTP", "YubiKey OTP applet."),
     Applet("a0000005272101", "YubiOATH", "YubiOATH applet."),
-    Applet("a0000005272201", "U2F", "Yubico U2F applet."),
+    Applet("a0000005272201", "U2F", "Yubico U2F applet.", "0.1.0"),
     #Applet("a0000005272102", "Yubico Bitcoin", "Yubico bitcoin applet."),
     Applet("d27600012401", "OpenPGP", "Open PGP applet.")
 ]
