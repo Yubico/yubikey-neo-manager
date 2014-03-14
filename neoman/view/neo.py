@@ -24,11 +24,14 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+import os
 from PySide import QtGui, QtCore
+from collections import OrderedDict
+from functools import partial
+from neoman import messages as m
+from neoman.storage import settings
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import get_applet
-from collections import OrderedDict
-from neoman import messages as m
 
 MODES = OrderedDict([
     (m.hid, 0x00),
@@ -50,9 +53,9 @@ class NeoPage(QtGui.QTabWidget):
         super(NeoPage, self).__init__()
         self._neo = None
 
-        settings = SettingsTab()
-        self.neo.connect(settings.set_neo)
-        self.addTab(settings, m.settings)
+        settings_tab = SettingsTab()
+        self.neo.connect(settings_tab.set_neo)
+        self.addTab(settings_tab, m.settings)
 
         apps = AppsTab(self, 1)
         self.neo.connect(apps.set_neo)
@@ -160,10 +163,34 @@ class AppsTab(QtGui.QWidget):
         self._apps_list.doubleClicked.connect(self.open_app)
         layout.addWidget(self._apps_list)
 
+        self._install_cap_btn = QtGui.QPushButton(m.install_cap)
+        self._install_cap_btn.clicked.connect(self.install_cap)
+        layout.addWidget(self._install_cap_btn)
+
         layout.addStretch()
         self.setLayout(layout)
 
         parent.currentChanged.connect(self.tab_changed)
+
+    def install_cap(self):
+        path = settings.value('filepicker/path', None)
+        (cap, _) = QtGui.QFileDialog.getOpenFileName(self, m.select_cap,
+                                                     path, "*.cap")
+        if not cap:
+            return
+        settings.setValue('filepicker/path', os.path.dirname(cap))
+        worker = QtCore.QCoreApplication.instance().worker
+        self._cap = os.path.basename(cap)
+        worker.post(m.installing, partial(self._neo.install_app, cap),
+                    self.install_done)
+
+    @QtCore.Slot(object)
+    def install_done(self, status):
+        if status:
+            print status
+            QtGui.QMessageBox.warning(self, m.error_installing,
+                                      m.error_installing_1 % self._cap)
+        self.set_neo(self._neo)
 
     def open_app(self, index):
         print index.data()

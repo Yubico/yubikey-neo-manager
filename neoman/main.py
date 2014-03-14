@@ -61,10 +61,10 @@ class NeomanApplication(QtGui.QApplication):
         self.available_neos.start()
         self.aboutToQuit.connect(self.available_neos.stop)
 
-        self.worker = Worker()
-        self.aboutToQuit.connect(self.worker.work_thread.quit)
-
         self.window = self._create_window()
+
+        self.worker = Worker(self.window)
+        self.aboutToQuit.connect(self.worker.work_thread.quit)
 
     def _create_window(self):
         window = MainWindow()

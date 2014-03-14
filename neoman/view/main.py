@@ -83,6 +83,9 @@ class MainWindow(QtGui.QMainWindow):
         settings.setValue('window/pos', self.pos())
         event.accept()
 
+    def customEvent(self, event):
+        event.callback()
+
 
 class ContentWidget(QtGui.QStackedWidget):
 

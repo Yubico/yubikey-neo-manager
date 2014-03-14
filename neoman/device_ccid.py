@@ -27,6 +27,7 @@
 from neoman.ykneomgr import *
 from ctypes import POINTER, byref, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
+from neoman.exc import YkNeoMgrError
 import os
 
 
@@ -36,7 +37,7 @@ if ykneomgr_global_init(1 if os.environ.has_key('NEOMAN_DEBUG') else 0) != 0:
 
 def check(status):
     if status != 0:
-        raise Exception("Error: %d" % status)
+        raise YkNeoMgrError(status)
 
 
 class CCIDDevice(BaseDevice):
@@ -81,7 +82,7 @@ class CCIDDevice(BaseDevice):
     def unlock(self):
         self._locked = True
         if not self._key:
-            raise Exception("No transport key provided!")
+            raise ValueError("No transport key provided!")
         check(ykneomgr_authenticate(self._dev, self._key))
         self._locked = False
 
