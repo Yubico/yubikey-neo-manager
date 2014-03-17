@@ -97,9 +97,8 @@ class OverviewTab(QtGui.QWidget):
             worker.post(m.deleting_1 % self._applet.name, work, cb)
         else:
             work = partial(self._neo.install_app, self._applet.cap_file)
-            worker.post(m.installing_1 % self._applet.name, work, self._cb_install)
-
-        self.neo_or_applet_changed(self._neo, self._applet)
+            worker.post(m.installing_1 % self._applet.name, work,
+                        self._cb_install)
 
     @QtCore.Slot(object)
     def _cb_install(self, result):

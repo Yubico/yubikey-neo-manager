@@ -179,12 +179,14 @@ class AvailableNeos(QtCore.QThread):
 
     def discover_devices(self):
         neos = self.get()
+        existing_devs = []
         for neo in neos:
             if neo._dev:
                 neo._mutex.lock()
+                existing_devs.append(neo._dev)
                 neo._dev = None
 
-        discovered = open_all_devices()
+        discovered = open_all_devices(existing_devs)
 
         new_neos = []
         for dev in discovered:

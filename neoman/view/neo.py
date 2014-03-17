@@ -31,7 +31,7 @@ from functools import partial
 from neoman import messages as m
 from neoman.storage import settings
 from neoman.model.neo import YubiKeyNeo
-from neoman.model.applet import get_applet
+from neoman.model.applet import Applet, get_applet
 
 MODES = OrderedDict([
     (m.hid, 0x00),
@@ -48,6 +48,7 @@ def name_for_mode(mode):
 
 class NeoPage(QtGui.QTabWidget):
     neo = QtCore.Signal(YubiKeyNeo)
+    applet = QtCore.Signal(Applet)
 
     def __init__(self):
         super(NeoPage, self).__init__()
@@ -193,8 +194,9 @@ class AppsTab(QtGui.QWidget):
         self.set_neo(self._neo)
 
     def open_app(self, index):
-        print index.data()
-        pass
+        readable = index.data()
+        aid = readable[readable.rindex('(')+1:readable.rindex(')')]
+        applet = get_applet(aid)
 
     def tab_changed(self, index):
         if index != self.index:
@@ -232,8 +234,9 @@ class AppsTab(QtGui.QWidget):
         if neo.locked:
             try:
                 neo.unlock()
-                self._apps = filter(None, map(get_applet, neo.list_apps()))
-                self._apps_list.model().setStringList(
-                    map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))
             except:
-                pass
+                return
+
+        self._apps = filter(None, map(get_applet, neo.list_apps()))
+        self._apps_list.model().setStringList(
+            map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))

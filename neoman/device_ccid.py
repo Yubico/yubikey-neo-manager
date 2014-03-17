@@ -54,6 +54,7 @@ class CCIDDevice(BaseDevice):
             ykneomgr_get_version_minor(dev),
             ykneomgr_get_version_build(dev)
         ]
+        self._apps = None
 
     @property
     def key(self):
@@ -90,27 +91,30 @@ class CCIDDevice(BaseDevice):
         check(ykneomgr_modeswitch(self._dev, mode))
         self._mode = mode
 
-    def list_apps(self):
-        if self.locked:
-            self.unlock()
-        size = c_size_t()
-        ykneomgr_applet_list(self._dev, None, byref(size))
-        applist = create_string_buffer(size.value)
-        ykneomgr_applet_list(self._dev, applist, byref(size))
-        apps = applist.raw.strip('\0').split('\0')
+    def list_apps(self, refresh=False):
+        if refresh or self._apps is None:
+            if self.locked:
+                self.unlock()
+            size = c_size_t()
+            ykneomgr_applet_list(self._dev, None, byref(size))
+            applist = create_string_buffer(size.value)
+            ykneomgr_applet_list(self._dev, applist, byref(size))
+            self._apps = applist.raw.strip('\0').split('\0')
 
-        return apps
+        return self._apps
 
     def delete_app(self, aid):
         if self.locked:
             self.unlock()
         aid_bytes = aid.decode('hex')
         check(ykneomgr_applet_delete(self._dev, aid_bytes, len(aid_bytes)))
+        self.list_apps(True)
 
     def install_app(self, path):
         if self.locked:
             self.unlock()
         check(ykneomgr_applet_install(self._dev, create_string_buffer(path)))
+        self.list_apps(True)
 
     def close(self):
         if hasattr(self, '_dev'):
