@@ -90,8 +90,8 @@ class OverviewTab(QtGui.QWidget):
         self.setLayout(layout)
 
     def install_button_click(self):
-        installed = any(map(lambda x: x.startswith(self._applet.aid),
-                            self._neo.list_apps()))
+        installed = self._neo and any(
+            [x.startswith(self._applet.aid) for x in self._neo.list_apps()])
         worker = QtCore.QCoreApplication.instance().worker
         cb = lambda _: self.neo_or_applet_changed(self._neo, self._applet)
         if installed:  # Uninstall
@@ -160,6 +160,7 @@ class OverviewTab(QtGui.QWidget):
                              (m.installed if installed else m.not_installed))
         btntext = m.uninstall if installed else m.install if applet.is_downloaded else m.download
         self._install_button.setText(btntext)
+        self._install_button.setEnabled(bool(neo) or not applet.is_downloaded)
 
     @QtCore.Slot(int)
     def neo_selected(self, index):

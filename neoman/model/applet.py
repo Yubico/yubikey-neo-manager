@@ -60,7 +60,8 @@ APPLETS = [
            "http://opensource.yubico.com/ykneo-oath/releases/ykneo-oath-0.2.1.cap"),
     Applet("a0000005272201", "U2F", "Yubico U2F applet.", "0.1.0"),
     #Applet("a0000005272102", "Yubico Bitcoin", "Yubico bitcoin applet."),
-    Applet("d27600012401", "OpenPGP", "Open PGP applet.")
+    Applet("d27600012401", "OpenPGP", "Open PGP applet.", "1.0.5",
+           "http://opensource.yubico.com/ykneo-openpgp/releases/ykneo-openpgp-1.0.5.cap")
 ]
 
 HIDDEN = [
