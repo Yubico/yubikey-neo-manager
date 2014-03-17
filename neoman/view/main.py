@@ -55,6 +55,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self._nav.subpage.connect(self._main.setContent)
         self._main.setContent(self._nav.current)
+        self._main.current.connect(self._nav.setCurrent)
         widget.setLayout(layout)
 
         return widget
@@ -88,6 +89,9 @@ class MainWindow(QtGui.QMainWindow):
 
 
 class ContentWidget(QtGui.QStackedWidget):
+    current = QtCore.Signal(object)
+    _neo = QtCore.Signal(YubiKeyNeo)
+    _applet = QtCore.Signal(Applet)
 
     def __init__(self):
         super(ContentWidget, self).__init__()
@@ -98,9 +102,13 @@ class ContentWidget(QtGui.QStackedWidget):
         self.addWidget(self._start_page)
 
         self._neo_page = NeoPage()
+        self._neo_page.applet.connect(self.setContent)
+        self._neo.connect(self._neo_page.setNeo)
         self.addWidget(self._neo_page)
 
         self._app_page = AppletPage()
+        self._neo.connect(self._app_page.setNeo)
+        self._applet.connect(self._app_page.setApplet)
         self.addWidget(self._app_page)
 
         self.setMinimumSize(420, 180)
@@ -112,11 +120,13 @@ class ContentWidget(QtGui.QStackedWidget):
         self._content = content
 
         if content is None:
-            self._neo_page.setNeo(None)
+            self._neo.emit(None)
+            self._applet.emit(None)
             self.setCurrentWidget(self._start_page)
         elif isinstance(content, YubiKeyNeo):
-            self._neo_page.setNeo(content)
+            self._neo.emit(content)
             self.setCurrentWidget(self._neo_page)
         elif isinstance(content, Applet):
-            self._app_page.setApplet(content)
+            self._applet.emit(content)
             self.setCurrentWidget(self._app_page)
+        self.current.emit(content)

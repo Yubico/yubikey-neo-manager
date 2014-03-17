@@ -26,7 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from PySide import QtGui, QtCore
 from neoman.model.neo import YubiKeyNeo
-from neoman.model.applet import APPLETS
+from neoman.model.applet import Applet, APPLETS
 from neoman import messages as m
 
 
@@ -44,6 +44,24 @@ class NavTree(QtGui.QTreeView):
 
         self.model().rowsInserted.connect(self._data_changed)
         self._data_changed()
+
+    @QtCore.Slot(YubiKeyNeo)
+    @QtCore.Slot(Applet)
+    def setCurrent(self, current):
+        if self.current != current:
+            self.current = current
+            if isinstance(current, YubiKeyNeo):
+                neo_index = self.model().neo_list.index(current)
+                self.setCurrentIndex(
+                    self.model().index(
+                        neo_index, 0, self.model().categories[m.devices]))
+
+                pass
+            elif isinstance(current, Applet):
+                applet_index = self.model().applets.index(current)
+                self.setCurrentIndex(
+                    self.model().index(
+                        applet_index, 0, self.model().categories[m.apps]))
 
     def currentChanged(self, current, previous):
         if current.flags() & QtCore.Qt.ItemIsSelectable:
@@ -118,7 +136,7 @@ class NavModel(QtCore.QAbstractItemModel):
 
     def rowCount(self, parent=QtCore.QModelIndex()):
         if not parent.isValid():
-            return 2  # NEO apps disabled for now 2
+            return 2
         node = parent.internalPointer()
         if node in self.categories:
             return len(self.neo_list if node == m.devices else self.applets)

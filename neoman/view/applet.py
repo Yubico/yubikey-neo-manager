@@ -32,19 +32,24 @@ from functools import partial
 
 
 class AppletPage(QtGui.QTabWidget):
-    applet = QtCore.Signal(Applet)
+    _applet = QtCore.Signal(Applet)
+    _neo = QtCore.Signal(YubiKeyNeo)
 
     def __init__(self):
         super(AppletPage, self).__init__()
-        self._applet = None
 
         overview = OverviewTab()
-        self.applet.connect(overview.set_applet)
+        self._applet.connect(overview.set_applet)
+        self._neo.connect(overview.set_neo)
         self.addTab(overview, m.overview)
 
+    @QtCore.Slot(Applet)
     def setApplet(self, applet):
-        self._applet = applet
-        self.applet.emit(applet)
+        self._applet.emit(applet)
+
+    @QtCore.Slot(YubiKeyNeo)
+    def setNeo(self, neo):
+        self._neo.emit(neo)
 
 
 class OverviewTab(QtGui.QWidget):
@@ -111,10 +116,11 @@ class OverviewTab(QtGui.QWidget):
 
     @QtCore.Slot(Applet)
     def set_applet(self, applet):
-        self._applet = applet
-        self._name.setText(m.name_1 % applet.name)
-        self._aid.setText(m.aid_1 % applet.aid)
-        self.neo_or_applet_changed(self._neo, applet)
+        if applet:
+            self._applet = applet
+            self._name.setText(m.name_1 % applet.name)
+            self._aid.setText(m.aid_1 % applet.aid)
+            self.neo_or_applet_changed(self._neo, applet)
 
     @QtCore.Slot(YubiKeyNeo)
     def set_neo(self, neo):

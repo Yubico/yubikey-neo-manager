@@ -47,27 +47,28 @@ def name_for_mode(mode):
 
 
 class NeoPage(QtGui.QTabWidget):
-    neo = QtCore.Signal(YubiKeyNeo)
+    _neo = QtCore.Signal(YubiKeyNeo)
     applet = QtCore.Signal(Applet)
 
     def __init__(self):
         super(NeoPage, self).__init__()
-        self._neo = None
 
         settings_tab = SettingsTab()
-        self.neo.connect(settings_tab.set_neo)
+        self._neo.connect(settings_tab.set_neo)
         self.addTab(settings_tab, m.settings)
 
         apps = AppsTab(self, 1)
-        self.neo.connect(apps.set_neo)
+        self._neo.connect(apps.set_neo)
+        apps.applet.connect(self._set_applet)
         self.addTab(apps, m.installed_apps)
 
+    @QtCore.Slot(YubiKeyNeo)
     def setNeo(self, neo):
-        self._neo = neo
-        self.neo.emit(neo)
+        self._neo.emit(neo)
 
-    def getNeo(self):
-        return self._neo
+    @QtCore.Slot(Applet)
+    def _set_applet(self, applet):
+        self.applet.emit(applet)
 
 
 class SettingsTab(QtGui.QWidget):
@@ -149,6 +150,7 @@ class SettingsTab(QtGui.QWidget):
 
 
 class AppsTab(QtGui.QWidget):
+    applet = QtCore.Signal(Applet)
 
     def __init__(self, parent, index):
         super(AppsTab, self).__init__()
@@ -195,8 +197,8 @@ class AppsTab(QtGui.QWidget):
 
     def open_app(self, index):
         readable = index.data()
-        aid = readable[readable.rindex('(')+1:readable.rindex(')')]
-        applet = get_applet(aid)
+        aid = readable[readable.rindex('(') + 1:readable.rindex(')')]
+        self.applet.emit(get_applet(aid))
 
     def tab_changed(self, index):
         if index != self.index:
