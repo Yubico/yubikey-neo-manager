@@ -50,18 +50,19 @@ class NavTree(QtGui.QTreeView):
     def setCurrent(self, current):
         if self.current != current:
             self.current = current
-            if isinstance(current, YubiKeyNeo):
-                neo_index = self.model().neo_list.index(current)
-                self.setCurrentIndex(
-                    self.model().index(
-                        neo_index, 0, self.model().categories[m.devices]))
-
-                pass
-            elif isinstance(current, Applet):
-                applet_index = self.model().applets.index(current)
-                self.setCurrentIndex(
-                    self.model().index(
-                        applet_index, 0, self.model().categories[m.apps]))
+            try:
+                if isinstance(current, YubiKeyNeo):
+                    neo_index = self.model().neo_list.index(current)
+                    self.setCurrentIndex(
+                        self.model().index(
+                            neo_index, 0, self.model().categories[m.devices]))
+                elif isinstance(current, Applet):
+                    applet_index = self.model().applets.index(current)
+                    self.setCurrentIndex(
+                        self.model().index(
+                            applet_index, 0, self.model().categories[m.apps]))
+            except:
+                self.clearSelection()
 
     def currentChanged(self, current, previous):
         if current.flags() & QtCore.Qt.ItemIsSelectable:

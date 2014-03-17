@@ -114,6 +114,15 @@ class OverviewTab(QtGui.QWidget):
 
         self.neo_or_applet_changed(self._neo, self._applet)
 
+    @QtCore.Slot(object)
+    def _cb_uninstall(self, result):
+        if result:
+            msg = m.error_uninstalling_1 % self._applet.name
+            msg += '\n%s' % result
+            QtGui.QMessageBox.warning(self, m.error_uninstalling, msg)
+
+        self.neo_or_applet_changed(self._neo, self._applet)
+
     @QtCore.Slot(Applet)
     def set_applet(self, applet):
         if applet:
@@ -124,9 +133,11 @@ class OverviewTab(QtGui.QWidget):
 
     @QtCore.Slot(YubiKeyNeo)
     def set_neo(self, neo):
-        self._neo = neo
-        self._neo_selector.setCurrentIndex(self._neo_selector.findData(neo))
-        self.neo_or_applet_changed(neo, self._applet)
+        if neo and neo.has_ccid:
+            self._neo = neo
+            self._neo_selector.setCurrentIndex(
+                self._neo_selector.findData(neo))
+            self.neo_or_applet_changed(neo, self._applet)
 
     def neo_or_applet_changed(self, neo, applet):
         installed = neo and applet and any((x.startswith(applet.aid)
@@ -142,6 +153,7 @@ class OverviewTab(QtGui.QWidget):
     @QtCore.Slot(list)
     def data_changed(self, new_neos):
         self._neo_selector.clear()
+        new_neos = [neo for neo in new_neos if neo.has_ccid]
         for neo in new_neos:
             self._neo_selector.addItem(neo.name, neo)
         if self._neo in new_neos:

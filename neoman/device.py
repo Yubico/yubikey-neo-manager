@@ -81,6 +81,10 @@ def open_all_devices(existing=None):
         pass
     try:
         from neoman.device_hid import open_first_device as open_hid
+        for dev in existing:
+            if not dev.has_ccid:
+                dev.close()
+        existing = []
         dev = open_hid()
         # Avoid adding any HID devices which do not expose a serial if we know
         # there are composite devices (as to not add them twice).
