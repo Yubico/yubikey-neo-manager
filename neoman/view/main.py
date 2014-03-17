@@ -115,7 +115,8 @@ class ContentWidget(QtGui.QStackedWidget):
         self.setSizePolicy(QtGui.QSizePolicy.Expanding,
                            QtGui.QSizePolicy.Expanding)
 
-    @QtCore.Slot(object)
+    @QtCore.Slot(YubiKeyNeo)
+    @QtCore.Slot(Applet)
     def setContent(self, content):
         self._content = content
 
