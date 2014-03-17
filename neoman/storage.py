@@ -44,8 +44,26 @@ class AppletCapStore(object):
     def __init__(self, basedir):
         self._dir = basedir
 
+    def _build_fname(self, aid, version):
+        return os.path.join(self._dir, aid, '%s.cap' % version)
+
+    def has_file(self, aid, version):
+        return os.path.isfile(self._build_fname(aid, version))
+
     def get_filename(self, aid, version):
-        fname = os.path.join(self._dir, aid, '%s.cap' % version)
-        return fname if os.path.isfile(fname) else None
+        fname = self._build_fname(aid, version)
+        if not self.has_file(aid, version):
+            raise ValueError("File not found: %s" % fname)
+        return fname
+
+    def store_data(self, aid, version, data):
+        fname = self._build_fname(aid, version)
+        QtCore.QDir.root().mkpath(os.path.dirname(fname))
+        target = QtCore.QFile(fname)
+        target.open(QtCore.QIODevice.WriteOnly)
+        if target.write(data) == -1:
+            raise ValueError("Unable to write data!")
+        target.close()
+
 
 capstore = AppletCapStore(os.path.join(CONFIG_HOME, 'applets'))

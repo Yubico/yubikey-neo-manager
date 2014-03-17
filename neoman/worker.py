@@ -24,7 +24,7 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-from PySide import QtGui, QtCore
+from PySide import QtGui, QtCore, QtNetwork
 from threading import Thread
 from functools import partial
 import time
@@ -70,9 +70,9 @@ class _Event(QtCore.QEvent):
 
 
 class QtWorker(QtCore.QObject):
-    work_signal = QtCore.Signal(tuple)
-    work_done = QtCore.Signal(object)
-    work_done_0 = QtCore.Signal()
+    _work_signal = QtCore.Signal(tuple)
+    _work_done = QtCore.Signal(object)
+    _work_done_0 = QtCore.Signal()
 
     def __init__(self, window):
         super(QtWorker, self).__init__()
@@ -88,13 +88,43 @@ class QtWorker(QtCore.QObject):
         self.moveToThread(self.work_thread)
         self.work_thread.start()
 
-        self.work_signal.connect(self.work)
-        self.work_done_0.connect(self.busy.reset)
+        self._work_signal.connect(self.work)
+        self._work_done_0.connect(self.busy.reset)
+
+        self._manager = QtNetwork.QNetworkAccessManager()
+        self._manager.finished.connect(self._work_done_0)
+        self._manager.finished.connect(self._dl_done)
 
     def post(self, title, fn, callback=None):
         self.busy.setLabelText(title)
         self.busy.show()
-        self.work_signal.emit((fn, callback))
+        self._work_signal.emit((fn, callback))
+
+    def download(self, url, callback=None):
+        self.busy.setLabelText("Downloading file...")
+        self.busy.show()
+        url = QtCore.QUrl(url)
+        request = QtNetwork.QNetworkRequest(url)
+        response = self._manager.get(request)
+        response.error[QtNetwork.QNetworkReply.NetworkError].connect(
+            self._dl_error)
+        self._dl = (request, response, callback)
+
+    def _dl_error(self):
+        (req, resp, target, callback) = self._dl
+        del self._dl
+        if callback:
+            event = _Event(partial(callback, resp.error()))
+            QtGui.QApplication.postEvent(self.window, event)
+
+    def _dl_done(self):
+        (req, resp, callback) = self._dl
+        del self._dl
+        if callback:
+            result = resp.readAll()
+            resp.close()
+            event = _Event(partial(callback, result))
+            QtGui.QApplication.postEvent(self.window, event)
 
     @QtCore.Slot(tuple)
     def work(self, job):
@@ -107,6 +137,6 @@ class QtWorker(QtCore.QObject):
         if callback:
             event = _Event(partial(callback, result))
             QtGui.QApplication.postEvent(self.window, event)
-        self.work_done_0.emit()
+        self._work_done_0.emit()
 
 Worker = QtWorker

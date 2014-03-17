@@ -25,7 +25,8 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from neoman.storage import CONFIG_HOME
+from neoman.storage import capstore
+from neoman import messages as m
 import os
 
 
@@ -33,7 +34,6 @@ class Applet(object):
 
     def __init__(self, aid, name, description, latest_version="unknown",
                  cap_url=None, tabs=None):
-        self._caps = os.path.join(CONFIG_HOME, 'applets')
         self.aid = aid
         self.name = name
         self.description = description
@@ -45,18 +45,19 @@ class Applet(object):
         return self.name
 
     @property
+    def is_downloaded(self):
+        return capstore.has_file(self.aid, self.latest_version)
+
+    @property
     def cap_file(self):
-        fn = os.path.join(self._caps, self.aid, '%s.cap' % self.latest_version)
-        if os.path.isfile(fn):
-            return fn
-        else:
-            raise ValueError("File Not Found: %s" % fn)
+        return capstore.get_filename(self.aid, self.latest_version)
 
 
 APPLETS = [
     #Applet("a0000005273001", "Manager", "YubiKey NEO Manager applet."),
     Applet("a0000005272001", "YubiKey OTP", "YubiKey OTP applet."),
-    Applet("a0000005272101", "YubiOATH", "YubiOATH applet."),
+    Applet("a0000005272101", "YubiOATH", "YubiOATH applet.", "0.2.1",
+           "http://opensource.yubico.com/ykneo-oath/releases/ykneo-oath-0.2.1.cap"),
     Applet("a0000005272201", "U2F", "Yubico U2F applet.", "0.1.0"),
     #Applet("a0000005272102", "Yubico Bitcoin", "Yubico bitcoin applet."),
     Applet("d27600012401", "OpenPGP", "Open PGP applet.")
@@ -79,4 +80,4 @@ def get_applet(aid):
     for applet in APPLETS:
         if aid.startswith(applet.aid):
             return applet
-    return Applet(aid, "Unknown", "Unknown applet")
+    return Applet(aid, m.unknown, m.unknown_applet)

@@ -27,6 +27,7 @@
 from PySide import QtGui, QtCore
 from neoman.model.applet import Applet
 from neoman.model.neo import YubiKeyNeo
+from neoman.storage import capstore
 from neoman import messages as m
 from functools import partial
 
@@ -93,17 +94,19 @@ class OverviewTab(QtGui.QWidget):
                             self._neo.list_apps()))
         worker = QtCore.QCoreApplication.instance().worker
         cb = lambda _: self.neo_or_applet_changed(self._neo, self._applet)
-        if installed:
+        if installed:  # Uninstall
             if QtGui.QMessageBox.Ok != QtGui.QMessageBox.warning(
                 self, m.delete_app_confirm, m.delete_app_desc,
                     QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel):
                 return
             work = partial(self._neo.delete_app, self._applet.aid)
             worker.post(m.deleting_1 % self._applet.name, work, cb)
-        else:
+        elif self._applet.is_downloaded:  # Install
             work = partial(self._neo.install_app, self._applet.cap_file)
             worker.post(m.installing_1 % self._applet.name, work,
                         self._cb_install)
+        else:  # Download
+            worker.download(self._applet.cap_url, self._cb_download)
 
     @QtCore.Slot(object)
     def _cb_install(self, result):
@@ -123,6 +126,15 @@ class OverviewTab(QtGui.QWidget):
 
         self.neo_or_applet_changed(self._neo, self._applet)
 
+    @QtCore.Slot(object)
+    def _cb_download(self, result):
+        if isinstance(result, QtCore.QByteArray):
+            capstore.store_data(self._applet.aid, self._applet.latest_version,
+                                result)
+            self.neo_or_applet_changed(self._neo, self._applet)
+        else:
+            print "Error:", result
+
     @QtCore.Slot(Applet)
     def set_applet(self, applet):
         if applet:
@@ -140,11 +152,14 @@ class OverviewTab(QtGui.QWidget):
             self.neo_or_applet_changed(neo, self._applet)
 
     def neo_or_applet_changed(self, neo, applet):
-        installed = neo and applet and any((x.startswith(applet.aid)
-                                            for x in neo.list_apps()))
+        if not applet:
+            return
+        installed = neo and any((x.startswith(applet.aid)
+                                 for x in neo.list_apps()))
         self._status.setText(m.status_1 %
                              (m.installed if installed else m.not_installed))
-        self._install_button.setText(m.uninstall if installed else m.install)
+        btntext = m.uninstall if installed else m.install if applet.is_downloaded else m.download
+        self._install_button.setText(btntext)
 
     @QtCore.Slot(int)
     def neo_selected(self, index):

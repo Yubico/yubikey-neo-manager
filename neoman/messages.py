@@ -33,6 +33,7 @@ serial_1 = "Serial: %s"
 firmware_1 = "Firmware version: %s"
 aid_1 = "AID: %s"
 status_1 = "Status: %s"
+download = "Download"
 install = "Install"
 installed = "Installed"
 installing = "Installing applet"
@@ -52,6 +53,8 @@ install_cap = "Install applet from CAP file"
 select_cap = "Select a CAP file"
 devices = "Devices"
 apps = "NEO apps"
+unknown = "Unknown"
+unknown_applet = "Unknown applet"
 
 
 def _translate(qt):
