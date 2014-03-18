@@ -154,4 +154,6 @@ def open_all_devices(existing=None):
         if ykneomgr_connect(dev, create_string_buffer(name)) == 0:
             devices.append(CCIDDevice(dev, name))
             dev = None
+    if dev:
+        ykneomgr_done(dev)
     return devices
