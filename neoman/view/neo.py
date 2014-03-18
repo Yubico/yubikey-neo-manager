@@ -31,7 +31,7 @@ from functools import partial
 from neoman import messages as m
 from neoman.storage import settings
 from neoman.model.neo import YubiKeyNeo
-from neoman.model.applet import Applet, get_applet
+from neoman.model.applet import Applet, appletmanager
 
 MODES = OrderedDict([
     (m.hid, 0x00),
@@ -198,7 +198,7 @@ class AppsTab(QtGui.QWidget):
     def open_app(self, index):
         readable = index.data()
         aid = readable[readable.rindex('(') + 1:readable.rindex(')')]
-        self.applet.emit(get_applet(aid))
+        self.applet.emit(appletmanager.get_applet(aid))
 
     def tab_changed(self, index):
         if index != self.index:
@@ -216,7 +216,8 @@ class AppsTab(QtGui.QWidget):
                         return
                     self._neo.key = pw
 
-            self._apps = filter(None, map(get_applet, self._neo.list_apps()))
+            self._apps = filter(None, map(appletmanager.get_applet,
+                                          self._neo.list_apps()))
             self._apps_list.model().setStringList(
                 map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))
         except AttributeError:
@@ -239,6 +240,7 @@ class AppsTab(QtGui.QWidget):
             except:
                 return
 
-        self._apps = filter(None, map(get_applet, neo.list_apps()))
+        self._apps = filter(None, map(appletmanager.get_applet,
+                                      neo.list_apps()))
         self._apps_list.model().setStringList(
             map(lambda app: "%s (%s)" % (app.name, app.aid), self._apps))

@@ -130,7 +130,7 @@ class OverviewTab(QtGui.QWidget):
     def _cb_download(self, result):
         if isinstance(result, QtCore.QByteArray):
             capstore.store_data(self._applet.aid, self._applet.latest_version,
-                                result)
+                                result, self._applet.cap_sha1)
             self.neo_or_applet_changed(self._neo, self._applet)
         else:
             print "Error:", result

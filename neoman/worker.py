@@ -24,10 +24,11 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+import time
 from PySide import QtGui, QtCore, QtNetwork
 from threading import Thread
 from functools import partial
-import time
+from neoman import messages as m
 
 
 class _Trigger(QtCore.QObject):
@@ -98,20 +99,24 @@ class QtWorker(QtCore.QObject):
     def post(self, title, fn, callback=None):
         self.busy.setLabelText(title)
         self.busy.show()
+        self.post_bg(fn, callback)
+
+    def post_bg(self, fn, callback=None):
         self._work_signal.emit((fn, callback))
 
     def download(self, url, callback=None):
-        self.busy.setLabelText("Downloading file...")
+        self.busy.setLabelText(m.downloading_file)
         self.busy.show()
+        self.download_bg(url, callback)
+
+    def download_bg(self, url, callback=None):
         url = QtCore.QUrl(url)
         request = QtNetwork.QNetworkRequest(url)
         response = self._manager.get(request)
-        response.error[QtNetwork.QNetworkReply.NetworkError].connect(
-            self._dl_error)
         self._dl = (request, response, callback)
 
     def _dl_error(self):
-        (req, resp, target, callback) = self._dl
+        (req, resp, callback) = self._dl
         del self._dl
         if callback:
             event = _Event(partial(callback, resp.error()))
@@ -121,7 +126,9 @@ class QtWorker(QtCore.QObject):
         (req, resp, callback) = self._dl
         del self._dl
         if callback:
-            result = resp.readAll()
+            result = resp.error()
+            if result is QtNetwork.QNetworkReply.NoError:
+                result = resp.readAll()
             resp.close()
             event = _Event(partial(callback, result))
             QtGui.QApplication.postEvent(self.window, event)

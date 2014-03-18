@@ -26,7 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from PySide import QtGui, QtCore
 from neoman.model.neo import YubiKeyNeo
-from neoman.model.applet import Applet, APPLETS
+from neoman.model.applet import Applet, appletmanager
 from neoman import messages as m
 
 
@@ -96,10 +96,11 @@ class NavModel(QtCore.QAbstractItemModel):
             m.apps: self.createIndex(1, 0, m.apps)
         }
 
-        self.applets = APPLETS
+        self.applets = []
         available = QtCore.QCoreApplication.instance().available_neos
         available.changed.connect(self.data_changed)
         self.neo_list = available.get()
+        self._update_applets()
 
     @QtCore.Slot(list)
     def data_changed(self, new_neos):
@@ -111,6 +112,28 @@ class NavModel(QtCore.QAbstractItemModel):
 
         self.beginInsertRows(parent, 0, len(new_neos) - 1)
         self.neo_list = new_neos
+        self.endInsertRows()
+        self._update_applets()
+
+    def _update_applets(self):
+        parent = self.categories[m.apps]
+
+        self.beginRemoveRows(parent, 0, self.rowCount(parent) - 1)
+        self.applets = []
+        self.endRemoveRows()
+
+        new_applets = []
+        installed = {app for neo in self.neo_list for app in neo.list_apps()}
+        for applet in appletmanager.get_applets():
+            if applet.is_downloaded:
+                new_applets.append(applet)
+            elif any([aid.startswith(applet.aid) for aid in installed]):
+                new_applets.append(applet)
+            elif applet.cap_url:
+                new_applets.append(applet)
+
+        self.beginInsertRows(parent, 0, len(new_applets) - 1)
+        self.applets = new_applets
         self.endInsertRows()
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
