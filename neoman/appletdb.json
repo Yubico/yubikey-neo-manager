@@ -11,15 +11,13 @@
 			"description": "YubiKey NEO Manager applet",
 			"aid": "a0000005273001",
 			"version": "0.1.0",
-			"cap_url": "",
-			"cap_sha1": ""
+			"allow_uninstall": false
 		}, {
 			"name": "YubiKey OTP",
 			"description": "YubiKey One Time Passwords",
 			"aid": "a0000005272001",
 			"version": "",
-			"cap_url": "",
-			"cap_sha1": ""
+			"allow_uninstall": false
 		}, {
 			"name": "YubiOATH",
 			"description": "YubiKey OATH applet for Yubico Authenticator",

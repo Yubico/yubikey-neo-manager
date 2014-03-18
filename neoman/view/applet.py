@@ -158,9 +158,17 @@ class OverviewTab(QtGui.QWidget):
                                  for x in neo.list_apps()))
         self._status.setText(m.status_1 %
                              (m.installed if installed else m.not_installed))
-        btntext = m.uninstall if installed else m.install if applet.is_downloaded else m.download
+        if installed:
+            enabled = applet.allow_uninstall
+            btntext = m.uninstall
+        elif applet.is_downloaded:
+            enabled = bool(neo)
+            btntext = m.install
+        else:
+            enabled = bool(applet.cap_url)
+            btntext = m.download
         self._install_button.setText(btntext)
-        self._install_button.setEnabled(bool(neo) or not applet.is_downloaded)
+        self._install_button.setEnabled(enabled)
 
     @QtCore.Slot(int)
     def neo_selected(self, index):

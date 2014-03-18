@@ -43,13 +43,14 @@ DB_FILE = os.path.join(CONFIG_HOME, "appletdb.json")
 class Applet(object):
 
     def __init__(self, aid, name, description, version="unknown",
-                 cap_url=None, cap_sha1=None, tabs=None):
+                 cap_url=None, cap_sha1=None, allow_uninstall=True, tabs=None):
         self.aid = aid
         self.name = name
         self.description = description
         self.latest_version = version
         self.cap_url = cap_url
         self.cap_sha1 = cap_sha1
+        self.allow_uninstall = allow_uninstall
         self.tabs = tabs or {}
 
     def __str__(self):
