@@ -29,7 +29,7 @@ import sys
 from PySide import QtGui, QtCore
 from neoman.view.main import MainWindow
 from neoman.model.neo import AvailableNeos
-from neoman.model.applet import appletmanager
+from neoman.model.applet import AppletManager
 from neoman.worker import Worker
 from neoman import __version__ as version, messages as m
 
@@ -62,10 +62,12 @@ class NeomanApplication(QtGui.QApplication):
         self.available_neos.start()
         self.aboutToQuit.connect(self.available_neos.stop)
 
+        self.appletmanager = AppletManager()
         self.window = self._create_window()
 
         self.worker = Worker(self.window)
         self.aboutToQuit.connect(self.worker.work_thread.quit)
+        self.appletmanager.update()
 
     def _create_window(self):
         window = MainWindow()
@@ -78,5 +80,4 @@ class NeomanApplication(QtGui.QApplication):
 
 def main():
     app = NeomanApplication(sys.argv)
-    appletmanager.update()
     sys.exit(app.exec_())

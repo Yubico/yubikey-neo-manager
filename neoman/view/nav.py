@@ -26,7 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from PySide import QtGui, QtCore
 from neoman.model.neo import YubiKeyNeo
-from neoman.model.applet import Applet, appletmanager
+from neoman.model.applet import Applet
 from neoman import messages as m
 
 
@@ -124,6 +124,7 @@ class NavModel(QtCore.QAbstractItemModel):
 
         new_applets = []
         installed = {app for neo in self.neo_list for app in neo.list_apps()}
+        appletmanager = QtCore.QCoreApplication.instance().appletmanager
         for applet in appletmanager.get_applets():
             if applet.is_downloaded:
                 new_applets.append(applet)

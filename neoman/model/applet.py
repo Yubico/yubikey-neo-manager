@@ -33,10 +33,9 @@ import os
 import json
 
 
-__all__ = ['Applet', 'appletmanager']
+__all__ = ['Applet', 'AppletManager']
 
 
-DB_URL = "http://opensource.yubico.com/neo_app_db.json"
 DB_FILE = os.path.join(CONFIG_HOME, "appletdb.json")
 
 
@@ -70,7 +69,6 @@ class AppletManager(object):
     def __init__(self):
         self._hidden = []
         self._applets = []
-        self._db_url = DB_URL
         self._read_db()
 
     def update(self):
@@ -80,12 +78,16 @@ class AppletManager(object):
     def _updated(self, data):
         if not isinstance(data, QtNetwork.QNetworkReply.NetworkError):
             try:
-                data = json.loads(data)
+                data = json.loads(data.data())
                 with open(DB_FILE, 'w') as db:
                     json.dump(data, db)
-                self._read_db()
+                if data['location'] != self._db_url:
+                    self._db_url = data['location']
+                    self.update()
+                else:
+                    self._read_db()
             except:
-                pass
+                pass  # Ignore
 
     def _read_db(self):
         try:
@@ -99,9 +101,7 @@ class AppletManager(object):
         for applet in data['applets']:
             self._applets.append(Applet(**applet))
         self._hidden = data['hidden']
-        if self._db_url != data['location']:
-            self.db_url = data['location']
-            self.update()
+        self._db_url = data['location']
 
     def get_applets(self):
         return self._applets
@@ -113,5 +113,3 @@ class AppletManager(object):
             if aid.startswith(applet.aid):
                 return applet
         return Applet(aid, m.unknown, m.unknown_applet)
-
-appletmanager = AppletManager()
