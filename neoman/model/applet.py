@@ -26,7 +26,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from PySide import QtCore, QtNetwork
-import neoman
 from neoman.storage import CONFIG_HOME, capstore
 from neoman import messages as m
 import os
@@ -94,7 +93,8 @@ class AppletManager(object):
             with open(DB_FILE, 'r') as db:
                 data = json.load(db)
         except:
-            path = os.path.join(os.path.dirname(neoman.__file__), 'appletdb.json')
+            basedir = QtCore.QCoreApplication.instance().basedir
+            path = os.path.join(basedir, 'appletdb.json')
             with open(path, 'r') as db:
                 data = json.load(db)
         self._applets = []

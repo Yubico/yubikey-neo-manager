@@ -28,7 +28,11 @@ a = Analysis(['scripts/neoman'],
 libs = glob('lib/*.dll') + glob('lib/*.dylib') + glob('lib/*.so')
 for filename in libs:
     a.datas.append((filename[4:], filename, 'BINARY'))
-a.datas.append(('neoman.png', 'neoman/neoman.png', 'DATA'))
+
+# Add other resources
+resources = glob('neoman/*.png') + glob('neoman/*.json')
+for filename in resources:
+	a.datas.append((filename[7:], filename, 'DATA'))
 
 # Read version string
 with open('neoman/__init__.py', 'r') as f:
