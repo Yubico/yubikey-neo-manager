@@ -173,7 +173,7 @@ class OverviewTab(QtGui.QWidget):
         elif applet.is_downloaded:
             enabled = bool(neo)
         else:
-            enabled = bool(applet.cap_url)
+            enabled = neo and applet.cap_url
         self._install_button.setText(m.uninstall if installed else m.install)
         self._install_button.setEnabled(enabled)
 

@@ -41,11 +41,16 @@
 			"cap_sha1": ""
 		}, {
 			"name": "OpenPGP",
-			"description": "OpenPGP applet",
+			"description": "OpenPGP applet for use with the GNU Privacy Guard.",
 			"aid": "d27600012401",
 			"version": "1.0.5",
 			"cap_url": "http://opensource.yubico.com/ykneo-openpgp/releases/ykneo-openpgp-1.0.5.cap",
 			"cap_sha1": "b69757abd6edb4064bef67fea5f0a887c9ec1f15"
+		}, {
+			"name": "Yubico PIV",
+			"description": "The YubiKey PIV applet implements some parts of FIPS 201/ SP800-78.",
+			"aid": "a000000308",
+			"allow_uninstall": false
 		}
 	]
 }
