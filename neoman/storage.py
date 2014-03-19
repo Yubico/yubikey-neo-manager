@@ -49,7 +49,8 @@ class AppletCapStore(object):
         return os.path.join(self._dir, aid, '%s.cap' % version)
 
     def _validate_hash(self, fname, cap_sha1):
-        with open(fname, 'r') as cap:
+        print "hash"
+        with open(fname, 'rb') as cap:
             return sha1(cap.read()).hexdigest() == cap_sha1
 
     def has_file(self, aid, version, cap_sha1=None):
@@ -60,10 +61,12 @@ class AppletCapStore(object):
             return True
         return False
 
-    def get_filename(self, aid, version):
+    def get_filename(self, aid, version, cap_sha1=None):
         fname = self._build_fname(aid, version)
         if not self.has_file(aid, version):
             raise ValueError("File not found: %s" % fname)
+        if cap_sha1 and not self._validate_hash(fname, cap_sha1):
+            raise ValueError("Incorrect SHA1 hash!")
         return fname
 
     def store_data(self, aid, version, data, cap_sha1=None):
@@ -75,6 +78,7 @@ class AppletCapStore(object):
             raise ValueError("Unable to write data!")
         target.close()
         if cap_sha1 and not self._validate_hash(fname, cap_sha1):
+            target.remove()
             raise ValueError("Incorrect SHA1 hash!")
 
 

@@ -56,11 +56,12 @@ class Applet(object):
 
     @property
     def is_downloaded(self):
-        return capstore.has_file(self.aid, self.latest_version, self.cap_sha1)
+        return capstore.has_file(self.aid, self.latest_version)
 
     @property
     def cap_file(self):
-        return capstore.get_filename(self.aid, self.latest_version)
+        return capstore.get_filename(self.aid, self.latest_version,
+                                     self.cap_sha1)
 
 
 class AppletManager(object):
