@@ -37,7 +37,12 @@ Run "pyinstaller.exe neoman.spec" from the main project folder.
 
 
 OSX:
-For OSX you need python, pyside and pyinstaller installed.
+For OSX you need python, pyside and pyinstaller installed. One way to install
+these dependencies is by using Homebrew:
+
+  brew install python
+  brew install pyside
+  pip install PyInstaller
 
 Clone the git repository and checkout the desired release tag (or branch):
 
