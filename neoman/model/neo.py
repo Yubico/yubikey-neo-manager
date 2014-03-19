@@ -172,6 +172,7 @@ class AvailableNeos(QtCore.QThread):
             self._mutex.unlock()
 
     def run(self):
+        self.discover_devices()  # Discover initial devices.
         while self._running:
             if QtGui.QApplication.activeWindow():  # Only if we have focus
                 self.discover_devices()

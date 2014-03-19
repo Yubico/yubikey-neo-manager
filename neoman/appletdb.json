@@ -8,26 +8,26 @@
 	"applets": [
 		{
 			"name": "Manager",
-			"description": "YubiKey NEO Manager applet",
+			"description": "YubiKey NEO Manager applet.",
 			"aid": "a0000005273001",
 			"version": "0.1.0",
 			"allow_uninstall": false
 		}, {
 			"name": "YubiKey OTP",
-			"description": "YubiKey One Time Passwords",
+			"description": "YubiKey One Time Passwords.",
 			"aid": "a0000005272001",
 			"version": "",
 			"allow_uninstall": false
 		}, {
 			"name": "YubiOATH",
-			"description": "YubiKey OATH applet for Yubico Authenticator",
+			"description": "YubiKey OATH applet for Yubico Authenticator.",
 			"aid": "a0000005272101",
 			"version": "0.2.1",
 			"cap_url": "http://opensource.yubico.com/ykneo-oath/releases/ykneo-oath-0.2.1.cap",
 			"cap_sha1": "56e599f48ed5dcf28e370c14c118ec2db3b3e10f"
 		}, {
 			"name": "Yubico U2F",
-			"description": "FIDO U2F for YubiKey NEO",
+			"description": "FIDO U2F for YubiKey NEO.",
 			"aid": "a0000005272201",
 			"version": "0.1.0",
 			"cap_url": "",

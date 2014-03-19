@@ -66,8 +66,10 @@ class OverviewTab(QtGui.QWidget):
         self._applet = None
         self._neo = None
         self._name = QtGui.QLabel()
-        self._aid = QtGui.QLabel()
+        self._description = QtGui.QLabel()
         self._status = QtGui.QLabel()
+        self._aid = QtGui.QLabel()
+        self._latest_version = QtGui.QLabel()
 
         available = QtCore.QCoreApplication.instance().available_neos
         available.changed.connect(self.data_changed)
@@ -76,21 +78,30 @@ class OverviewTab(QtGui.QWidget):
         for neo in available.get():
             self._neo_selector.addItem(neo.name, neo)
 
-        top_row = QtGui.QHBoxLayout()
-        top_row.addWidget(self._name)
-        top_row.addWidget(self._neo_selector)
-
         self._install_button = QtGui.QPushButton()
         self._install_button.clicked.connect(self.install_button_click)
 
-        status_row = QtGui.QHBoxLayout()
-        status_row.addWidget(self._status)
-        status_row.addWidget(self._install_button)
+        header = QtGui.QHBoxLayout()
+        col_1 = QtGui.QVBoxLayout()
+        col_2 = QtGui.QVBoxLayout()
+
+        col_1.addWidget(self._name)
+        col_1.addWidget(self._status)
+        col_1.addWidget(self._latest_version)
+        #col_1.addWidget(self._aid)
+
+        col_2.addWidget(self._neo_selector)
+        col_2.addWidget(self._install_button)
+
+        header.addLayout(col_1)
+        header.addLayout(col_2)
 
         layout = QtGui.QVBoxLayout()
-        layout.addLayout(top_row)
-        layout.addLayout(status_row)
-        layout.addWidget(self._aid)
+        layout.addLayout(header)
+        separator = QtGui.QFrame()
+        separator.setFrameStyle(QtGui.QFrame.HLine | QtGui.QFrame.Sunken)
+        layout.addWidget(separator)
+        layout.addWidget(self._description)
         layout.addStretch()
 
         self.setLayout(layout)
@@ -151,6 +162,9 @@ class OverviewTab(QtGui.QWidget):
             self._applet = applet
             self._name.setText(m.name_1 % applet.name)
             self._aid.setText(m.aid_1 % applet.aid)
+            self._latest_version.setText(
+                m.latest_version_1 % (applet.latest_version or m.unknown))
+            self._description.setText(applet.description)
             self.neo_or_applet_changed(self._neo, applet)
 
     @QtCore.Slot(YubiKeyNeo)
