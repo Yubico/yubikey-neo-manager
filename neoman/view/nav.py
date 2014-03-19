@@ -28,6 +28,7 @@ from PySide import QtGui, QtCore
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import Applet
 from neoman import messages as m
+import os
 
 
 class NavTree(QtGui.QTreeView):
@@ -48,21 +49,24 @@ class NavTree(QtGui.QTreeView):
     @QtCore.Slot(YubiKeyNeo)
     @QtCore.Slot(Applet)
     def setCurrent(self, current):
-        if self.current != current:
-            self.current = current
-            try:
-                if isinstance(current, YubiKeyNeo):
-                    neo_index = self.model().neo_list.index(current)
-                    self.setCurrentIndex(
-                        self.model().index(
-                            neo_index, 0, self.model().categories[m.devices]))
-                elif isinstance(current, Applet):
-                    applet_index = self.model().applets.index(current)
-                    self.setCurrentIndex(
-                        self.model().index(
-                            applet_index, 0, self.model().categories[m.apps]))
-            except:
-                self.clearSelection()
+        self.current = current
+        try:
+            if isinstance(current, YubiKeyNeo):
+                neo_index = self.model().neo_list.index(current)
+                self.setCurrentIndex(
+                    self.model().index(
+                        neo_index, 0, self.model().categories[m.devices]))
+            elif isinstance(current, Applet):
+                applet_index = self.model().applets.index(current)
+                self.setCurrentIndex(
+                    self.model().index(
+                        applet_index, 0, self.model().categories[m.apps]))
+        except:
+            self.clearSelection()
+
+    def setCurrentIndex(self, index):
+        super(NavTree, self).setCurrentIndex(index)
+        self.model().refresh_icons(index)
 
     def currentChanged(self, current, previous):
         if current.flags() & QtCore.Qt.ItemIsSelectable:
@@ -96,11 +100,19 @@ class NavModel(QtCore.QAbstractItemModel):
             m.apps: self.createIndex(1, 0, m.apps)
         }
 
+        self.refresh_icons()
+
         self.applets = []
         available = QtCore.QCoreApplication.instance().available_neos
         available.changed.connect(self.data_changed)
         self.neo_list = available.get()
         self._update_applets()
+
+    def refresh_icons(self, index=None):
+        if index and index.isValid():
+            self._get_icon(index, True)
+        else:
+            self._icons = {m.devices: {}, m.apps: {}}
 
     @QtCore.Slot(list)
     def data_changed(self, new_neos):
@@ -114,6 +126,8 @@ class NavModel(QtCore.QAbstractItemModel):
         self.neo_list = new_neos
         self.endInsertRows()
         self._update_applets()
+
+        self.refresh_icons()
 
     def _update_applets(self):
         parent = self.categories[m.apps]
@@ -168,8 +182,39 @@ class NavModel(QtCore.QAbstractItemModel):
         return 0
 
     def data(self, index, role=QtCore.Qt.DisplayRole):
-        if index.isValid() and role == QtCore.Qt.DisplayRole:
-            return str(index.internalPointer())
+        if index.isValid():
+            if role == QtCore.Qt.DisplayRole:
+                return str(index.internalPointer())
+            elif role == QtCore.Qt.DecorationRole:
+                return self._get_icon(index)
+
+    def _get_icon(self, index, force_refresh=False):
+        parent = index.parent()
+        if not parent.isValid():
+            return None
+        category = parent.internalPointer()
+        if force_refresh or index.row() not in self._icons[category]:
+            self._icons[category][index.row()] = self._build_icon(index)
+        return self._icons[category][index.row()]
+
+    def _build_icon(self, index):
+        item = index.internalPointer()
+        basedir = QtCore.QCoreApplication.instance().basedir
+        icon_template = os.path.join(basedir, 'icon_%s.png')
+        if isinstance(item, Applet):
+            all_installed = bool(self.neo_list)
+            some_installed = False
+            for neo in self.neo_list:
+                if any((aid.startswith(item.aid) for aid in neo.list_apps())):
+                    some_installed = True
+                else:
+                    all_installed = False
+            if all_installed:
+                return QtGui.QPixmap(icon_template % 'installed')
+            elif some_installed:
+                return QtGui.QPixmap(icon_template % 'some_installed')
+            else:
+                return QtGui.QPixmap(icon_template % 'not_installed')
 
     def flags(self, index):
         node = index.internalPointer()

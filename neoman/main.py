@@ -52,6 +52,8 @@ class NeomanApplication(QtGui.QApplication):
     def __init__(self, argv):
         super(NeomanApplication, self).__init__(argv)
 
+        self._set_basedir()
+
         m._translate(self)
 
         QtCore.QCoreApplication.setOrganizationName(m.organization)
@@ -69,10 +71,19 @@ class NeomanApplication(QtGui.QApplication):
         self.aboutToQuit.connect(self.worker.work_thread.quit)
         self.appletmanager.update()
 
+    def _set_basedir(self):
+        if getattr(sys, 'frozen', False):
+            # we are running in a PyInstaller bundle
+            self.basedir = sys._MEIPASS
+        else:
+            # we are running in a normal Python environment
+            self.basedir = os.path.dirname(__file__)
+
     def _create_window(self):
         window = MainWindow()
         window.setWindowTitle(m.win_title_1 % version)
-        window.setWindowIcon(QtGui.QIcon(os.path.join(basedir, 'neoman.png')))
+        window.setWindowIcon(QtGui.QIcon(
+            os.path.join(self.basedir, 'neoman.png')))
         window.show()
         window.raise_()
         return window

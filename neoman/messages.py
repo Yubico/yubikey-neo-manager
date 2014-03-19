@@ -1,12 +1,42 @@
+# Copyright (c) 2013 Yubico AB
+# All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or
+#   without modification, are permitted provided that the following
+#   conditions are met:
+#
+#    1. Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#    2. Redistributions in binary form must reproduce the above
+#       copyright notice, this list of conditions and the following
+#       disclaimer in the documentation and/or other materials provided
+#       with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
 """
-Strings for YubiKey NEO Manager
-Note: Strings must not start with underscore (_).
+Strings for YubiKey NEO Manager.
+
+Note: String names must not start with underscore (_).
+
 """
 
 organization = "Yubico"
 domain = "yubico.com"
 app_name = "YubiKey NEO Manager"
 win_title_1 = "YubiKey NEO Manager (%s)"
+wait = "Please wait..."
 overview = "Overview"
 hid = "HID"
 ccid = "CCID"
@@ -43,6 +73,8 @@ error_installing = "Error installing applet"
 error_installing_1 = "There was an error installing the applet: %s"
 error_uninstalling = "Error uninstalling applet"
 error_uninstalling_1 = "There was an error uninstalling the applet: %s"
+error_downloading = "Error downloading applet"
+error_downloading_1 = "There was an error downloading the applet: %s"
 not_installed = "Not installed"
 uninstall = "Uninstall"
 delete_app_confirm = "Delete applet?"
@@ -53,7 +85,7 @@ deleting_1 = "Deleting applet: %s"
 install_cap = "Install applet from CAP file"
 select_cap = "Select a CAP file"
 devices = "Devices"
-apps = "NEO apps"
+apps = "Available apps"
 unknown = "Unknown"
 unknown_applet = "Unknown applet"
 

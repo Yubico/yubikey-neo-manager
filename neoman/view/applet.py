@@ -33,6 +33,7 @@ from functools import partial
 
 
 class AppletPage(QtGui.QTabWidget):
+    applet_status = QtCore.Signal(Applet)
     _applet = QtCore.Signal(Applet)
     _neo = QtCore.Signal(YubiKeyNeo)
 
@@ -40,9 +41,13 @@ class AppletPage(QtGui.QTabWidget):
         super(AppletPage, self).__init__()
 
         overview = OverviewTab()
+        overview.install_status.connect(self._install_status_changed)
         self._applet.connect(overview.set_applet)
         self._neo.connect(overview.set_neo)
         self.addTab(overview, m.overview)
+
+    def _install_status_changed(self, applet, installed):
+        self.applet_status.emit(applet)
 
     @QtCore.Slot(Applet)
     def setApplet(self, applet):
@@ -54,6 +59,7 @@ class AppletPage(QtGui.QTabWidget):
 
 
 class OverviewTab(QtGui.QWidget):
+    install_status = QtCore.Signal(Applet, bool)
 
     def __init__(self):
         super(OverviewTab, self).__init__()
@@ -93,19 +99,19 @@ class OverviewTab(QtGui.QWidget):
         installed = self._neo and any(
             [x.startswith(self._applet.aid) for x in self._neo.list_apps()])
         worker = QtCore.QCoreApplication.instance().worker
-        cb = lambda _: self.neo_or_applet_changed(self._neo, self._applet)
         if installed:  # Uninstall
             if QtGui.QMessageBox.Ok != QtGui.QMessageBox.warning(
                 self, m.delete_app_confirm, m.delete_app_desc,
                     QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel):
                 return
             work = partial(self._neo.delete_app, self._applet.aid)
-            worker.post(m.deleting_1 % self._applet.name, work, cb)
+            worker.post(m.deleting_1 % self._applet.name, work,
+                        self._cb_uninstall)
         elif self._applet.is_downloaded:  # Install
             work = partial(self._neo.install_app, self._applet.cap_file)
             worker.post(m.installing_1 % self._applet.name, work,
                         self._cb_install)
-        else:  # Download
+        else:  # Download and install
             worker.download(self._applet.cap_url, self._cb_download)
 
     @QtCore.Slot(object)
@@ -115,6 +121,7 @@ class OverviewTab(QtGui.QWidget):
             msg += '\n%s' % result
             QtGui.QMessageBox.warning(self, m.error_installing, msg)
 
+        self.install_status.emit(self._applet, True)
         self.neo_or_applet_changed(self._neo, self._applet)
 
     @QtCore.Slot(object)
@@ -124,6 +131,7 @@ class OverviewTab(QtGui.QWidget):
             msg += '\n%s' % result
             QtGui.QMessageBox.warning(self, m.error_uninstalling, msg)
 
+        self.install_status.emit(self._applet, False)
         self.neo_or_applet_changed(self._neo, self._applet)
 
     @QtCore.Slot(object)
@@ -131,9 +139,11 @@ class OverviewTab(QtGui.QWidget):
         if isinstance(result, QtCore.QByteArray):
             capstore.store_data(self._applet.aid, self._applet.latest_version,
                                 result, self._applet.cap_sha1)
-            self.neo_or_applet_changed(self._neo, self._applet)
+            self.install_button_click()  # Now install
         else:
-            print "Error:", result
+            msg = m.error_downloading_1 % self._applet.name
+            msg += '\n%s' % result
+            QtGui.QMessageBox.warning(self, m.error_downloading, msg)
 
     @QtCore.Slot(Applet)
     def set_applet(self, applet):
@@ -160,14 +170,11 @@ class OverviewTab(QtGui.QWidget):
                              (m.installed if installed else m.not_installed))
         if installed:
             enabled = applet.allow_uninstall
-            btntext = m.uninstall
         elif applet.is_downloaded:
             enabled = bool(neo)
-            btntext = m.install
         else:
             enabled = bool(applet.cap_url)
-            btntext = m.download
-        self._install_button.setText(btntext)
+        self._install_button.setText(m.uninstall if installed else m.install)
         self._install_button.setEnabled(enabled)
 
     @QtCore.Slot(int)

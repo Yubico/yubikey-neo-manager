@@ -24,42 +24,9 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-import time
 from PySide import QtGui, QtCore, QtNetwork
-from threading import Thread
 from functools import partial
 from neoman import messages as m
-
-
-class _Trigger(QtCore.QObject):
-    signal = QtCore.Signal()
-    signal_1 = QtCore.Signal(object)
-
-
-class PyWorker(Thread):
-
-    def __init__(self, title="Working", parent=None):
-        super(PyWorker, self).__init__()
-        self._obj = _Trigger(parent)
-        self.work_done = self._obj.signal_1
-
-        self.busy = QtGui.QProgressDialog(title, None, 0, 0, parent)
-        self.busy.setWindowModality(QtCore.Qt.WindowModal)
-        self.busy.setMinimumDuration(0)
-        self._obj.signal.connect(self.busy.cancel)
-
-    def do_work(self):
-        raise NotImplementedError("do_work not implemented!")
-
-    def run(self):
-        time.sleep(0.2)
-        try:
-            result = self.do_work()
-        except Exception as e:
-            result = e
-        print "Work done"
-        self._obj.signal.emit()
-        self.work_done.emit(result)
 
 
 class _Event(QtCore.QEvent):
@@ -81,6 +48,7 @@ class QtWorker(QtCore.QObject):
         self.window = window
 
         self.busy = QtGui.QProgressDialog('', None, 0, 0, window)
+        self.busy.setWindowTitle(m.wait)
         self.busy.setWindowModality(QtCore.Qt.WindowModal)
         self.busy.setMinimumDuration(0)
         self.busy.setAutoClose(True)

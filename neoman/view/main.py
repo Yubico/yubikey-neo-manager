@@ -107,6 +107,7 @@ class ContentWidget(QtGui.QStackedWidget):
         self.addWidget(self._neo_page)
 
         self._app_page = AppletPage()
+        self._app_page.applet_status.connect(self.setContent)
         self._neo.connect(self._app_page.setNeo)
         self._applet.connect(self._app_page.setApplet)
         self.addWidget(self._app_page)
