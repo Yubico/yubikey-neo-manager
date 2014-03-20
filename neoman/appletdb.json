@@ -48,7 +48,7 @@
 			"cap_sha1": "b69757abd6edb4064bef67fea5f0a887c9ec1f15"
 		}, {
 			"name": "Yubico PIV",
-			"description": "The YubiKey PIV applet implements some parts of FIPS 201/ SP800-78.",
+			"description": "The YubiKey PIV applet implements SP800-73-3.",
 			"aid": "a000000308",
 			"allow_uninstall": false
 		}
