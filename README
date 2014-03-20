@@ -35,6 +35,7 @@ SDK) either copied into the root as well or in a location in your PATH.
 
 Run "pyinstaller.exe neoman.spec" from the main project folder.
 
+With NSIS installed, a Windows installer will be built as well.
 
 OSX:
 For OSX you need python, pyside and pyinstaller installed. One way to install
@@ -52,4 +53,9 @@ Clone the git repository and checkout the desired release tag (or branch):
 Copy any required dylib files into a "lib" subdirectory, which you will need
 to manually create.
 
-Run "pyinstaller neoman.spec" from the main project directory.
+Run "pyinstaller neoman.spec" from the main project directory. This will create
+an .app in the dist directory.
+There is also a project file for use with Packages
+(http://s.sudre.free.fr/Packaging.html) located at resources/neoman.pkgproj.
+This can be used to create an installer for distribution, though you may want
+to sign the build prior to this using signtool.
