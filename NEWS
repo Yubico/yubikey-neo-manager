@@ -1,5 +1,9 @@
 * Version 0.0.2 (unreleased)
 
+  * Support for installing/removing applets.
+
+  * Support for multiple NEOs.
+
   * Better support for platform specific packaging.
 
 * Version 0.0.1 (released 2013-11-13)
