@@ -38,9 +38,9 @@
 									<key>GID</key>
 									<integer>0</integer>
 									<key>PATH</key>
-									<string>/Users/dain/yubikey-neo-manager/dist/YubiKey NEO Manager.app</string>
+									<string>../dist/YubiKey NEO Manager.app</string>
 									<key>PATH_TYPE</key>
-									<integer>0</integer>
+									<integer>1</integer>
 									<key>PERMISSIONS</key>
 									<integer>493</integer>
 									<key>TYPE</key>
@@ -474,9 +474,9 @@
 				<key>POSTINSTALL_PATH</key>
 				<dict>
 					<key>PATH</key>
-					<string>../yubikey-neo-manager/resources/osx-patch-ccid</string>
+					<string>osx-patch-ccid</string>
 					<key>PATH_TYPE</key>
-					<integer>3</integer>
+					<integer>1</integer>
 				</dict>
 				<key>PREINSTALL_PATH</key>
 				<dict/>
@@ -488,9 +488,9 @@
 						<key>GID</key>
 						<integer>0</integer>
 						<key>PATH</key>
-						<string>../yubikey-neo-manager/resources/libccid-yubikey.diff</string>
+						<string>libccid-yubikey.diff</string>
 						<key>PATH_TYPE</key>
-						<integer>3</integer>
+						<integer>1</integer>
 						<key>PERMISSIONS</key>
 						<integer>420</integer>
 						<key>TYPE</key>
@@ -504,9 +504,9 @@
 						<key>GID</key>
 						<integer>0</integer>
 						<key>PATH</key>
-						<string>../yubikey-neo-manager/resources/osx-patch-ccid</string>
+						<string>osx-patch-ccid</string>
 						<key>PATH_TYPE</key>
-						<integer>3</integer>
+						<integer>1</integer>
 						<key>PERMISSIONS</key>
 						<integer>493</integer>
 						<key>TYPE</key>
@@ -563,9 +563,9 @@
 				<key>BACKGROUND_PATH</key>
 				<dict>
 					<key>PATH</key>
-					<string>/Users/dain/Documents/Yubico-Trust-the-Net-Logo-Small.png</string>
+					<string>installer_bg.png</string>
 					<key>PATH_TYPE</key>
-					<integer>0</integer>
+					<integer>1</integer>
 				</dict>
 				<key>CUSTOM</key>
 				<integer>1</integer>
@@ -736,7 +736,7 @@
 			<key>BUILD_PATH</key>
 			<dict>
 				<key>PATH</key>
-				<string>build</string>
+				<string>../dist</string>
 				<key>PATH_TYPE</key>
 				<integer>1</integer>
 			</dict>
