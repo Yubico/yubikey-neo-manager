@@ -49,7 +49,6 @@ class AppletCapStore(object):
         return os.path.join(self._dir, aid, '%s.cap' % version)
 
     def _validate_hash(self, fname, cap_sha1):
-        print "hash"
         with open(fname, 'rb') as cap:
             return sha1(cap.read()).hexdigest() == cap_sha1
 
