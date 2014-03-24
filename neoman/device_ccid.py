@@ -91,6 +91,10 @@ class CCIDDevice(BaseDevice):
         check(ykneomgr_modeswitch(self._dev, mode))
         self._mode = mode
 
+    def send_apdu(self, apdu):
+        # TODO: send the APDU and return the response.
+        return '79030002019000'.decode('hex')  # Dummy value
+
     def list_apps(self, refresh=False):
         if refresh or self._apps is None:
             if self.locked:

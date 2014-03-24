@@ -180,8 +180,16 @@ class OverviewTab(QtGui.QWidget):
             return
         installed = neo and any((x.startswith(applet.aid)
                                  for x in neo.list_apps()))
-        self._status.setText(m.status_1 %
-                             (m.installed if installed else m.not_installed))
+
+        if installed:
+            version = applet.get_version(neo)
+            if version:
+                self._status.setText(m.status_1 % (m.installed_1 % version))
+            else:
+                self._status.setText(m.status_1 % m.installed)
+        else:
+            self._status.setText(m.status_1 % m.not_installed)
+
         if installed:
             enabled = applet.allow_uninstall
         elif applet.is_downloaded:

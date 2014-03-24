@@ -78,6 +78,9 @@ class HIDDevice(BaseDevice):
             raise Exception("Failed writing device config!")
         ykp_free_device_config(config)
 
+    def list_apps(self):
+        return []
+
     def close(self):
         if hasattr(self, '_dev'):
             yk_close_key(self._dev)

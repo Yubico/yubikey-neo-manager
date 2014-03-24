@@ -26,6 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from PySide import QtCore, QtNetwork
+from neoman.model.jsapi import JS_API
 from neoman.storage import CONFIG_HOME, capstore
 from neoman import messages as m
 import os
@@ -40,16 +41,16 @@ DB_FILE = os.path.join(CONFIG_HOME, "appletdb.json")
 
 class Applet(object):
 
-    def __init__(self, aid, name, description, version="unknown",
-                 cap_url=None, cap_sha1=None, allow_uninstall=True, tabs=None):
+    def __init__(self, aid, name, description, **kwargs):
         self.aid = aid
         self.name = name
         self.description = description
-        self.latest_version = version
-        self.cap_url = cap_url
-        self.cap_sha1 = cap_sha1
-        self.allow_uninstall = allow_uninstall
-        self.tabs = tabs or {}
+        self.latest_version = kwargs.get('version', 'unknown')
+        self.cap_url = kwargs.get('cap_url', None)
+        self.cap_sha1 = kwargs.get('cap_sha1', None)
+        self.allow_uninstall = kwargs.get('allow_uninstall', True)
+        self._js_version = kwargs.get('js_version', None)
+        self.tabs = kwargs.get('tabs', {})
 
     def __str__(self):
         return self.name
@@ -62,6 +63,11 @@ class Applet(object):
     def cap_file(self):
         return capstore.get_filename(self.aid, self.latest_version,
                                      self.cap_sha1)
+
+    def get_version(self, neo):
+        if self._js_version:
+            js_api = JS_API(neo, self)
+            return js_api.run(self._js_version)
 
 
 class AppletManager(object):
