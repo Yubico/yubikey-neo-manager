@@ -1,5 +1,9 @@
 * Version 0.0.3 (unreleased)
 
+  * Added the ability to view installed applet versions.
+
+  * Updated ykneomgr with ability to send custom APDUs.
+
 * Version 0.0.2 (released 2014-03-20)
 
   * Support for installing/removing applets.
