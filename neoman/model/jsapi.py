@@ -46,7 +46,7 @@ class JS_API(QtCore.QObject):
         return self
 
     def __exit__(self, type, value, traceback):
-        self._neo.unlock()
+        del self._frame
 
     def run(self, script):
         return self._frame.evaluateJavaScript(script)
