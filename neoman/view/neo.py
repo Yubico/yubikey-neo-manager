@@ -209,7 +209,8 @@ class AppsTab(QtGui.QWidget):
             while self._neo.locked:
                 try:
                     self._neo.unlock()
-                except Exception:
+                except Exception as e:
+                    print e
                     pw, ok = QtGui.QInputDialog.getText(
                         self, m.key_required, m.key_required_desc)
                     if not ok:

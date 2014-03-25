@@ -92,7 +92,6 @@ class CCIDDevice(BaseDevice):
         self._mode = mode
 
     def send_apdu(self, apdu):
-        self._locked = True
         buf_size = c_size_t(1024)
         resp = create_string_buffer(buf_size.value)
         check(ykneomgr_send_apdu(self._dev, apdu, len(apdu), resp,
