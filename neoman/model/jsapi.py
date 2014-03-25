@@ -46,8 +46,6 @@ class JS_API(QtCore.QObject):
         return self
 
     def __exit__(self, type, value, traceback):
-        # Re-select global platform
-        self._neo.send_apdu("00a4040008a000000003000000".decode('hex'))
         del self._frame
 
     def run(self, script):
