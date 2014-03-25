@@ -17,7 +17,7 @@ Building binaries
 Binaries for Windows and OSX are built using PyInstaller.
 
 Windows:
-For Windows you will need python, PySide, PyInstaller and Pywin32 installed
+For Windows you will need python, PySide, PyCrypto, PyInstaller and Pywin32 installed
 (32 or 64-bit versions depending on the architecture of the binary your are
 building).
 
@@ -38,12 +38,13 @@ Run "pyinstaller.exe neoman.spec" from the main project folder.
 With NSIS installed, a Windows installer will be built as well.
 
 OSX:
-For OSX you need python, pyside and pyinstaller installed. One way to install
+For OSX you need python, pyside, pycrypto, and pyinstaller installed. One way to install
 these dependencies is by using Homebrew:
 
   brew install python
   brew install pyside
   pip install PyInstaller
+  pip install pycrypto
 
 Clone the git repository and checkout the desired release tag (or branch):
 

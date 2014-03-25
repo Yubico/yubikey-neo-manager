@@ -12,22 +12,26 @@ Neo = {};
 		return hex;
 	}
 
+	function select(aid) {
+		var len_hex = bytes_to_hex([aid.length / 2]);
+		return Neo.send_apdu("00a40400" + len_hex + aid);
+	};
+
 	//Public API
 	Neo.aid = _JS_API.aid;
 	Neo.log = _JS_API.log;
 
 	Neo.send_apdu = function(data) {
+		if(data.substr(0,4) == "00a4") {
+			Neo.log("SELECT command blocked: "+data);
+			return;
+		}
 		var resp = _JS_API.send_apdu(data);
 		var bytes = [];
 		for(var i=0; i<resp.length; i+=2) {
 			bytes.push(parseInt(resp.substr(i, 2), 16));
 		}
 		return bytes;
-	};
-
-	Neo.select = function() {
-		var len_hex = bytes_to_hex([Neo.aid.length / 2]);
-		return Neo.send_apdu("00a40400" + len_hex + Neo.aid);
 	};
 
 	Neo.send_ok = function(data) {
@@ -39,4 +43,6 @@ Neo = {};
 			Neo.log("ERROR req: "+data+", resp: "+bytes_to_hex(bytes));
 		}
 	};
+
+	Neo.select = select(Neo.aid);
 })();

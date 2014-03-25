@@ -37,10 +37,16 @@ class JS_API(QtCore.QObject):
         self._webpage = QtWebKit.QWebPage()
         self._frame = self._webpage.mainFrame()
         self._frame.addToJavaScriptWindowObject('_JS_API', self)
+
+    def __enter__(self):
         basedir = QtCore.QCoreApplication.instance().basedir
         path = os.path.join(basedir, 'js_api.js')
         with open(path, 'r') as f:
             self._frame.evaluateJavaScript(f.read())
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self._neo.unlock()
 
     def run(self, script):
         return self._frame.evaluateJavaScript(script)

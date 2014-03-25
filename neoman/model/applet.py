@@ -69,8 +69,8 @@ class Applet(object):
 
     def get_version(self, neo):
         if self._js_version:
-            js_api = JS_API(neo, self)
-            return js_api.run(self._js_version)
+            with JS_API(neo, self) as api:
+                return api.run(self._js_version)
 
 
 class AppletManager(object):

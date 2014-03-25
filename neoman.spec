@@ -30,7 +30,7 @@ for filename in libs:
     a.datas.append((filename[4:], filename, 'BINARY'))
 
 # Add other resources
-resources = glob('neoman/*.png') + glob('neoman/*.json')
+resources = glob('neoman/*.png') + glob('neoman/*.json') + glob('neoman/*.js')
 for filename in resources:
 	a.datas.append((filename[7:], filename, 'DATA'))
 
