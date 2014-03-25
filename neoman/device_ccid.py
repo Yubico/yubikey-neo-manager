@@ -92,8 +92,10 @@ class CCIDDevice(BaseDevice):
         self._mode = mode
 
     def send_apdu(self, apdu):
-        # TODO: send the APDU and return the response.
-        return '79030002019000'.decode('hex')  # Dummy value
+        buf_size = c_size_t(1024)
+        resp = create_string_buffer(buf_size.value)
+        ykneomgr_send_apdu(self._dev, apdu, len(apdu), resp, byref(buf_size))
+        return resp.raw[0:buf_size.value]
 
     def list_apps(self, refresh=False):
         if refresh or self._apps is None:

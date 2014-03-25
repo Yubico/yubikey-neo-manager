@@ -46,7 +46,7 @@ ykneomgr_dev = type('ykneomgr_dev', (Structure,), {})
 
 ykneomgr_global_init = define('ykneomgr_global_init', [ykneomgr_initflags],
                               ykneomgr_rc)
-ykneomgr_global_done = define('ykneomgr_global_done', []);
+ykneomgr_global_done = define('ykneomgr_global_done', [])
 
 ykneomgr_init = define('ykneomgr_init', [
                        POINTER(POINTER(ykneomgr_dev))], ykneomgr_rc)
@@ -87,6 +87,9 @@ ykneomgr_applet_delete = define('ykneomgr_applet_delete',
 ykneomgr_applet_install = define('ykneomgr_applet_install',
                                  [POINTER(ykneomgr_dev), c_char_p],
                                  ykneomgr_rc)
+ykneomgr_send_apdu = define('ykneomgr_send_apdu',
+                            [POINTER(ykneomgr_dev), c_char_p, c_size_t,
+                             c_char_p, POINTER(c_size_t)], ykneomgr_rc)
 
 
 __all__ = [x for x in globals().keys() if x.lower().startswith('ykneomgr')]
