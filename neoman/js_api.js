@@ -12,9 +12,18 @@ Neo = {};
 		return hex;
 	}
 
+	function send_apdu(data) {
+		var resp = _JS_API.send_apdu(data);
+		var bytes = [];
+		for(var i=0; i<resp.length; i+=2) {
+			bytes.push(parseInt(resp.substr(i, 2), 16));
+		}
+		return bytes;
+	}
+
 	function select(aid) {
 		var len_hex = bytes_to_hex([aid.length / 2]);
-		return Neo.send_apdu("00a40400" + len_hex + aid);
+		return send_apdu("00a40400" + len_hex + aid);
 	};
 
 	//Public API
@@ -26,12 +35,7 @@ Neo = {};
 			Neo.log("SELECT command blocked: "+data);
 			return;
 		}
-		var resp = _JS_API.send_apdu(data);
-		var bytes = [];
-		for(var i=0; i<resp.length; i+=2) {
-			bytes.push(parseInt(resp.substr(i, 2), 16));
-		}
-		return bytes;
+		return send_apdu(data);
 	};
 
 	Neo.send_ok = function(data) {
