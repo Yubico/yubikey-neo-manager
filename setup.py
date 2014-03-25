@@ -52,7 +52,7 @@ setup(
     include_package_data=True,
     scripts=['scripts/neoman'],
     setup_requires=['nose>=1.0'],
-    install_requires=['PySide'],
+    install_requires=['PySide', 'pycrypto'],
     test_suite='nose.collector',
     tests_require=[''],
     cmdclass={'release': release},
