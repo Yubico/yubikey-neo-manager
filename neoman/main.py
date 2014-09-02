@@ -63,7 +63,6 @@ class NeomanApplication(QtGui.QApplication):
 
         args = self._parse_args()
         self.devmode = args.devmode
-        print "Devmode: %r" % self.devmode
 
         self.available_neos = AvailableNeos()
         self.available_neos.start()
