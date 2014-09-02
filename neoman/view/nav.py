@@ -139,13 +139,12 @@ class NavModel(QtCore.QAbstractItemModel):
         new_applets = []
         installed = {app for neo in self.neo_list for app in neo.list_apps()}
         appletmanager = QtCore.QCoreApplication.instance().appletmanager
-        for applet in appletmanager.get_applets():
-            if applet.is_downloaded:
-                new_applets.append(applet)
-            elif any([aid.startswith(applet.aid) for aid in installed]):
-                new_applets.append(applet)
-            elif applet.cap_url:
-                new_applets.append(applet)
+        if QtCore.QCoreApplication.instance().devmode:
+            new_applets = appletmanager.get_applets()
+        else:
+            for applet in appletmanager.get_applets():
+                if any([aid.startswith(applet.aid) for aid in installed]):
+                    new_applets.append(applet)
 
         self.beginInsertRows(parent, 0, len(new_applets) - 1)
         self.applets = new_applets

@@ -26,6 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 import os
 import sys
+import argparse
 from PySide import QtGui, QtCore
 from neoman.view.main import MainWindow
 from neoman.model.neo import AvailableNeos
@@ -60,6 +61,10 @@ class NeomanApplication(QtGui.QApplication):
         QtCore.QCoreApplication.setOrganizationDomain(m.domain)
         QtCore.QCoreApplication.setApplicationName(m.app_name)
 
+        args = self._parse_args()
+        self.devmode = args.devmode
+        print "Devmode: %r" % self.devmode
+
         self.available_neos = AvailableNeos()
         self.available_neos.start()
         self.aboutToQuit.connect(self.available_neos.stop)
@@ -70,6 +75,16 @@ class NeomanApplication(QtGui.QApplication):
         self.worker = Worker(self.window)
         self.aboutToQuit.connect(self.worker.work_thread.quit)
         self.appletmanager.update()
+
+    def _parse_args(self):
+        parser = argparse.ArgumentParser(description="YubiKey NEO Manager",
+                                         add_help=True)
+        parser.add_argument('-d', '--devmode', action='store_true',
+                            default=False, help='enables features which '
+                            'require the transport keys of the device to be '
+                            'known')
+
+        return parser.parse_args()
 
     def _set_basedir(self):
         if getattr(sys, 'frozen', False):
