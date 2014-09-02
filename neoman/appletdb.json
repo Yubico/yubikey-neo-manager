@@ -49,8 +49,8 @@
 			"name": "OpenPGP",
 			"description": "OpenPGP applet for use with the GNU Privacy Guard.",
 			"aid": "d27600012401",
-			"version": "1.0.5",
-			"cap_url": "http://opensource.yubico.com/ykneo-openpgp/releases/ykneo-openpgp-1.0.5.cap",
+			"version": "1.0.6",
+			"cap_url": "http://opensource.yubico.com/ykneo-openpgp/releases/ykneo-openpgp-1.0.6.cap",
 			"cap_sha1": "b69757abd6edb4064bef67fea5f0a887c9ec1f15",
 			"js_version": "Neo.send_ok('00f10000').slice(0,3).join('.')"
 		}, {
