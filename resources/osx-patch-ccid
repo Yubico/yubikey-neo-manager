@@ -13,6 +13,7 @@ then
 		echo "already patched"
 	else
 		/usr/bin/patch -d/ -p0 < libccid-yubikey.diff
+		pkill -9 pcscd
 	fi
 
 else
