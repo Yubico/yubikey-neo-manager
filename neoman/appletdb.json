@@ -1,64 +1,64 @@
 {
-	"location": "http://opensource.yubico.com/neo_app_db_signed.json",
-	"pubkey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArM0ylYcaT84KDgwYlazg\n+kzZo/vsDYHflq+go9Jk8EE9BMeGmvpKdwCS7+jeEcmc7MhQeK7cZ4Av7QsywL8I\nGDESG6PPQypebaw3JqQBm6zzrUwDPoI6488pJ2Hsx+N+d3wPGwEShTa+CVxnaY83\nJs1Rrz6G52HmJRSO0dIFZIadm4wUmXRFO8eFyKnySREOiL6hVYduo5wuwiZXRl/P\njDnePmREaLOJjsVbUyL3Kc9lxeBZzCV7zIvyLwBfjkFdDADMdR/F54iJTeYsmEbw\n3T5gRqzGnc1se/0x+CVMowMLRb41t47MFJzP92K/ub0Cg15uzz1JKjuvJA/6r2fJ\nYwIDAQAB\n-----END PUBLIC KEY-----",
-	"hidden": [
-		"a0000000035350",
-		"a000000527300101",
-		"d2760000850101"
-	],
-	"applets": [
-		{
-			"name": "Manager",
-			"description": "YubiKey NEO Manager applet.",
-			"aid": "a0000005273001",
-			"version": "0.1.0",
-			"allow_uninstall": false,
-			"js_version": "Neo.select.slice(0,3).join('.')"
-		}, {
-			"name": "YubiKey OTP",
-			"description": "YubiKey One Time Passwords.",
-			"aid": "a0000005272001",
-			"version": "",
-			"allow_uninstall": false,
-			"js_version": "Neo.select.slice(0,3).join('.')"
-		}, {
-			"name": "YubiOATH",
-			"description": "YubiKey OATH applet for Yubico Authenticator.",
-			"aid": "a0000005272101",
-			"version": "0.2.1",
-			"cap_url": "http://opensource.yubico.com/ykneo-oath/releases/ykneo-oath-0.2.1.cap",
-			"cap_sha1": "56e599f48ed5dcf28e370c14c118ec2db3b3e10f",
-			"js_version": "Neo.select.slice(2,5).join('.')"
-		}, {
-			"name": "Yubico U2F",
-			"description": "FIDO U2F for YubiKey NEO.",
-			"aid": "a0000005272201",
-			"version": "0.1.0",
-			"cap_url": "",
-			"cap_sha1": "",
-			"js_version": "Neo.select.slice(0,3).join('.')"
-		}, {
-			"name": "Yubico Bitcoin",
-			"description": "A Bitcoin wallet",
-			"aid": "a0000005272102",
-			"version": "",
-			"cap_url": "",
-			"cap_sha1": "",
-			"js_version": "Neo.select.slice(0,3).join('.')"
-		}, {
-			"name": "OpenPGP",
-			"description": "OpenPGP applet for use with the GNU Privacy Guard.",
-			"aid": "d27600012401",
-			"version": "1.0.6",
-			"cap_url": "http://opensource.yubico.com/ykneo-openpgp/releases/ykneo-openpgp-1.0.6.cap",
-			"cap_sha1": "b69757abd6edb4064bef67fea5f0a887c9ec1f15",
-			"js_version": "Neo.send_ok('00f10000').slice(0,3).join('.')"
-		}, {
-			"name": "Yubico PIV",
-			"description": "The YubiKey PIV applet implements SP800-73-3.",
-			"aid": "a000000308",
-			"allow_uninstall": false,
-			"js_version": "Neo.send_ok('00fd0000').slice(0,3).join('.')"
-		}
-	]
+  "location": "http://opensource.yubico.com/neo_app_db_signed.json",
+  "pubkey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArM0ylYcaT84KDgwYlazg\n+kzZo/vsDYHflq+go9Jk8EE9BMeGmvpKdwCS7+jeEcmc7MhQeK7cZ4Av7QsywL8I\nGDESG6PPQypebaw3JqQBm6zzrUwDPoI6488pJ2Hsx+N+d3wPGwEShTa+CVxnaY83\nJs1Rrz6G52HmJRSO0dIFZIadm4wUmXRFO8eFyKnySREOiL6hVYduo5wuwiZXRl/P\njDnePmREaLOJjsVbUyL3Kc9lxeBZzCV7zIvyLwBfjkFdDADMdR/F54iJTeYsmEbw\n3T5gRqzGnc1se/0x+CVMowMLRb41t47MFJzP92K/ub0Cg15uzz1JKjuvJA/6r2fJ\nYwIDAQAB\n-----END PUBLIC KEY-----",
+  "hidden": [
+    "a0000000035350",
+    "a000000527300101",
+    "d2760000850101"
+  ],
+  "applets": [
+    {
+      "name": "Manager",
+      "description": "YubiKey NEO Manager applet.",
+      "aid": "a0000005273001",
+      "version": "0.1.0",
+      "allow_uninstall": false,
+      "js_version": "Neo.select.slice(0,3).join('.')"
+    }, {
+      "name": "YubiKey OTP",
+      "description": "YubiKey One Time Passwords.",
+      "aid": "a0000005272001",
+      "version": "",
+      "allow_uninstall": false,
+      "js_version": "Neo.select.slice(0,3).join('.')"
+    }, {
+      "name": "YubiOATH",
+      "description": "YubiKey OATH applet for Yubico Authenticator.",
+      "aid": "a0000005272101",
+      "version": "0.2.1",
+      "cap_url": "http://opensource.yubico.com/ykneo-oath/releases/ykneo-oath-0.2.1.cap",
+      "cap_sha1": "56e599f48ed5dcf28e370c14c118ec2db3b3e10f",
+      "js_version": "Neo.select.slice(2,5).join('.')"
+    }, {
+      "name": "Yubico U2F",
+      "description": "FIDO U2F for YubiKey NEO.",
+      "aid": "a0000005272201",
+      "version": "0.1.0",
+      "cap_url": "",
+      "cap_sha1": "",
+      "js_version": "Neo.select.slice(0,3).join('.')"
+    }, {
+      "name": "Yubico Bitcoin",
+      "description": "A Bitcoin wallet",
+      "aid": "a0000005272102",
+      "version": "",
+      "cap_url": "",
+      "cap_sha1": "",
+      "js_version": "Neo.select.slice(0,3).join('.')"
+    }, {
+      "name": "OpenPGP",
+      "description": "OpenPGP applet for use with the GNU Privacy Guard.",
+      "aid": "d27600012401",
+      "version": "1.0.6",
+      "cap_url": "http://opensource.yubico.com/ykneo-openpgp/releases/ykneo-openpgp-1.0.6.cap",
+      "cap_sha1": "b69757abd6edb4064bef67fea5f0a887c9ec1f15",
+      "js_version": "Neo.send_ok('00f10000').slice(0,3).join('.')"
+    }, {
+      "name": "Yubico PIV",
+      "description": "The YubiKey PIV applet implements SP800-73-3.",
+      "aid": "a000000308",
+      "allow_uninstall": false,
+      "js_version": "Neo.send_ok('00fd0000').slice(0,3).join('.')"
+    }
+  ]
 }
