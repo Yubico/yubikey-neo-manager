@@ -34,11 +34,15 @@ from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import Applet
 
 MODES = OrderedDict([
-    (m.hid, 0x00),
+    (m.otp, 0x00),
     (m.ccid, 0x01),
     (m.ccid_touch_eject, 0x81),
-    (m.hid_ccid, 0x02),
-    (m.hid_ccid_touch_eject, 0x82)
+    (m.otp_ccid, 0x02),
+    (m.otp_ccid_touch_eject, 0x82),
+    (m.u2f, 0x03),
+    (m.otp_u2f, 0x04),
+    (m.u2f_ccid, 0x05),
+    (m.otp_u2f_ccid, 0x06)
 ])
 
 
@@ -57,10 +61,11 @@ class NeoPage(QtGui.QTabWidget):
         self._neo.connect(settings_tab.set_neo)
         self.addTab(settings_tab, m.settings)
 
-        apps = AppsTab(self, 1)
-        self._neo.connect(apps.set_neo)
-        apps.applet.connect(self._set_applet)
-        self.addTab(apps, m.installed_apps)
+        if QtCore.QCoreApplication.instance().devmode:
+            apps = AppsTab(self, 1)
+            self._neo.connect(apps.set_neo)
+            apps.applet.connect(self._set_applet)
+            self.addTab(apps, m.installed_apps)
 
     @QtCore.Slot(YubiKeyNeo)
     def setNeo(self, neo):
@@ -104,6 +109,10 @@ class SettingsTab(QtGui.QWidget):
         self._mode_btn = QtGui.QPushButton(m.change_mode)
         self._mode_btn.clicked.connect(self.change_mode)
         layout.addWidget(self._mode_btn)
+
+        mode_note = QtGui.QLabel(m.note_1 % m.mode_note)
+        mode_note.setWordWrap(True)
+        layout.addWidget(mode_note)
 
         layout.addStretch()
         self.setLayout(layout)

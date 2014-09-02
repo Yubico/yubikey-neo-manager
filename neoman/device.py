@@ -24,9 +24,13 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-MODE_HID = 0
+MODE_OTP = 0
 MODE_CCID = 1
-MODE_HID_CCID = 2
+MODE_OTP_CCID = 2
+MODE_U2F = 3
+MODE_OTP_U2F = 4
+MODE_U2F_CCID = 5
+MODE_OTP_U2F_CCID = 6
 
 
 class BaseDevice(object):
@@ -37,7 +41,8 @@ class BaseDevice(object):
 
     @property
     def has_ccid(self):
-        return self.mode & 0x0f in [MODE_CCID, MODE_HID_CCID]
+        return self.mode & 0x0f in [MODE_CCID, MODE_OTP_CCID, MODE_U2F_CCID,
+                                    MODE_OTP_U2F_CCID]
 
     @property
     def serial(self):
@@ -65,7 +70,7 @@ def open_first_device():
     try:
         from neoman.device_hid import open_first_device as open_hid
         return open_hid()
-    except Exception as e:
+    except:
         return None
 
 
@@ -75,7 +80,7 @@ def open_all_devices(existing=None):
     try:
         from neoman.device_ccid import open_all_devices as open_ccid_all
         for dev in open_ccid_all(existing):
-            has_composite = has_composite or dev.mode & 0xf == MODE_HID_CCID
+            has_composite = has_composite or dev.mode & 0xf == MODE_OTP_CCID
             devices.append(dev)
     except Exception:
         pass

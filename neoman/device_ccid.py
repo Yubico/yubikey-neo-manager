@@ -80,7 +80,7 @@ class CCIDDevice(BaseDevice):
     def version(self):
         return self._version
 
-    def unlock(self):
+    def _unlock(self):
         self._locked = True
         if not self._key:
             raise ValueError("No transport key provided!")
@@ -99,7 +99,7 @@ class CCIDDevice(BaseDevice):
                                  byref(buf_size)))
         return resp.raw[0:buf_size.value]
 
-    def list_apps(self, refresh=False):
+    def _list_apps(self, refresh=False):
         if refresh or self._apps is None:
             if self.locked:
                 self.unlock()

@@ -26,7 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from neoman.ykpers import *
 from ctypes import byref, c_uint
-from neoman.device import BaseDevice, MODE_HID
+from neoman.device import BaseDevice, MODE_OTP
 
 if not yk_init():
     raise Exception("Unable to initialize ykpers")
@@ -58,7 +58,7 @@ class HIDDevice(BaseDevice):
 
     @property
     def mode(self):
-        return MODE_HID
+        return MODE_OTP
 
     @property
     def serial(self):

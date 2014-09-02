@@ -51,15 +51,13 @@ class YubiKeyNeo(QtCore.QObject):
 
         self._mutex = QtCore.QMutex()
 
-        self._dev = device
-        self._mode = device.mode
         self._serial = device.serial
         self._version = device.version
+        self._apps = None
 
         self._group = self._serial if self._serial else "NOSERIAL"
 
-        if device.has_ccid:
-            device.key = self.key.decode('hex')
+        self._set_device(device)
 
     def _set_device(self, device):
         if self.serial != device.serial or self.version != device.version:
@@ -67,6 +65,7 @@ class YubiKeyNeo(QtCore.QObject):
             raise ValueError("New device must have same serial/version.")
         self._dev = device
         self._mode = device.mode
+        #self._apps = None
         if device.has_ccid:
             device.key = self.key.decode('hex')
 
@@ -147,6 +146,19 @@ class YubiKeyNeo(QtCore.QObject):
 
     def __str__(self):
         return self.name
+
+    def list_apps(self):
+        if not self.has_ccid:
+            return []
+        if self._apps is None:
+            apps = []
+            appletmanager = QtCore.QCoreApplication.instance().appletmanager
+            for applet in appletmanager.get_applets():
+                installed, version = applet.get_status(self)
+                if installed:
+                    apps.append(applet.aid)
+            self._apps = apps
+        return self._apps
 
 
 class AvailableNeos(QtCore.QThread):

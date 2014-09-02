@@ -45,8 +45,12 @@ Neo = {};
 			return bytes.slice(0, len-2);
 		} else {
 			Neo.log("ERROR req: "+data+", resp: "+bytes_to_hex(bytes));
+      return undefined;
 		}
 	};
 
-	Neo.select = select(Neo.aid);
+  var result = select(Neo.aid);
+	Neo.select = result.slice(0,result.length-2);
+  var status = result.slice(result.length-2);
+  return status[0] == 0x90 && status[1] == 0x00;
 })();

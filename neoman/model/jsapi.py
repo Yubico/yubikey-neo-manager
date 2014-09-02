@@ -28,6 +28,10 @@ from PySide import QtCore, QtWebKit
 import os
 
 
+class AppletNotInstalledException(Exception):
+    pass
+
+
 class JS_API(QtCore.QObject):
 
     def __init__(self, neo, applet):
@@ -42,7 +46,9 @@ class JS_API(QtCore.QObject):
         basedir = QtCore.QCoreApplication.instance().basedir
         path = os.path.join(basedir, 'js_api.js')
         with open(path, 'r') as f:
-            self._frame.evaluateJavaScript(f.read())
+            if not self._frame.evaluateJavaScript(f.read()):
+                del self._frame
+                raise AppletNotInstalledException()
         return self
 
     def __exit__(self, type, value, traceback):

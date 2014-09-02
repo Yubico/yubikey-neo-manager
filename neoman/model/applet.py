@@ -29,7 +29,7 @@ from PySide import QtCore, QtNetwork
 from Crypto.Signature import PKCS1_PSS
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
-from neoman.model.jsapi import JS_API
+from neoman.model.jsapi import JS_API, AppletNotInstalledException
 from neoman.storage import CONFIG_HOME, capstore
 from neoman import messages as m
 import os
@@ -67,10 +67,17 @@ class Applet(object):
         return capstore.get_filename(self.aid, self.latest_version,
                                      self.cap_sha1)
 
-    def get_version(self, neo):
-        if self._js_version:
+    def get_status(self, neo):
+        installed = False
+        version = None
+        try:
             with JS_API(neo, self) as api:
-                return api.run(self._js_version)
+                installed = True
+                if self._js_version:
+                    version = api.run(self._js_version)
+        except AppletNotInstalledException:
+            pass
+        return (installed, version)
 
 
 class AppletManager(object):
