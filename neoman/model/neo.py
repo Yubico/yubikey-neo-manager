@@ -49,7 +49,7 @@ class YubiKeyNeo(QtCore.QObject):
     def __init__(self, device):
         super(YubiKeyNeo, self).__init__()
 
-        self._mutex = QtCore.QMutex()
+        self._mutex = QtCore.QMutex(QtCore.QMutex.Recursive)
 
         self._serial = device.serial
         self._version = device.version
@@ -157,17 +157,21 @@ class YubiKeyNeo(QtCore.QObject):
         return self.name
 
     def list_apps(self):
-        if not self.has_ccid:
-            return []
-        if self._apps is None:
-            apps = []
-            appletmanager = QtCore.QCoreApplication.instance().appletmanager
-            for applet in appletmanager.get_applets():
-                installed, version = applet.get_status(self)
-                if installed:
-                    apps.append(applet.aid)
-            self._apps = apps
-        return self._apps
+        try:
+            self._mutex.lock()
+            if not self.has_ccid:
+                return []
+            if self._apps is None:
+                apps = []
+                appletmanager = QtCore.QCoreApplication.instance().appletmanager
+                for applet in appletmanager.get_applets():
+                    installed, version = applet.get_status(self)
+                    if installed:
+                        apps.append(applet.aid)
+                self._apps = apps
+            return self._apps
+        finally:
+            self._mutex.unlock()
 
 
 class AvailableNeos(QtCore.QThread):

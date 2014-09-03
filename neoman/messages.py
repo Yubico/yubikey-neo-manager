@@ -63,8 +63,8 @@ change_mode_desc = ("Set the connection mode used by your YubiKey NEO.\nFor "
                     "this setting to take effect, you will need to unplug, "
                     "and re-attach your YubiKey.")
 remove_device = "\nRemove your YubiKey NEO now.\n"
-mode_note = ("To be able to list/manage apps, your YubiKey NEO must be in a "
-             "mode with CCID enabled.")
+mode_note = ("To be able to list/manage apps, your YubiKey NEO must have CCID "
+             "enabled.")
 name = "Name"
 name_1 = "Name: %s"
 serial_1 = "Serial: %s"

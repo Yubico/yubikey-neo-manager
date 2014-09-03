@@ -78,19 +78,16 @@ def open_all_devices(existing=None):
             devices.append(dev)
     except Exception:
         pass
+    if has_composite:  # If any of the devices have OTP mode enabled, we're done
+        return devices
     try:
         from neoman.device_hid import open_first_device as open_hid
-        # Close any exisitng HID devices as we are going to reopen them.
+        # Close any existing HID devices as we are going to reopen them.
         for dev in existing:
             if not dev.has_ccid:
                 dev.close()
         dev = open_hid()
-        # Avoid adding any HID devices which do not expose a serial if we know
-        # there are composite devices (as to not add them twice).
-        if not dev.serial and has_composite:
-            dev.close()
-        else:
-            devices.append(dev)
+        devices.append(dev)
     except Exception:
         pass
     return devices
