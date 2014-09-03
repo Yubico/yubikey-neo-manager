@@ -149,30 +149,37 @@ class ModeDialog(QtGui.QDialog):
 
         boxes = QtGui.QHBoxLayout()
         self._otp = QtGui.QCheckBox(m.otp)
+        self._otp.clicked.connect(self._state_changed)
         boxes.addWidget(self._otp)
         self._ccid = QtGui.QCheckBox(m.ccid)
+        self._ccid.clicked.connect(self._state_changed)
         boxes.addWidget(self._ccid)
         self._u2f = QtGui.QCheckBox(m.u2f)
+        self._u2f.clicked.connect(self._state_changed)
         boxes.addWidget(self._u2f)
-        self._touch_eject = QtGui.QCheckBox("touch eject flag")
-        boxes.addWidget(self._touch_eject)
         layout.addLayout(boxes)
 
         buttons = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok |
                                          QtGui.QDialogButtonBox.Cancel)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
+        self._ok = buttons.button(QtGui.QDialogButtonBox.Ok)
         layout.addWidget(buttons)
 
         self.setWindowTitle(m.change_mode)
         self.setLayout(layout)
 
+    def _state_changed(self):
+        self._ok.setDisabled(not any(self.flags))
+
+    @property
+    def flags(self):
+        return self._otp.isChecked(), self._ccid.isChecked(), \
+            self._u2f.isChecked()
+
     @property
     def mode(self):
-        return MODE.mode_for_flags(
-            self._otp.isChecked(), self._ccid.isChecked(),
-            self._u2f.isChecked(), self._touch_eject.isChecked()
-        )
+        return MODE.mode_for_flags(*self.flags)
 
     @mode.setter
     def mode(self, value):
@@ -180,7 +187,6 @@ class ModeDialog(QtGui.QDialog):
         self._otp.setChecked(otp)
         self._ccid.setChecked(ccid)
         self._u2f.setChecked(u2f)
-        self._touch_eject.setChecked(touch_eject)
 
     @property
     def has_u2f(self):
@@ -194,9 +200,13 @@ class ModeDialog(QtGui.QDialog):
     def change_mode(neo, parent=None):
         dialog = ModeDialog(parent)
         dialog.mode = neo.mode
-        dialog.has_u2f = neo.version >= (3, 3, 0)
+        legacy = neo.version < (3, 3, 0)
+        dialog.has_u2f = not legacy
         if dialog.exec_():
-            return dialog.mode
+            mode = dialog.mode
+            if legacy and mode == 2:  # Always set 82 instead of 2
+                mode = 0x82
+            return mode
         else:
             return neo.mode
 
