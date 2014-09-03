@@ -49,11 +49,11 @@ class CCIDDevice(BaseDevice):
         self._locked = True
         self._serial = ykneomgr_get_serialno(dev) or None
         self._mode = ykneomgr_get_mode(dev)
-        self._version = [
+        self._version = (
             ykneomgr_get_version_major(dev),
             ykneomgr_get_version_minor(dev),
             ykneomgr_get_version_build(dev)
-        ]
+        )
         self._apps = None
 
     @property

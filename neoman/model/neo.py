@@ -133,6 +133,15 @@ class YubiKeyNeo(QtCore.QObject):
             self._mutex.unlock()
 
     @property
+    def has_ccid(self):
+        try:
+            self._mutex.lock()
+            return self._dev and self._dev.has_ccid
+        finally:
+            self._mutex.unlock()
+
+
+    @property
     def mode(self):
         return self._mode
 

@@ -46,13 +46,13 @@ class HIDDevice(BaseDevice):
         status = ykds_alloc()
         try:
             if yk_get_status(dev, status):
-                self._version = [
+                self._version = (
                     ykds_version_major(status),
                     ykds_version_minor(status),
                     ykds_version_build(status)
-                ]
+                )
             else:
-                self._version = [0, 0, 0]
+                self._version = (0, 0, 0)
         finally:
             ykds_free(status)
 

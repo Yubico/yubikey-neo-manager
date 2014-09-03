@@ -32,22 +32,7 @@ from neoman import messages as m
 from neoman.storage import settings
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import Applet
-
-MODES = OrderedDict([
-    (m.otp, 0x00),
-    (m.ccid, 0x01),
-    (m.ccid_touch_eject, 0x81),
-    (m.otp_ccid, 0x02),
-    (m.otp_ccid_touch_eject, 0x82),
-    (m.u2f, 0x03),
-    (m.otp_u2f, 0x04),
-    (m.u2f_ccid, 0x05),
-    (m.otp_u2f_ccid, 0x06)
-])
-
-
-def name_for_mode(mode):
-    return next((n for n, md in MODES.items() if md == mode), None)
+from neoman.model.modes import MODE
 
 
 class NeoPage(QtGui.QTabWidget):
@@ -126,7 +111,7 @@ class SettingsTab(QtGui.QWidget):
         self._name.setText(m.name_1 % neo.name)
         self._serial.setText(m.serial_1 % neo.serial)
         self._firmware.setText(m.firmware_1 % '.'.join(map(str, neo.version)))
-        self._mode_btn.setText(m.change_mode_1 % name_for_mode(neo.mode))
+        self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(neo.mode))
 
     def change_name(self):
         name, ok = QtGui.QInputDialog.getText(
@@ -139,23 +124,81 @@ class SettingsTab(QtGui.QWidget):
         print m.manage_keys
 
     def change_mode(self):
-        current = MODES.keys().index(name_for_mode(self._neo.mode))
-        res = QtGui.QInputDialog.getItem(
-            self, m.change_mode, m.change_mode_desc, MODES.keys(), current,
-            False)
-        if res[1]:
-            mode = MODES[res[0]]
-            if self._neo.mode != mode:
-                self._neo.set_mode(mode)
-                self._mode_btn.setText(m.change_mode_1 % res[0])
+        current = self._neo.mode
+        mode = ModeDialog.change_mode(self._neo, self)
 
-                remove_dialog = QtGui.QMessageBox(self)
-                remove_dialog.setWindowTitle(m.change_mode)
-                remove_dialog.setIcon(QtGui.QMessageBox.Information)
-                remove_dialog.setText(m.remove_device)
-                remove_dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
-                self._neo.removed.connect(remove_dialog.accept)
-                remove_dialog.exec_()
+        if self._neo.mode != mode:
+            self._neo.set_mode(mode)
+            self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(mode))
+
+            remove_dialog = QtGui.QMessageBox(self)
+            remove_dialog.setWindowTitle(m.change_mode)
+            remove_dialog.setIcon(QtGui.QMessageBox.Information)
+            remove_dialog.setText(m.remove_device)
+            remove_dialog.setStandardButtons(QtGui.QMessageBox.NoButton)
+            self._neo.removed.connect(remove_dialog.accept)
+            remove_dialog.exec_()
+
+
+class ModeDialog(QtGui.QDialog):
+    def __init__(self, parent=None):
+        super(ModeDialog, self).__init__(parent)
+
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(QtGui.QLabel(m.change_mode_desc))
+
+        boxes = QtGui.QHBoxLayout()
+        self._otp = QtGui.QCheckBox(m.otp)
+        boxes.addWidget(self._otp)
+        self._ccid = QtGui.QCheckBox(m.ccid)
+        boxes.addWidget(self._ccid)
+        self._u2f = QtGui.QCheckBox(m.u2f)
+        boxes.addWidget(self._u2f)
+        self._touch_eject = QtGui.QCheckBox("touch eject flag")
+        boxes.addWidget(self._touch_eject)
+        layout.addLayout(boxes)
+
+        buttons = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok |
+                                         QtGui.QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+        self.setWindowTitle(m.change_mode)
+        self.setLayout(layout)
+
+    @property
+    def mode(self):
+        return MODE.mode_for_flags(
+            self._otp.isChecked(), self._ccid.isChecked(),
+            self._u2f.isChecked(), self._touch_eject.isChecked()
+        )
+
+    @mode.setter
+    def mode(self, value):
+        otp, ccid, u2f, touch_eject = MODE.flags_for_mode(value)
+        self._otp.setChecked(otp)
+        self._ccid.setChecked(ccid)
+        self._u2f.setChecked(u2f)
+        self._touch_eject.setChecked(touch_eject)
+
+    @property
+    def has_u2f(self):
+        return self._u2f.isVisible()
+
+    @has_u2f.setter
+    def has_u2f(self, value):
+        self._u2f.setVisible(value)
+
+    @staticmethod
+    def change_mode(neo, parent=None):
+        dialog = ModeDialog(parent)
+        dialog.mode = neo.mode
+        dialog.has_u2f = neo.version >= (3, 3, 0)
+        if dialog.exec_():
+            return dialog.mode
+        else:
+            return neo.mode
 
 
 class AppsTab(QtGui.QWidget):
