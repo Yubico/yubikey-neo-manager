@@ -3,19 +3,37 @@
 #exit on error
 set -e       
 
-#define file
 FILE="/usr/libexec/SmartCardServices/drivers/ifd-ccid.bundle/Contents/Info.plist"
+UNPATCHED="$FILE.unpatched"
 
 if [ -f $FILE ];
 then
-	if grep -q 'Yubikey' "$FILE"
-	then
-		echo "already patched"
-	else
-		/usr/bin/patch -d/ -p0 < libccid-yubikey.diff
-		pkill -9 pcscd
-	fi
+
+  if [ ! -f $UNPATCHED ];
+  then
+    #Undo old patch (if applied)
+    patch -d/ -p0 < libccid-yubikey-old.diff
+    #Make a backup of the original
+    cp $FILE $UNPATCHED
+  fi
+
+  if grep -q 'Yubikey NEO OTP+U2F+CCID' "$FILE"
+  then
+    echo "Patch already applied"
+  else
+    #Start with a clean file
+    cp "$UNPATCHED" "$FILE"
+    /usr/bin/patch -d/ -p0 < libccid-yubikey.diff
+
+    #Kill pcscd if running
+    pid=$(ps ax | grep pcscd | grep -v grep | awk '{ print $1 }')
+    if [ "$pid" != "" ];
+    then
+      echo "Killing pcscd..."
+      kill -9 $pid
+    fi
+  fi
 
 else
-   echo "File $FILE does not exist. Did you installed the CCID TOOLS?"
+   echo "File $FILE does not exist. Did you install the CCID TOOLS?"
 fi

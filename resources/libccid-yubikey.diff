@@ -1,10 +1,10 @@
---- /usr/libexec/SmartCardServices/drivers/ifd-ccid.bundle/Contents/Info.plist_not_edited	2014-03-13 12:45:29.000000000 +0100
+--- /usr/libexec/SmartCardServices/drivers/ifd-ccid.bundle/Contents/Info.plist 2014-03-13 12:45:29.000000000 +0100
 +++ /usr/libexec/SmartCardServices/drivers/ifd-ccid.bundle/Contents/Info.plist_updated	2014-09-03 11:37:13.000000000 +0200
 @@ -104,6 +104,10 @@
  
  	<key>ifdVendorID</key>
  	<array>
-+	        <string>0x1050</string>
++		<string>0x1050</string>
 +		<string>0x1050</string>
 +		<string>0x1050</string>
 +		<string>0x1050</string>
@@ -15,7 +15,7 @@
  
  	<key>ifdProductID</key>
  	<array>
-+	        <string>0x0111</string>
++		<string>0x0111</string>
 +		<string>0x0112</string>
 +		<string>0x0115</string>
 +		<string>0x0116</string>
@@ -26,7 +26,7 @@
  
  	<key>ifdFriendlyName</key>
  	<array>
-+	        <string>Yubikey NEO OTP+CCID</string>
++		<string>Yubikey NEO OTP+CCID</string>
 +		<string>Yubikey NEO CCID</string>
 +		<string>Yubikey NEO U2F+CCID</string>
 +		<string>Yubikey NEO OTP+U2F+CCID</string>
