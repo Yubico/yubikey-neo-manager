@@ -70,24 +70,52 @@ def open_first_device():
 
 def open_all_devices(existing=None):
     devices = []
-    has_composite = False
+    has_otp = False
+    has_u2f = False
+
+    # CCID devices
     try:
         from neoman.device_ccid import open_all_devices as open_ccid_all
         for dev in open_ccid_all(existing):
-            has_composite = has_composite or MODE.flags_for_mode(dev.mode)[0]
+            has_otp = has_otp or MODE.flags_for_mode(dev.mode)[0]
+            has_u2f = has_u2f or MODE.flags_for_mode(dev.mode)[2]
             devices.append(dev)
     except Exception:
         pass
-    if has_composite:  # If any of the devices have OTP mode enabled, we're done
-        return devices
-    try:
-        from neoman.device_hid import open_first_device as open_hid
-        # Close any existing HID devices as we are going to reopen them.
-        for dev in existing:
-            if not dev.has_ccid:
-                dev.close()
-        dev = open_hid()
-        devices.append(dev)
-    except Exception:
-        pass
+
+    # OTP devices
+    if not has_otp:
+        try:
+            from neoman.device_hid import (HIDDevice,
+                                           open_first_device as open_otp)
+            # Close any existing OTP devices as we are going to reopen them.
+            for dev in existing:
+                if isinstance(dev, HIDDevice):
+                    dev.close()
+            dev = open_otp()
+            devices.append(dev)
+            has_otp = True
+        except Exception:
+            pass
+
+    # U2F devices
+    if not has_u2f and not has_otp:
+        try:
+            from neoman.device_u2f import (U2FDevice,
+                                           open_all_devices as open_u2f_all)
+            # Close any existing U2F devices, as we are going to reopen them.
+            u2f_devs = [x for x in existing if isinstance(x, U2FDevice)]
+            alive = bool(u2f_devs)
+            for dev in u2f_devs:
+                alive = alive and dev.poll()
+            if alive:
+                devices.extend(u2f_devs)
+            else:
+                for dev in u2f_devs:
+                    dev.close()
+                devices.extend(open_u2f_all())
+        except Exception:
+            raise
+            pass
+
     return devices
