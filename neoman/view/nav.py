@@ -184,7 +184,8 @@ class NavModel(QtCore.QAbstractItemModel):
         if index.isValid():
             if role == QtCore.Qt.DisplayRole:
                 return str(index.internalPointer())
-            elif role == QtCore.Qt.DecorationRole:
+            elif QtCore.QCoreApplication.instance().devmode and \
+                    role == QtCore.Qt.DecorationRole:
                 return self._get_icon(index)
 
     def _get_icon(self, index, force_refresh=False):

@@ -100,6 +100,9 @@ class YubiKeyNeo(QtCore.QObject):
         finally:
             self._mutex.unlock()
 
+    def __delattr__(self, key):
+        del self[key]
+
     def get(self, key, default=None):
         return settings.value('%s/%s' % (self._group, key), default)
 

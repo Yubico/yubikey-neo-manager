@@ -81,7 +81,7 @@ class CCIDDevice(BaseDevice):
     def version(self):
         return self._version
 
-    def _unlock(self):
+    def unlock(self):
         self._locked = True
         if not self._key:
             raise ValueError("No transport key provided!")
@@ -100,6 +100,7 @@ class CCIDDevice(BaseDevice):
                                  byref(buf_size)))
         return resp.raw[0:buf_size.value]
 
+    #Deprecated, DO NOT USE!
     def _list_apps(self, refresh=False):
         if refresh or self._apps is None:
             if self.locked:
@@ -117,13 +118,11 @@ class CCIDDevice(BaseDevice):
             self.unlock()
         aid_bytes = aid.decode('hex')
         self.check(ykneomgr_applet_delete(self._dev, aid_bytes, len(aid_bytes)))
-        self.list_apps(True)
 
     def install_app(self, path):
         if self.locked:
             self.unlock()
         self.check(ykneomgr_applet_install(self._dev, create_string_buffer(path)))
-        self.list_apps(True)
 
     def close(self):
         if hasattr(self, '_dev'):

@@ -73,7 +73,6 @@ class U2FDevice(BaseDevice):
 
         check(u2fh_sendrecv(self._dev, U2FHID_YUBIKEY_DEVICE_CONFIG,
                             data, len(data), resp, byref(buf_size)))
-        print "Resp:", resp.raw[0:buf_size.value]
 
     def list_apps(self):
         return []
@@ -82,12 +81,10 @@ class U2FDevice(BaseDevice):
         if not hasattr(self, '_dev'):
             return False
 
-        print "PING"
         buf_size = c_size_t(1024)
         resp = create_string_buffer(buf_size.value)
         if u2fh_sendrecv(self._dev, U2FHID_PING, '0', 1, resp,
                          byref(buf_size)) == 0:
-            print "PONG!"
             return True
         self.close()
         return False

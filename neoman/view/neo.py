@@ -124,10 +124,9 @@ class SettingsTab(QtGui.QWidget):
         print m.manage_keys
 
     def change_mode(self):
-        current = self._neo.mode
         mode = ModeDialog.change_mode(self._neo, self)
 
-        if self._neo.mode != mode:
+        if mode is not None:
             self._neo.set_mode(mode)
             self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(mode))
 
@@ -208,7 +207,7 @@ class ModeDialog(QtGui.QDialog):
                 mode = 0x82
             return mode
         else:
-            return neo.mode
+            return None
 
 
 class AppsTab(QtGui.QWidget):
@@ -272,6 +271,7 @@ class AppsTab(QtGui.QWidget):
                 try:
                     self._neo.unlock()
                 except Exception as e:
+                    del self._neo.key
                     print e
                     pw, ok = QtGui.QInputDialog.getText(
                         self, m.key_required, m.key_required_desc)
