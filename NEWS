@@ -1,3 +1,11 @@
+* Version 0.2.0 (unreleased)
+
+  * Removed usage of card manager keys for normal use.
+
+  * Added support for U2F modes (if hardware supports it).
+
+  * Better support for composite devices.
+
 * Version 0.1.0 (released 2014-03-25)
 
   * Added the ability to view installed applet versions.
