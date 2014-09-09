@@ -30,7 +30,7 @@ then
     if [ "$pid" != "" ];
     then
       echo "Killing pcscd..."
-      kill -9 $pid
+      kill -9 $pid || true
     fi
   fi
 
