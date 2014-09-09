@@ -101,7 +101,6 @@ def open_all_devices():
     if status == 0:
         # We have devices!
         num_devs = u2fh_num_devices(devs)
-        print "Num devices: %d" % num_devs
         devices = []
         for index in range(num_devs):
             dev = POINTER(u2fh_dev)()
@@ -110,6 +109,5 @@ def open_all_devices():
         return devices
     else:
         # No devices!
-        print "discover: %d" % status
         u2fh_devs_done(devs)
     return []

@@ -105,15 +105,6 @@ def open_all_devices(existing=None):
                                            open_all_devices as open_u2f_all)
             devices.extend(open_u2f_all())
             return devices
-            # Close any existing U2F devices, as we are going to reopen them.
-            u2f_devs = [x for x in existing if isinstance(x, U2FDevice)]
-            alive = bool(u2f_devs)
-            for dev in u2f_devs:
-                alive = alive and dev.poll()
-            if alive:
-                devices.extend(u2f_devs)
-            else:
-                devices.extend(open_u2f_all())
         except Exception:
             pass
 
