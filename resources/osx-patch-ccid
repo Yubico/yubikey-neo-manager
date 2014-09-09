@@ -12,7 +12,7 @@ then
   if [ ! -f $UNPATCHED ];
   then
     #Undo old patch (if applied)
-    patch -N -R -d/ -p0 < libccid-yubikey-old.diff
+    patch -N -R -r- -d/ -p0 < libccid-yubikey-old.diff || true
     #Make a backup of the original
     cp $FILE $UNPATCHED
   fi
