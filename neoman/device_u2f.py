@@ -91,7 +91,6 @@ class U2FDevice(BaseDevice):
 
     def close(self):
         if hasattr(self, '_dev'):
-            u2fh_devs_done(self._dev)
             del self._dev
 
 
@@ -100,9 +99,15 @@ def open_all_devices():
     check(u2fh_devs_init(byref(devs)))
     status = u2fh_devs_discover(devs)
     if status == 0:
-        print "Devices found!"
         # We have devices!
-        return [U2FDevice(devs)]
+        num_devs = u2fh_num_devices(devs)
+        print "Num devices: %d" % num_devs
+        devices = []
+        for index in range(num_devs):
+            dev = POINTER(u2fh_dev)()
+            check(u2fh_get_device(devs, index, byref(dev)))
+            devices.append(U2FDevice(dev))
+        return devices
     else:
         # No devices!
         print "discover: %d" % status

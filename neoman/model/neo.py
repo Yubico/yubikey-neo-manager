@@ -218,16 +218,20 @@ class AvailableNeos(QtCore.QThread):
         discovered = open_all_devices(existing_devs)
 
         new_neos = []
+        dead_neos = neos[:]
+        print "discovered:", discovered, "dead:", dead_neos
         for dev in discovered:
-            for neo in neos:
+            for neo in dead_neos[:]:
                 if dev.serial == neo.serial:
+                    print "match:", neo.serial
                     neo._set_device(dev)
                     neo._mutex.unlock()
+                    dead_neos.remove(neo)
                     break
             else:
+                print "miss:", dev
                 new_neos.append(YubiKeyNeo(dev))
 
-        dead_neos = [x for x in neos if not x._dev]
         for neo in dead_neos:
             neos.remove(neo)
             neo.removed.emit()

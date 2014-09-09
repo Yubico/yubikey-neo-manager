@@ -43,6 +43,7 @@ def define(name, args, res=None):
 
 
 u2fh_devs = type('u2fh_devs', (Structure,), {})
+u2fh_dev = type('u2fh_dev', (Structure,), {})
 
 u2fh_global_init = define('u2fh_global_init', [u2fh_initflags], u2fh_rc)
 u2fh_global_done = define('u2fh_global_done', [])
@@ -53,7 +54,11 @@ u2fh_devs_discover = define('u2fh_devs_discover', [POINTER(u2fh_devs)],
                             u2fh_rc)
 u2fh_devs_done = define('u2fh_devs_done', [POINTER(u2fh_devs)])
 
-u2fh_sendrecv = define('u2fh_sendrecv', [POINTER(u2fh_devs), c_uint8, c_char_p,
+u2fh_num_devices = define('u2fh_num_devices', [POINTER(u2fh_devs)], c_int)
+u2fh_get_device = define('u2fh_get_device', [POINTER(u2fh_devs), c_int,
+                                             POINTER(POINTER(u2fh_dev))],
+                         u2fh_rc)
+u2fh_sendrecv = define('u2fh_sendrecv', [POINTER(u2fh_dev), c_uint8, c_char_p,
                                          c_uint16, c_char_p, POINTER(c_size_t)
                                          ], u2fh_rc)
 

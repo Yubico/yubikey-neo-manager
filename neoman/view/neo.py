@@ -75,9 +75,9 @@ class SettingsTab(QtGui.QWidget):
 
         name_row = QtGui.QHBoxLayout()
         name_row.addWidget(self._name)
-        button = QtGui.QPushButton(m.change_name)
-        button.clicked.connect(self.change_name)
-        name_row.addWidget(button)
+        self._name_btn = QtGui.QPushButton(m.change_name)
+        self._name_btn.clicked.connect(self.change_name)
+        name_row.addWidget(self._name_btn)
 
         details_row = QtGui.QHBoxLayout()
         details_row.addWidget(self._serial)
@@ -108,6 +108,7 @@ class SettingsTab(QtGui.QWidget):
         if not neo:
             return
 
+        self._name_btn.setDisabled(neo.serial is None)
         self._name.setText(m.name_1 % neo.name)
         self._serial.setText(m.serial_1 % neo.serial)
         self._firmware.setText(m.firmware_1 % '.'.join(map(str, neo.version)))
