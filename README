@@ -55,7 +55,15 @@ to manually create.
 
 Run "pyinstaller neoman.spec" from the main project directory. This will create
 an .app in the dist directory.
+
+Sign the code using codesign:
+
+  codesign -s 'Developer ID Application' dist/YubiKey\ NEO\ Manager.app --deep
+
 There is also a project file for use with Packages
 (http://s.sudre.free.fr/Packaging.html) located at resources/neoman.pkgproj.
-This can be used to create an installer for distribution, though you may want
-to sign the build prior to this using signtool.
+This can be used to create an installer for distribution, which you should sign
+prior to distribution:
+
+  productsign --sign 'Developer ID Installer' dist/YubiKey\ NEO\ Manager.pkg dist/yubikey-neo-manager-mac.pkg
+
