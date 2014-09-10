@@ -25,7 +25,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from neoman.u2fh import *
-from ctypes import POINTER, byref, c_size_t, create_string_buffer
+from ctypes import POINTER, byref, c_int, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
 from neoman.exc import YkNeoMgrError
 from neoman.model.modes import MODE
@@ -49,8 +49,9 @@ def check(status):
 
 class U2FDevice(BaseDevice):
 
-    def __init__(self, dev):
-        self._dev = dev
+    def __init__(self, devs, index):
+        self._devs = devs
+        self._index = index
         self._serial = None
         self._version = (3, 3, 0)
 
@@ -66,46 +67,45 @@ class U2FDevice(BaseDevice):
     def version(self):
         return self._version
 
-    def set_mode(self, mode):
-        data = ('%02x0f0000' % mode).decode('hex')
+    def _sendrecv(self, cmd, data):
         buf_size = c_size_t(1024)
         resp = create_string_buffer(buf_size.value)
 
-        check(u2fh_sendrecv(self._dev, U2FHID_YUBIKEY_DEVICE_CONFIG,
-                            data, len(data), resp, byref(buf_size)))
+        check(u2fh_sendrecv(self._devs, self._index, cmd, data, len(data),
+                            resp, byref(buf_size)))
+        return resp.raw[0:buf_size.value]
+
+    def set_mode(self, mode):
+        data = ('%02x0f0000' % mode).decode('hex')
+        self._sendrecv(U2FHID_YUBIKEY_DEVICE_CONFIG, data)
 
     def list_apps(self):
         return []
 
     def poll(self):
-        if not hasattr(self, '_dev'):
-            return False
-
-        buf_size = c_size_t(1024)
-        resp = create_string_buffer(buf_size.value)
-        if u2fh_sendrecv(self._dev, U2FHID_PING, '0', 1, resp,
-                         byref(buf_size)) == 0:
-            return True
-        self.close()
-        return False
+        return hasattr(self, '_index')
 
     def close(self):
-        if hasattr(self, '_dev'):
-            del self._dev
+        if hasattr(self, '_index'):
+            del self._index
+            del self._devs
 
 
 def open_all_devices():
     devs = POINTER(u2fh_devs)()
     check(u2fh_devs_init(byref(devs)))
-    status = u2fh_devs_discover(devs)
+    max_index = c_int()
+    status = u2fh_devs_discover(devs, byref(max_index))
     if status == 0:
         # We have devices!
-        num_devs = u2fh_num_devices(devs)
         devices = []
-        for index in range(num_devs):
-            dev = POINTER(u2fh_dev)()
-            check(u2fh_get_device(devs, index, byref(dev)))
-            devices.append(U2FDevice(dev))
+        buf_size = c_size_t(1024)
+        resp = create_string_buffer(buf_size.value)
+        for index in range(max_index.value + 1):
+            if u2fh_get_device_description(
+                devs, index, resp, byref(buf_size)) == 0:
+                if resp.value.startswith('Yubikey NEO'):
+                    devices.append(U2FDevice(devs, index))
         return devices
     else:
         # No devices!

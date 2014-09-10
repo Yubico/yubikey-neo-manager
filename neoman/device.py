@@ -101,11 +101,11 @@ def open_all_devices(existing=None):
     # U2F devices
     if not has_u2f and not has_otp:
         try:
-            from neoman.device_u2f import (U2FDevice,
-                                           open_all_devices as open_u2f_all)
+            from neoman.device_u2f import open_all_devices as open_u2f_all
             devices.extend(open_u2f_all())
             return devices
         except Exception:
+            raise
             pass
 
     return devices
