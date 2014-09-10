@@ -54,20 +54,6 @@ class BaseDevice(object):
         return "NEO[mode=%x, serial=%s]" % (self.mode, self.serial)
 
 
-def open_first_device():
-    for _ in range(3):  # Retry a few times as this sometimes fails.
-        try:
-            from neoman.device_ccid import open_first_device as open_ccid
-            return open_ccid()
-        except Exception:
-            pass
-    try:
-        from neoman.device_hid import open_first_device as open_hid
-        return open_hid()
-    except:
-        return None
-
-
 def open_all_devices(existing=None):
     devices = []
     has_otp = False
@@ -86,11 +72,11 @@ def open_all_devices(existing=None):
     # OTP devices
     if not has_otp:
         try:
-            from neoman.device_hid import (HIDDevice,
+            from neoman.device_otp import (OTPDevice,
                                            open_first_device as open_otp)
             # Close any existing OTP devices as we are going to reopen them.
             for dev in existing:
-                if isinstance(dev, HIDDevice):
+                if isinstance(dev, OTPDevice):
                     dev.close()
             dev = open_otp()
             devices.append(dev)

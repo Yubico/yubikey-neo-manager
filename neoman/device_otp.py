@@ -33,7 +33,7 @@ if not yk_init():
     raise Exception("Unable to initialize ykpers")
 
 
-class HIDDevice(BaseDevice):
+class OTPDevice(BaseDevice):
 
     def __init__(self, dev):
         self._dev = dev
@@ -93,8 +93,8 @@ def open_first_device():
     if not dev:
         raise Exception("Unable to open YubiKey NEO!")
 
-    hid_device = HIDDevice(dev)
-    if hid_device.version[0] < 3:
+    otp_device = OTPDevice(dev)
+    if otp_device.version[0] < 3:
         raise Exception("Device is not a YubiKey NEO!")
 
-    return hid_device
+    return otp_device
