@@ -32,8 +32,17 @@ from neoman.model.modes import MODE
 import os
 
 
+def check(status):
+    if status != 0:
+        raise YkNeoMgrError(status)
+
+
 if u2fh_global_init(1 if os.environ.has_key('NEOMAN_DEBUG') else 0) != 0:
     raise Exception("Unable to initialize ykneomgr")
+
+
+devs = POINTER(u2fh_devs)()
+check(u2fh_devs_init(byref(devs)))
 
 
 U2F_VENDOR_FIRST = 0x40
@@ -42,18 +51,17 @@ U2FHID_PING = TYPE_INIT | 0x01
 U2FHID_YUBIKEY_DEVICE_CONFIG = TYPE_INIT | U2F_VENDOR_FIRST
 
 
-def check(status):
-    if status != 0:
-        raise YkNeoMgrError(status)
-
-
 class U2FDevice(BaseDevice):
 
     def __init__(self, devs, index):
         self._devs = devs
         self._index = index
         self._serial = None
-        self._version = (3, 3, 0)
+        self._version = (0, 0, 0)
+
+    @property
+    def u2f_capable(self):
+        return True
 
     @property
     def mode(self):
@@ -92,16 +100,14 @@ class U2FDevice(BaseDevice):
 
 
 def open_all_devices():
-    devs = POINTER(u2fh_devs)()
-    check(u2fh_devs_init(byref(devs)))
     max_index = c_int()
     status = u2fh_devs_discover(devs, byref(max_index))
     if status == 0:
         # We have devices!
         devices = []
-        buf_size = c_size_t(1024)
-        resp = create_string_buffer(buf_size.value)
+        resp = create_string_buffer(1024)
         for index in range(max_index.value + 1):
+            buf_size = c_size_t(1024)
             if u2fh_get_device_description(
                 devs, index, resp, byref(buf_size)) == 0:
                 if resp.value.startswith('Yubikey NEO'):
@@ -109,5 +115,6 @@ def open_all_devices():
         return devices
     else:
         # No devices!
-        u2fh_devs_done(devs)
+        #u2fh_devs_done(devs)
+        pass
     return []

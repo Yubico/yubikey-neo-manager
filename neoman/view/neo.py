@@ -196,14 +196,14 @@ class ModeDialog(QtGui.QDialog):
     def has_u2f(self, value):
         self._u2f.setVisible(value)
 
-    @staticmethod
-    def change_mode(neo, parent=None):
-        dialog = ModeDialog(parent)
+    @classmethod
+    def change_mode(cls, neo, parent=None):
+        dialog = cls(parent)
         dialog.mode = neo.mode
-        legacy = neo.version < (3, 3, 0)
-        dialog.has_u2f = not legacy
+        dialog.has_u2f = neo.u2f_capable
         if dialog.exec_():
             mode = dialog.mode
+            legacy = neo.version < (3, 3, 0)
             if legacy and mode == 2:  # Always set 82 instead of 2
                 mode = 0x82
             return mode

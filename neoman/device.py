@@ -39,6 +39,10 @@ class BaseDevice(object):
         return MODE.flags_for_mode(self.mode)[1]
 
     @property
+    def u2f_capable(self):
+        return self.version >= (3, 3, 0)
+
+    @property
     def serial(self):
         raise NotImplementedError()
 
