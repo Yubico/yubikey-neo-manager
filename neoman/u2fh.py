@@ -24,8 +24,8 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-from ctypes import (Structure, POINTER,
-                    c_int, c_uint, c_uint8, c_uint16, c_char_p, c_size_t)
+from ctypes import (Structure, POINTER, c_int, c_uint, c_uint8, c_uint16,
+                    c_char_p, c_size_t, c_ubyte)
 from neoman.libloader import load_library
 
 _lib = load_library('u2f-host', '0')
@@ -50,13 +50,14 @@ u2fh_global_done = define('u2fh_global_done', [])
 u2fh_devs_init = define('u2fh_devs_init', [POINTER(POINTER(u2fh_devs))],
                         u2fh_rc)
 u2fh_devs_discover = define('u2fh_devs_discover', [POINTER(u2fh_devs),
-                                                   POINTER(c_int)], u2fh_rc)
+                                                   POINTER(c_uint)], u2fh_rc)
 u2fh_devs_done = define('u2fh_devs_done', [POINTER(u2fh_devs)])
 
-u2fh_is_alive = define('u2fh_is_alive', [POINTER(u2fh_devs), c_int], c_int)
-u2fh_sendrecv = define('u2fh_sendrecv', [POINTER(u2fh_devs), c_int, c_uint8,
-                                         c_char_p, c_uint16, c_char_p,
-                                         POINTER(c_size_t)], u2fh_rc)
+u2fh_is_alive = define('u2fh_is_alive', [POINTER(u2fh_devs), c_uint], c_int)
+u2fh_sendrecv = define('u2fh_sendrecv', [POINTER(u2fh_devs), c_uint, c_uint8,
+                                         c_char_p, c_uint16,
+                                         c_char_p, POINTER(c_size_t)],
+                       u2fh_rc)
 u2fh_get_device_description = define('u2fh_get_device_description',
                                      [POINTER(u2fh_devs), c_int, c_char_p,
                                       POINTER(c_size_t)], u2fh_rc)

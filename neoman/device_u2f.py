@@ -25,7 +25,8 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from neoman.u2fh import *
-from ctypes import POINTER, byref, c_int, c_size_t, create_string_buffer
+from ctypes import (POINTER, byref, c_uint, c_size_t, c_ubyte,
+                    create_string_buffer)
 from neoman.device import BaseDevice
 from neoman.exc import YkNeoMgrError
 from neoman.model.modes import MODE
@@ -77,6 +78,7 @@ class U2FDevice(BaseDevice):
 
     def _sendrecv(self, cmd, data):
         buf_size = c_size_t(1024)
+        #resp = (c_ubyte * buf_size.value)()
         resp = create_string_buffer(buf_size.value)
 
         check(u2fh_sendrecv(self._devs, self._index, cmd, data, len(data),
@@ -100,7 +102,7 @@ class U2FDevice(BaseDevice):
 
 
 def open_all_devices():
-    max_index = c_int()
+    max_index = c_uint()
     status = u2fh_devs_discover(devs, byref(max_index))
     if status == 0:
         # We have devices!
