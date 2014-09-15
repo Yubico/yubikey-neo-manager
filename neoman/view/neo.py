@@ -26,13 +26,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 import os
 from PySide import QtGui, QtCore
-from collections import OrderedDict
 from functools import partial
 from neoman import messages as m
 from neoman.storage import settings
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import Applet
 from neoman.model.modes import MODE
+
+
+U2F_URL = "http://www.yubico.com/products/yubikey-hardware/yubikey-neo/yubikey-neo-u2f/"
 
 
 class NeoPage(QtGui.QTabWidget):
@@ -70,6 +72,8 @@ class SettingsTab(QtGui.QWidget):
         self._name = QtGui.QLabel()
         self._serial = QtGui.QLabel()
         self._firmware = QtGui.QLabel()
+        self._u2f = QtGui.QLabel()
+        self._u2f.setOpenExternalLinks(True)
 
         layout = QtGui.QVBoxLayout()
 
@@ -83,8 +87,13 @@ class SettingsTab(QtGui.QWidget):
         details_row.addWidget(self._serial)
         details_row.addWidget(self._firmware)
 
+        u2f_row = QtGui.QHBoxLayout()
+        u2f_row.addWidget(QtGui.QLabel())
+        u2f_row.addWidget(self._u2f)
+
         layout.addLayout(name_row)
         layout.addLayout(details_row)
+        layout.addLayout(u2f_row)
 
         button = QtGui.QPushButton(m.manage_keys)
         button.clicked.connect(self.manage_keys)
@@ -112,6 +121,10 @@ class SettingsTab(QtGui.QWidget):
         self._name.setText(m.name_1 % neo.name)
         self._serial.setText(m.serial_1 % neo.serial)
         self._firmware.setText(m.firmware_1 % '.'.join(map(str, neo.version)))
+        if neo.u2f_capable:
+            self._u2f.setText(m.u2f_supported)
+        else:
+            self._u2f.setText(m.u2f_not_supported_1 % U2F_URL)
         self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(neo.mode))
 
     def change_name(self):
