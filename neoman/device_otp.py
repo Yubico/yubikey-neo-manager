@@ -33,6 +33,9 @@ if not yk_init():
     raise Exception("Unable to initialize ykpers")
 
 
+libversion = ykpers_check_version(None)
+
+
 class OTPDevice(BaseDevice):
 
     def __init__(self, dev):

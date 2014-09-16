@@ -35,6 +35,9 @@ if ykneomgr_global_init(1 if os.environ.has_key('NEOMAN_DEBUG') else 0) != 0:
     raise Exception("Unable to initialize ykneomgr")
 
 
+libversion = ykneomgr_check_version(None)
+
+
 class CCIDDevice(BaseDevice):
 
     def __init__(self, dev, dev_str=None):

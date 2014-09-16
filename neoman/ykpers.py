@@ -24,7 +24,8 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-from ctypes import Structure, POINTER, c_int, c_uint8, c_uint, c_ubyte
+from ctypes import (Structure, POINTER, c_int, c_uint8, c_uint, c_ubyte,
+                    c_char_p)
 from neoman.libloader import load_library
 
 _lib = load_library('ykpers-1', '1')
@@ -45,6 +46,8 @@ YK_NAV = type('YK_NAV', (Structure,), {})
 YK_FRAME = type('YK_FRAME', (Structure,), {})
 YK_NDEF = type('YK_NDEF', (Structure,), {})
 YK_DEVICE_CONFIG = type('YK_DEVICE_CONFIG', (Structure,), {})
+
+ykpers_check_version = define('ykpers_check_version', [c_char_p], c_char_p)
 
 yk_init = define('yk_init', [], c_int)
 yk_release = define('yk_release', [], c_int)

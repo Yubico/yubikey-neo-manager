@@ -32,12 +32,13 @@ from neoman.storage import settings
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import Applet
 from neoman.model.modes import MODE
+from neoman.view.tabs import TabWidgetWithAbout
 
 
 U2F_URL = "http://www.yubico.com/products/yubikey-hardware/yubikey-neo/yubikey-neo-u2f/"
 
 
-class NeoPage(QtGui.QTabWidget):
+class NeoPage(TabWidgetWithAbout):
     _neo = QtCore.Signal(YubiKeyNeo)
     applet = QtCore.Signal(Applet)
 

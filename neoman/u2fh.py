@@ -42,6 +42,8 @@ def define(name, args, res=None):
     return fn
 
 
+u2fh_check_version = define('u2fh_check_version', [c_char_p], c_char_p)
+
 u2fh_devs = type('u2fh_devs', (Structure,), {})
 
 u2fh_global_init = define('u2fh_global_init', [u2fh_initflags], u2fh_rc)

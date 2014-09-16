@@ -42,6 +42,9 @@ if u2fh_global_init(1 if os.environ.has_key('NEOMAN_DEBUG') else 0) != 0:
     raise Exception("Unable to initialize ykneomgr")
 
 
+libversion = u2fh_check_version(None)
+
+
 devs = POINTER(u2fh_devs)()
 check(u2fh_devs_init(byref(devs)))
 

@@ -41,6 +41,7 @@ def define(name, args, res=None):
     fn.restype = res
     return fn
 
+ykneomgr_check_version = define('ykneomgr_check_version', [c_char_p], c_char_p)
 
 ykneomgr_dev = type('ykneomgr_dev', (Structure,), {})
 

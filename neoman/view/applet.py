@@ -28,11 +28,12 @@ from PySide import QtGui, QtCore
 from neoman.model.applet import Applet
 from neoman.model.neo import YubiKeyNeo
 from neoman.storage import capstore
+from neoman.view.tabs import TabWidgetWithAbout
 from neoman import messages as m
 from functools import partial
 
 
-class AppletPage(QtGui.QTabWidget):
+class AppletPage(TabWidgetWithAbout):
     applet_status = QtCore.Signal(Applet)
     _applet = QtCore.Signal(Applet)
     _neo = QtCore.Signal(YubiKeyNeo)

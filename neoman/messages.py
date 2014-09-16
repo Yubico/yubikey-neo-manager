@@ -74,6 +74,7 @@ u2f_supported = "supported"
 u2f_not_supported_1 = "<a href=\"%s\">not supported</a>"
 aid_1 = "AID: %s"
 status_1 = "Status: %s"
+version_1 = "Version: %s"
 latest_version_1 = "Latest version: %s"
 download = "Download"
 downloading_file = "Downloading file..."
@@ -102,6 +103,9 @@ apps = "Available apps"
 installed_apps = "Installed apps"
 unknown = "Unknown"
 unknown_applet = "Unknown applet"
+about_1 = "About: %s"
+about_text_2 = ("<h2>%s</h2>%s<h3>Libraries</h3>%s"
+              % (app_name, version_1, '%s'))
 
 
 def _translate(qt):
