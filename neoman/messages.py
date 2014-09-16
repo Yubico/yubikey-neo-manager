@@ -105,8 +105,9 @@ installed_apps = "Installed apps"
 unknown = "Unknown"
 unknown_applet = "Unknown applet"
 about_1 = "About: %s"
-libraries = "Libraries"
+libraries = "Library versions"
 about_link_1 = "For help and discussion, see our <a href=\"%s\">forum</a>."
+copyright = "Copyright &copy; 2014 Yubico"
 
 
 def _translate(qt):

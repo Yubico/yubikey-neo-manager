@@ -36,12 +36,14 @@ import os
 FORUM_URL = "http://yubi.co/forum"
 ABOUT_TEXT = """
 <h2>%s</h2>
+%s<br>
 %s
-<h3>%s</h3>
+<h4>%s</h4>
 %s
-<br>
+<br><br>
 %s
-""" % (m.app_name, m.version_1, m.libraries, '%s', m.about_link_1 % FORUM_URL)
+""" % (m.app_name, m.copyright, m.version_1, m.libraries, '%s',
+       m.about_link_1 % FORUM_URL)
 
 
 class TabWidgetWithAbout(QtGui.QTabWidget):
