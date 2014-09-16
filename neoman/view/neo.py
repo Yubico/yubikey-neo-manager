@@ -122,9 +122,9 @@ class SettingsTab(QtGui.QWidget):
         self._serial.setText(m.serial_1 % neo.serial)
         self._firmware.setText(m.firmware_1 % '.'.join(map(str, neo.version)))
         if neo.u2f_capable:
-            self._u2f.setText(m.u2f_supported)
+            self._u2f.setText(m.u2f_1 % m.u2f_supported)
         else:
-            self._u2f.setText(m.u2f_not_supported_1 % U2F_URL)
+            self._u2f.setText(m.u2f_1 % m.u2f_not_supported_1 % U2F_URL)
         self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(neo.mode))
 
     def change_name(self):
