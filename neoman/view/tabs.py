@@ -25,11 +25,12 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from PySide import QtGui
+from PySide import QtGui, QtCore
 from neoman import __version__ as version, messages as m
 from neoman.device_ccid import libversion as ykneomgr_version
 from neoman.device_otp import libversion as ykpers_version
 from neoman.device_u2f import libversion as u2fh_version
+import os
 
 
 FORUM_URL = "http://yubi.co/forum"
@@ -48,7 +49,10 @@ class TabWidgetWithAbout(QtGui.QTabWidget):
         super(TabWidgetWithAbout, self).__init__()
 
         btn = QtGui.QToolButton()
-        btn.setIcon(QtGui.QIcon.fromTheme('help-about'))
+
+        basedir = QtCore.QCoreApplication.instance().basedir
+        icon = QtGui.QIcon(os.path.join(basedir, 'icon-about.png'))
+        btn.setIcon(icon)
         btn.clicked.connect(self._about)
 
         self.setCornerWidget(btn)

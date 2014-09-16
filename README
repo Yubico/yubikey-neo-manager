@@ -1,6 +1,8 @@
 = YubiKey NEO Manager
 Tool for managing your YubiKey NEO configuration.
 
+Entypo pictograms by Daniel Bruce - www.entypo.com
+
 == Dependencies
 YubiKey NEO Manager requires PySide, libykneomgr, libykpers-1 and libu2f-host.
 
