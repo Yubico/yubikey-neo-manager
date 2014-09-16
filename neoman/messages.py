@@ -104,8 +104,8 @@ installed_apps = "Installed apps"
 unknown = "Unknown"
 unknown_applet = "Unknown applet"
 about_1 = "About: %s"
-about_text_2 = ("<h2>%s</h2>%s<h3>Libraries</h3>%s"
-              % (app_name, version_1, '%s'))
+libraries = "Libraries"
+about_link_1 = "For help and discussion, see our <a href=\"%s\">forum</a>."
 
 
 def _translate(qt):
