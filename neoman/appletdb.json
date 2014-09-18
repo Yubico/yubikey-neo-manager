@@ -32,7 +32,7 @@
     }, {
       "name": "Yubico U2F",
       "description": "FIDO U2F for YubiKey NEO.",
-      "aid": "a0000005272201",
+      "aid": "a0000005271002",
       "version": "0.1.0",
       "cap_url": "",
       "cap_sha1": "",
@@ -49,9 +49,9 @@
       "name": "OpenPGP",
       "description": "OpenPGP applet for use with the GNU Privacy Guard.",
       "aid": "d27600012401",
-      "version": "1.0.6",
-      "cap_url": "https://developers.yubico.com/ykneo-openpgp/releases/ykneo-openpgp-1.0.6.cap",
-      "cap_sha1": "34370845d33f250acf17ab680325652549d60e5f",
+      "version": "1.0.7",
+      "cap_url": "https://developers.yubico.com/ykneo-openpgp/releases/ykneo-openpgp-1.0.7.cap",
+      "cap_sha1": "ff6c18e6bda3818fa301ec257fbbe898c1ab13e4",
       "js_version": "Neo.send_ok('00f10000').slice(0,3).join('.')"
     }, {
       "name": "Yubico PIV",
