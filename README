@@ -1,31 +1,35 @@
-= YubiKey NEO Manager
+== YubiKey NEO Manager
 Tool for managing your YubiKey NEO configuration.
 
 Entypo pictograms by Daniel Bruce - www.entypo.com
 
-== Dependencies
+=== Dependencies
 YubiKey NEO Manager requires PySide, libykneomgr, libykpers-1 and libu2f-host.
 
-== Running tests
+=== Running tests
 Tests can be run using the "nosetests" command, from the python-nose package.
 Anternatively "python setup.py test" can be used, but this will cause PySide
 to be compiled from source, requiring the python-dev package.
 
-== Building binaries
+=== Building binaries
 Binaries for Windows and OSX are built using PyInstaller.
-
-=== Windows
-For Windows you will need python, PySide, PyCrypto, PyInstaller and Pywin32 installed
-(32 or 64-bit versions depending on the architecture of the binary your are
-building).
 
 Clone the git repository and checkout the desired release tag (or branch):
 
   git clone https://github.com/Yubico/yubikey-neo-manager.git
   cd yubikey-neo-manager
 
-Copy any required DLL files into a "lib" subdirectory, which you will need
-to manually create.
+When building binaries for Windows or OS X, you will need to include
+.dll/.dylib files from the libykneomgr, libykpers-1, and libu2f-host projects.
+Download the correct binary release for your architecture for each of the 
+aforementioned projects from http://developers.yubico.com/ and extract the 
+.dll/.dylib files for each of them together with the included dependencies to a
+subdirectory of the repository named "lib", which you have to manually create.
+
+==== Windows
+For Windows you will need python, PySide, PyCrypto, PyInstaller and Pywin32 installed
+(32 or 64-bit versions depending on the architecture of the binary your are
+building).
 
 To sign the executable, copy the pfx file to neoman.pfx and place it in the
 root of the project folder. You will need signtool.exe (from the Windows
@@ -35,7 +39,7 @@ Run "pyinstaller.exe neoman.spec" from the main project folder.
 
 With NSIS installed, a Windows installer will be built as well.
 
-=== OSX
+==== OSX
 For OSX you need python, pyside, pycrypto, and pyinstaller installed. One way 
 to install these dependencies is by using Homebrew:
 
@@ -46,14 +50,6 @@ to install these dependencies is by using Homebrew:
 
 NOTE: Homebrew will build backwards-incompatible binaries, so the resulting
 build will not run on an older version of OSX.
-
-Clone the git repository and checkout the desired release tag (or branch):
-
-  git clone https://github.com/Yubico/yubikey-neo-manager.git
-  cd yubikey-neo-manager
-
-Copy any required dylib files into a "lib" subdirectory, which you will need
-to manually create.
 
 Run "pyinstaller neoman.spec" from the main project directory. This will create
 an .app in the dist directory.
