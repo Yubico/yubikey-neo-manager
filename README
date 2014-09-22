@@ -4,7 +4,8 @@ Tool for managing your YubiKey NEO configuration.
 Entypo pictograms by Daniel Bruce - www.entypo.com
 
 === Dependencies
-YubiKey NEO Manager requires PySide, libykneomgr, libykpers-1 and libu2f-host.
+YubiKey NEO Manager requires PySide, libykneomgr, yubikey-personalization and
+libu2f-host.
 
 === Running tests
 Tests can be run using the "nosetests" command, from the python-nose package.
@@ -20,7 +21,8 @@ Clone the git repository and checkout the desired release tag (or branch):
   cd yubikey-neo-manager
 
 When building binaries for Windows or OS X, you will need to include
-.dll/.dylib files from the libykneomgr, libykpers-1, and libu2f-host projects.
+.dll/.dylib files from the libykneomgr, yubikey-personalization, and
+libu2f-host projects.
 Download the correct binary release for your architecture for each of the 
 aforementioned projects from http://developers.yubico.com/ and extract the 
 .dll/.dylib files for each of them together with the included dependencies to a
