@@ -121,6 +121,7 @@ class SettingsTab(QtGui.QWidget):
         self._name_btn.setDisabled(neo.serial is None)
         self._name.setText(m.name_1 % neo.name)
         self._serial.setText(m.serial_1 % neo.serial)
+        self._firmware.setVisible(neo.version != (0, 0, 0))
         self._firmware.setText(m.firmware_1 % '.'.join(map(str, neo.version)))
         if neo.u2f_capable:
             self._u2f.setText(m.u2f_1 % m.u2f_supported)
