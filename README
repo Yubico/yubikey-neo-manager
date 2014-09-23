@@ -1,5 +1,6 @@
 == YubiKey NEO Manager
-Tool for managing your YubiKey NEO configuration.
+Tool for managing your YubiKey NEO configuration. Connecting multiple keys at
+once is supported, but only if CCID mode is active for all of them.
 
 Entypo pictograms by Daniel Bruce - www.entypo.com
 
