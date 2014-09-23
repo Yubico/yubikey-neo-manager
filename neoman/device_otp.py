@@ -25,7 +25,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from neoman.ykpers import *
-from ctypes import byref, c_uint
+from ctypes import byref, c_uint, c_int
 from neoman.device import BaseDevice
 from neoman.model.modes import MODE
 
@@ -47,6 +47,14 @@ class OTPDevice(BaseDevice):
         else:
             self._serial = None
 
+        vid = c_int()
+        pid = c_int()
+        try:
+            yk_get_key_vid_pid(dev, byref(vid), byref(pid))
+            self._mode = 0x0f & pid.value
+        except:
+            self._mode = MODE.mode_for_flags(True, False, False)
+
         status = ykds_alloc()
         try:
             if yk_get_status(dev, status):
@@ -62,7 +70,7 @@ class OTPDevice(BaseDevice):
 
     @property
     def mode(self):
-        return MODE.mode_for_flags(True, False, False)
+        return self._mode
 
     @property
     def serial(self):

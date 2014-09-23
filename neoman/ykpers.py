@@ -32,9 +32,16 @@ _lib = load_library('ykpers-1', '1')
 
 
 def define(name, args, res):
-    fn = getattr(_lib, name)
-    fn.argtypes = args
-    fn.restype = res
+    try:
+        fn = getattr(_lib, name)
+        fn.argtypes = args
+        fn.restype = res
+    except AttributeError:
+        print "Undefined symbol: %s" % name
+
+        def error(*args, **kwargs):
+            raise Exception("Undefined symbol: %s" % name)
+        fn = error
     return fn
 
 
@@ -75,5 +82,9 @@ ykp_free_device_config = define('ykp_free_device_config',
                                 [POINTER(YK_DEVICE_CONFIG)], c_int)
 ykp_set_device_mode = define('ykp_set_device_mode', [POINTER(YK_DEVICE_CONFIG),
                                                      c_ubyte], c_int)
+
+yk_get_key_vid_pid = define('yk_get_key_vid_pid', [POINTER(YK_KEY),
+                                                     POINTER(c_int),
+                                                     POINTER(c_int)], c_int)
 
 __all__ = [x for x in globals().keys() if x.lower().startswith('yk')]
