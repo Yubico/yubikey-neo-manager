@@ -88,13 +88,13 @@ class SettingsTab(QtGui.QWidget):
         details_row.addWidget(self._serial)
         details_row.addWidget(self._firmware)
 
-        u2f_row = QtGui.QHBoxLayout()
-        u2f_row.addWidget(QtGui.QLabel())
-        u2f_row.addWidget(self._u2f)
+        self._u2f_row = QtGui.QHBoxLayout()
+        self._u2f_row.addWidget(QtGui.QLabel())
+        self._u2f_row.addWidget(self._u2f)
 
         layout.addLayout(name_row)
         layout.addLayout(details_row)
-        layout.addLayout(u2f_row)
+        layout.addLayout(self._u2f_row)
 
         button = QtGui.QPushButton(m.manage_keys)
         button.clicked.connect(self.manage_keys)
@@ -121,7 +121,11 @@ class SettingsTab(QtGui.QWidget):
         self._name_btn.setDisabled(neo.serial is None)
         self._name.setText(m.name_1 % neo.name)
         self._serial.setText(m.serial_1 % neo.serial)
-        self._firmware.setVisible(neo.version != (0, 0, 0))
+        show_firmware = neo.version != (0, 0, 0)
+        self._u2f_row.setDirection(
+            QtGui.QBoxLayout.LeftToRight if show_firmware else
+            QtGui.QBoxLayout.RightToLeft)
+        self._firmware.setVisible(show_firmware)
         self._firmware.setText(m.firmware_1 % '.'.join(map(str, neo.version)))
         if neo.u2f_capable:
             self._u2f.setText(m.u2f_1 % m.u2f_supported)
