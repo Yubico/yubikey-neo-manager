@@ -1,3 +1,7 @@
+* Version 0.2.1 (unreleased)
+
+  * Correctly display mode for OTP+U2F devices.
+
 * Version 0.2.0 (released 2014-09-16)
 
   * Removed usage of card manager keys for normal use.
