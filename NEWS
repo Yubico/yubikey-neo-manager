@@ -1,3 +1,9 @@
+* Version 0.2.2 (released 2014-09-26)
+
+  * Better handle multiple devices with no serial set.
+
+  * Don't display OTP/U2F note for devices without U2F support.
+
 * Version 0.2.1 (released 2014-09-26)
 
   * Correctly display mode for OTP+U2F devices.
