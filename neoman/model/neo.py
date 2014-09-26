@@ -222,7 +222,7 @@ class AvailableNeos(QtCore.QThread):
         dead_neos = neos[:]
         for dev in discovered:
             for neo in dead_neos[:]:
-                if dev.serial == neo.serial:
+                if dev.serial == neo.serial and dev.version == neo.version:
                     neo._set_device(dev)
                     neo._mutex.unlock()
                     dead_neos.remove(neo)
