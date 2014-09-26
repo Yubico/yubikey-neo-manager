@@ -105,4 +105,6 @@ class NeomanApplication(QtGui.QApplication):
 
 def main():
     app = NeomanApplication(sys.argv)
-    sys.exit(app.exec_())
+    status = app.exec_()
+    app.deleteLater()
+    sys.exit(status)

@@ -2,6 +2,10 @@
 
   * Correctly display mode for OTP+U2F devices.
 
+  * Don't display firmware in modes where firmware cannot be read.
+
+  * Disable OTP+U2F combinations as they aren't currently usable.
+
 * Version 0.2.0 (released 2014-09-16)
 
   * Removed usage of card manager keys for normal use.

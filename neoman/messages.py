@@ -32,6 +32,9 @@ Note: String names must not start with underscore (_).
 
 """
 
+otp_u2f_disabled = "OTP and U2F modes cannot currently both be active."
+
+
 organization = "Yubico"
 domain = "yubico.com"
 app_name = "YubiKey NEO Manager"
