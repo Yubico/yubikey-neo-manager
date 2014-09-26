@@ -187,7 +187,7 @@ class SettingsTab(QtGui.QWidget):
 
 
 class ModeDialog(QtGui.QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, neo, parent=None):
         super(ModeDialog, self).__init__(parent)
 
         layout = QtGui.QVBoxLayout()
@@ -207,20 +207,21 @@ class ModeDialog(QtGui.QDialog):
 
         # Disable OTP in combination with U2F
         # Remove the rest of this method to re-enable.
-        note = QtGui.QLabel(m.note_1 % m.otp_u2f_disabled)
+        if neo.u2f_capable:
+            note = QtGui.QLabel(m.note_1 % m.otp_u2f_disabled)
 
-        def otp_clicked():
-            if self._otp.isChecked() and self._u2f.isChecked():
-                note.setStyleSheet("QLabel { color: red; }")
-                self._u2f.setChecked(False)
-        self._otp.clicked.connect(otp_clicked)
+            def otp_clicked():
+                if self._otp.isChecked() and self._u2f.isChecked():
+                    note.setStyleSheet("QLabel { color: red; }")
+                    self._u2f.setChecked(False)
+            self._otp.clicked.connect(otp_clicked)
 
-        def u2f_clicked():
-            if self._otp.isChecked() and self._u2f.isChecked():
-                note.setStyleSheet("QLabel { color: red; }")
-                self._otp.setChecked(False)
-        self._u2f.clicked.connect(u2f_clicked)
-        layout.addWidget(note)
+            def u2f_clicked():
+                if self._otp.isChecked() and self._u2f.isChecked():
+                    note.setStyleSheet("QLabel { color: red; }")
+                    self._otp.setChecked(False)
+            self._u2f.clicked.connect(u2f_clicked)
+            layout.addWidget(note)
         # End Disable OTP in combination with U2F
 
         buttons = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok |
@@ -232,6 +233,9 @@ class ModeDialog(QtGui.QDialog):
 
         self.setWindowTitle(m.change_mode)
         self.setLayout(layout)
+
+        self.mode = neo.mode
+        self.has_u2f = neo.u2f_capable
 
     def _state_changed(self):
         self._ok.setDisabled(not any(self.flags))
@@ -262,9 +266,7 @@ class ModeDialog(QtGui.QDialog):
 
     @classmethod
     def change_mode(cls, neo, parent=None):
-        dialog = cls(parent)
-        dialog.mode = neo.mode
-        dialog.has_u2f = neo.u2f_capable
+        dialog = cls(neo, parent)
         if dialog.exec_():
             mode = dialog.mode
             legacy = neo.version < (3, 3, 0)
