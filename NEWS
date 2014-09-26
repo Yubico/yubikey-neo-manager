@@ -4,6 +4,8 @@
 
   * Don't display firmware in modes where firmware cannot be read.
 
+  * Display unsupported Yubico devices.
+
   * Disable OTP+U2F combinations as they aren't currently usable.
 
 * Version 0.2.0 (released 2014-09-16)

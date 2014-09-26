@@ -31,6 +31,14 @@ from neoman.model.modes import MODE
 class BaseDevice(object):
 
     @property
+    def default_name(self):
+        return 'YubiKey NEO'
+
+    @property
+    def supported(self):
+        return True
+
+    @property
     def mode(self):
         raise NotImplementedError()
 

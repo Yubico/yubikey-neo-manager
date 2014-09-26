@@ -107,6 +107,7 @@ apps = "Available apps"
 installed_apps = "Installed apps"
 unknown = "Unknown"
 unknown_applet = "Unknown applet"
+unsupported_device = "The %s doesn't support this device." % app_name
 about_1 = "About: %s"
 libraries = "Library versions"
 about_link_1 = "For help and discussion, see our <a href=\"%s\">forum</a>."

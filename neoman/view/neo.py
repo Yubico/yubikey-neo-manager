@@ -44,6 +44,10 @@ class NeoPage(TabWidgetWithAbout):
 
     def __init__(self):
         super(NeoPage, self).__init__()
+        self._tabs = []
+        self._supported = True
+
+        self._unsupported_tab = UnsupportedTab()
 
         settings_tab = SettingsTab()
         self._neo.connect(settings_tab.set_neo)
@@ -55,13 +59,36 @@ class NeoPage(TabWidgetWithAbout):
             apps.applet.connect(self._set_applet)
             self.addTab(apps, m.installed_apps)
 
+    def addTab(self, tab, title):
+        self._tabs.append((tab, title))
+        if self._supported:
+            super(NeoPage, self).addTab(tab, title)
+
     @QtCore.Slot(YubiKeyNeo)
     def setNeo(self, neo):
+        self._supported = neo and neo.supported
+        self.clear()
+        if self._supported:
+            for (tab, title) in self._tabs:
+                super(NeoPage, self).addTab(tab, title)
+        else:
+            super(NeoPage, self).addTab(self._unsupported_tab, m.settings)
+
         self._neo.emit(neo)
 
     @QtCore.Slot(Applet)
     def _set_applet(self, applet):
         self.applet.emit(applet)
+
+
+class UnsupportedTab(QtGui.QWidget):
+
+    def __init__(self):
+        super(UnsupportedTab, self).__init__()
+
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(QtGui.QLabel(m.unsupported_device))
+        self.setLayout(layout)
 
 
 class SettingsTab(QtGui.QWidget):

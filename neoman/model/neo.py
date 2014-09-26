@@ -65,6 +65,7 @@ class YubiKeyNeo(QtCore.QObject):
             raise ValueError("New device must have same serial/version.")
         self._dev = device
         self._mode = device.mode
+        self._default_name = device.default_name
         #self._apps = None
         if device.has_ccid:
             device.key = self.key.decode('hex')
@@ -108,7 +109,7 @@ class YubiKeyNeo(QtCore.QObject):
 
     @property
     def name(self):
-        return self.get('name', 'YubiKey NEO')
+        return self.get('name', self._default_name)
 
     @name.setter
     def name(self, new_name):

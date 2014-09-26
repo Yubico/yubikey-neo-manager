@@ -104,6 +104,11 @@ class U2FDevice(BaseDevice):
             del self._devs
 
 
+class SKYDevice(U2FDevice):
+    supported = False
+    default_name = 'Security Key by Yubico'
+
+
 def open_all_devices():
     max_index = c_uint()
     status = u2fh_devs_discover(devs, byref(max_index))
@@ -117,6 +122,8 @@ def open_all_devices():
                 devs, index, resp, byref(buf_size)) == 0:
                 if resp.value.startswith('Yubikey NEO'):
                     devices.append(U2FDevice(devs, index))
+                elif resp.value.startswith('Security Key by Yubico'):
+                    devices.append(SKYDevice(devs, index))
         return devices
     else:
         # No devices!
