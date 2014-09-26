@@ -18,7 +18,6 @@
       "name": "YubiKey OTP",
       "description": "YubiKey One Time Passwords.",
       "aid": "a0000005272001",
-      "version": "",
       "allow_uninstall": false,
       "js_version": "Neo.select.slice(0,3).join('.')"
     }, {
@@ -33,25 +32,19 @@
       "name": "Yubico U2F",
       "description": "FIDO U2F for YubiKey NEO.",
       "aid": "a0000005271002",
-      "version": "0.1.0",
-      "cap_url": "",
-      "cap_sha1": "",
       "js_version": "Neo.select.slice(0,3).join('.')"
     }, {
       "name": "Yubico Bitcoin",
       "description": "A Bitcoin wallet",
       "aid": "a0000005272102",
-      "version": "",
-      "cap_url": "",
-      "cap_sha1": "",
       "js_version": "Neo.select.slice(0,3).join('.')"
     }, {
       "name": "OpenPGP",
       "description": "OpenPGP applet for use with the GNU Privacy Guard.",
       "aid": "d27600012401",
-      "version": "1.0.7",
-      "cap_url": "https://developers.yubico.com/ykneo-openpgp/releases/ykneo-openpgp-1.0.7.cap",
-      "cap_sha1": "ff6c18e6bda3818fa301ec257fbbe898c1ab13e4",
+      "version": "1.0.8",
+      "cap_url": "https://developers.yubico.com/ykneo-openpgp/releases/ykneo-openpgp-1.0.8.cap",
+      "cap_sha1": "5d4902d11a87795c1f2d53e0479ac87e438f200a",
       "js_version": "Neo.send_ok('00f10000').slice(0,3).join('.')"
     }, {
       "name": "Yubico PIV",
