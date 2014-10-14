@@ -26,8 +26,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from distutils import log
-from distutils.core import Command
 from distutils.errors import DistutilsSetupError
+from setuptools import Command
 import os
 import re
 from datetime import date

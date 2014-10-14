@@ -25,9 +25,9 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from distutils.core import Command
+from setuptools import Command
 from distutils.errors import DistutilsSetupError
-from distutils.command.sdist import sdist
+from setuptools.command.sdist import sdist
 import os
 
 
