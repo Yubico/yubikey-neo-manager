@@ -5,3 +5,5 @@ build/
 dist/
 .ropeproject/
 ChangeLog
+MANIFEST
+neoman/qt_resources.py

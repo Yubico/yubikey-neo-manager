@@ -27,12 +27,14 @@
 import os
 import sys
 import argparse
+import neoman.qt_resources
 from PySide import QtGui, QtCore
 from neoman.view.main import MainWindow
 from neoman.model.neo import AvailableNeos
 from neoman.model.applet import AppletManager
 from neoman.worker import Worker
 from neoman import __version__ as version, messages as m
+
 
 if getattr(sys, 'frozen', False):
     # we are running in a PyInstaller bundle
@@ -96,8 +98,7 @@ class NeomanApplication(QtGui.QApplication):
     def _create_window(self):
         window = MainWindow()
         window.setWindowTitle(m.win_title_1 % version)
-        window.setWindowIcon(QtGui.QIcon(
-            os.path.join(self.basedir, 'neoman.png')))
+        window.setWindowIcon(QtGui.QIcon(':/neoman.png'))
         window.show()
         window.raise_()
         return window

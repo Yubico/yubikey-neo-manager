@@ -25,48 +25,48 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from PySide import QtGui
-from neoman import __version__ as version, messages as m
-from neoman.device_ccid import libversion as ykneomgr_version
-from neoman.device_otp import libversion as ykpers_version
-from neoman.device_u2f import libversion as u2fh_version
+from distutils.core import Command
+from distutils.errors import DistutilsSetupError
+from setuptools.command.sdist import _sdist as sdist
+import os
 
 
-FORUM_URL = "http://yubi.co/forum"
-ABOUT_TEXT = """
-<h2>%s</h2>
-%s<br>
-%s
-<h4>%s</h4>
-%s
-<br><br>
-%s
-""" % (m.app_name, m.copyright, m.version_1, m.libraries, '%s',
-       m.about_link_1 % FORUM_URL)
+class qt_sdist(sdist):
+    def run(self):
+        self.run_command('qt_resources')
+
+        sdist.run(self)
 
 
-class TabWidgetWithAbout(QtGui.QTabWidget):
-    def __init__(self):
-        super(TabWidgetWithAbout, self).__init__()
+class qt_resources(Command):
+    description = "convert file resources into code"
+    user_options = []
+    boolean_options = []
 
-        btn = QtGui.QToolButton()
+    def initialize_options(self):
+        pass
 
-        icon = QtGui.QIcon(':/icon_about.png')
-        btn.setIcon(icon)
-        btn.clicked.connect(self._about)
+    def finalize_options(self):
+        self.cwd = os.getcwd()
+        self.source = os.path.join(self.cwd, 'qt_resources')
+        self.target = os.path.join(self.cwd, 'neoman', 'qt_resources.py')
 
-        self.setCornerWidget(btn)
+    def _create_qrc(self):
+        qrc = os.path.join(self.source, 'qt_resources.qrc')
+        with open(qrc, 'w') as f:
+            f.write('<RCC>\n<qresource>\n')
+            for fname in os.listdir(self.source):
+                f.write('<file>%s</file>\n' % fname)
+            f.write('</qresource>\n</RCC>\n')
+        return qrc
 
-    def _libversions(self):
-        libs = []
-        libs.append('libykneomgr: %s' % ykneomgr_version)
-        libs.append('ykpers: %s' % ykpers_version)
-        libs.append('libu2f-host: %s' % u2fh_version)
-        return '<br>'.join(libs)
+    def run(self):
+        if os.getcwd() != self.cwd:
+            raise DistutilsSetupError("Must be in package root!")
 
-    def _about(self):
-        QtGui.QMessageBox.about(
-            self,
-            m.about_1 % m.app_name,
-            ABOUT_TEXT % (version, self._libversions())
-        )
+        qrc = self._create_qrc()
+        self.execute(os.system,
+                     ('pyside-rcc "%s" -o "%s"' % (qrc, self.target),))
+        os.unlink(qrc)
+
+        self.announce("QT resources compiled into %s" % self.target)

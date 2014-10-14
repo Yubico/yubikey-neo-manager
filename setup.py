@@ -27,6 +27,7 @@
 
 from setuptools import setup
 from release import release
+from qt_resources import qt_resources, qt_sdist
 import re
 
 VERSION_PATTERN = re.compile(r"(?m)^__version__\s*=\s*['\"](.+)['\"]$")
@@ -55,7 +56,8 @@ setup(
     install_requires=['PySide', 'pycrypto'],
     test_suite='nose.collector',
     tests_require=[''],
-    cmdclass={'release': release},
+    cmdclass={'release': release, 'qt_resources': qt_resources,
+              'sdist': qt_sdist},
     classifiers=[
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',

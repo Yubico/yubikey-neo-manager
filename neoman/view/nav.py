@@ -28,7 +28,6 @@ from PySide import QtGui, QtCore
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import Applet
 from neoman import messages as m
-import os
 
 
 class NavTree(QtGui.QTreeView):
@@ -199,8 +198,7 @@ class NavModel(QtCore.QAbstractItemModel):
 
     def _build_icon(self, index):
         item = index.internalPointer()
-        basedir = QtCore.QCoreApplication.instance().basedir
-        icon_template = os.path.join(basedir, 'icon_%s.png')
+        icon_template = ':/icon_%s.png'
         if isinstance(item, Applet):
             all_installed = bool(self.neo_list)
             some_installed = False
