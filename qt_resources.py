@@ -27,7 +27,7 @@
 
 from distutils.core import Command
 from distutils.errors import DistutilsSetupError
-from setuptools.command.sdist import _sdist as sdist
+from distutils.command.sdist import sdist
 import os
 
 
