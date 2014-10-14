@@ -1,3 +1,7 @@
+* Version 0.2.3 (unreleased)
+
+  * Use image assets from code instead of external files.
+
 * Version 0.2.2 (released 2014-09-26)
 
   * Better handle multiple devices with no serial set.
