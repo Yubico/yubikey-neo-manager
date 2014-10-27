@@ -54,7 +54,7 @@ to install these dependencies is by using Homebrew:
 NOTE: Homebrew will build backwards-incompatible binaries, so the resulting
 build will not run on an older version of OSX.
 
-Run "pyinstaller neoman.spec" from the main project directory. This will create
+Run "pyinstaller resources/neoman.spec" from the main project directory. This will create
 an .app in the dist directory.
 
 Sign the code using codesign:
