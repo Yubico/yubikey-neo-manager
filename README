@@ -16,29 +16,29 @@ to be compiled from source, requiring the python-dev package.
 === Building binaries
 Binaries for Windows and OSX are built using PyInstaller.
 
-Clone the git repository and checkout the desired release tag (or branch):
-
-  git clone https://github.com/Yubico/yubikey-neo-manager.git
-  cd yubikey-neo-manager
+Get the source release file, yubikey-neo-manager-<version>.tar.gz, and extract
+it. It should contain a single directory, henceforth refered to as the release
+directory.
 
 When building binaries for Windows or OS X, you will need to include
 .dll/.dylib files from the libykneomgr, yubikey-personalization, and
-libu2f-host projects.
+libu2f-host projects. Create a subdirectory called "lib" in the release
+directory.
 Download the correct binary release for your architecture for each of the 
 aforementioned projects from http://developers.yubico.com/ and extract the 
-.dll/.dylib files for each of them together with the included dependencies to a
-subdirectory of the repository named "lib", which you have to manually create.
+.dll/.dylib files for each of them together with the included dependencies to
+the "lib" directory you created previously.
 
 ==== Windows
-For Windows you will need python, PySide, PyCrypto, PyInstaller and Pywin32 installed
-(32 or 64-bit versions depending on the architecture of the binary your are
-building).
+For Windows you will need python, PySide, PyCrypto, PyInstaller and Pywin32
+installed (32 or 64-bit versions depending on the architecture of the binary
+your are building).
 
 To sign the executable, copy the pfx file to neoman.pfx and place it in the
-root of the project folder. You will need signtool.exe (from the Windows
+root of the release directory. You will need signtool.exe (from the Windows
 SDK) either copied into the root as well or in a location in your PATH.
 
-Run "pyinstaller.exe neoman.spec" from the main project folder.
+Run "pyinstaller.exe resources/neoman.spec" from the main release directory.
 
 With NSIS installed, a Windows installer will be built as well.
 
@@ -52,10 +52,11 @@ to install these dependencies is by using Homebrew:
   pip install pycrypto
 
 NOTE: Homebrew will build backwards-incompatible binaries, so the resulting
-build will not run on an older version of OSX.
+build will not run on an older version of OSX. For building distributable
+releases you can use MacPorts instead.
 
-Run "pyinstaller resources/neoman.spec" from the main project directory. This will create
-an .app in the dist directory.
+Run "pyinstaller resources/neoman.spec" from the main release directory. This
+will create an .app in the dist directory.
 
 Sign the code using codesign:
 
