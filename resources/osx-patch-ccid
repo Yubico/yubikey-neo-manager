@@ -1,39 +1,49 @@
-#!/bin/sh   
+#!/usr/bin/python
 
-#exit on error
-set -e       
+import re
 
-FILE="/usr/libexec/SmartCardServices/drivers/ifd-ccid.bundle/Contents/Info.plist"
-UNPATCHED="$FILE.unpatched"
+DEVICES = [
+    ('0x1050', '0x0111', 'Yubico Yubikey NEO OTP+CCID'),
+    ('0x1050', '0x0112', 'Yubico Yubikey NEO CCID'),
+    ('0x1050', '0x0115', 'Yubico Yubikey NEO U2F+CCID'),
+    ('0x1050', '0x0116', 'Yubico Yubikey NEO OTP+U2F+CCID')
+]
 
-if [ -f $FILE ];
-then
+FNAME = "/usr/libexec/SmartCardServices/drivers/ifd-ccid.bundle/Contents/Info.plist"
 
-  if [ ! -f $UNPATCHED ];
-  then
-    #Undo old patch (if applied)
-    patch -N -R -r- -d/ -p0 < libccid-yubikey-old.diff || true
-    #Make a backup of the original
-    cp $FILE $UNPATCHED
-  fi
 
-  if grep -q 'Yubikey NEO OTP+U2F+CCID' "$FILE"
-  then
-    echo "Patch already applied"
-  else
-    #Start with a clean file
-    cp "$UNPATCHED" "$FILE"
-    /usr/bin/patch -d/ -p0 < libccid-yubikey.diff
+def add_device(dev, content):
+    # Parsing XML with regexes, what a wonderful idea!
+    names = re.search('<key>ifdFriendlyName</key>\s*<array>(.*?)</array>', content, re.DOTALL)
 
-    #Kill pcscd if running
-    pid=$(ps ax | grep pcscd | grep -v grep | awk '{ print $1 }')
-    if [ "$pid" != "" ];
-    then
-      echo "Killing pcscd..."
-      kill -9 $pid || true
-    fi
-  fi
+    if names.group(1).find('<string>%s</string>' % dev[2]) > 0:
+        # Already added
+        return content
 
-else
-   echo "File $FILE does not exist. Did you install the CCID TOOLS?"
-fi
+    pos = names.start(1)
+    content = content[:pos] + '\n\t\t<string>%s</string>' % dev[2] + content[pos:]
+
+    vids = re.search('<key>ifdVendorID</key>\s*<array>(.*?)</array>', content, re.DOTALL)
+    pos = vids.start(1)
+    content = content[:pos] + '\n\t\t<string>%s</string>' % dev[0] + content[pos:]
+
+    pids = re.search('<key>ifdProductID</key>\s*<array>(.*?)</array>', content, re.DOTALL)
+    pos = pids.start(1)
+    content = content[:pos] + '\n\t\t<string>%s</string>' % dev[1] + content[pos:]
+
+    return content
+
+
+def main():
+    with open(FNAME, 'r') as f:
+        content = f.read()
+
+    for dev in DEVICES:
+        content = add_device(dev, content)
+
+    with open(FNAME, 'w') as f:
+        f.write(content)
+
+
+if __name__ == '__main__':
+    main()
