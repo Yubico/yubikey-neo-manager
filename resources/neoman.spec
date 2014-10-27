@@ -1,5 +1,9 @@
 # -*- mode: python -*-
 # -*- encoding: utf-8 -*-
+
+# This file needs to be invoked with "pyinstaller resources/neoman.spec" from
+# the parent directory!
+
 import os
 import sys
 import re
