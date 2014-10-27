@@ -31,7 +31,7 @@ from neoman.exc import YkNeoMgrError
 import os
 
 
-if ykneomgr_global_init(1 if os.environ.has_key('NEOMAN_DEBUG') else 0) != 0:
+if ykneomgr_global_init(1 if 'NEOMAN_DEBUG' in os.environ else 0) != 0:
     raise Exception("Unable to initialize ykneomgr")
 
 
@@ -100,10 +100,10 @@ class CCIDDevice(BaseDevice):
         buf_size = c_size_t(1024)
         resp = create_string_buffer(buf_size.value)
         self.check(ykneomgr_send_apdu(self._dev, apdu, len(apdu), resp,
-                                 byref(buf_size)))
+                                      byref(buf_size)))
         return resp.raw[0:buf_size.value]
 
-    #Deprecated, DO NOT USE!
+    # Deprecated, DO NOT USE!
     def _list_apps(self, refresh=False):
         if refresh or self._apps is None:
             if self.locked:
@@ -120,12 +120,14 @@ class CCIDDevice(BaseDevice):
         if self.locked:
             self.unlock()
         aid_bytes = aid.decode('hex')
-        self.check(ykneomgr_applet_delete(self._dev, aid_bytes, len(aid_bytes)))
+        self.check(ykneomgr_applet_delete(self._dev, aid_bytes,
+                                          len(aid_bytes)))
 
     def install_app(self, path):
         if self.locked:
             self.unlock()
-        self.check(ykneomgr_applet_install(self._dev, create_string_buffer(path)))
+        self.check(ykneomgr_applet_install(self._dev,
+                                           create_string_buffer(path)))
 
     def close(self):
         if hasattr(self, '_dev'):

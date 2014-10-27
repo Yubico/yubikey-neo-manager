@@ -66,7 +66,7 @@ class YubiKeyNeo(QtCore.QObject):
         self._dev = device
         self._mode = device.mode
         self._default_name = device.default_name
-        #self._apps = None
+        # self._apps = None
         if device.has_ccid:
             device.key = self.key.decode('hex')
 
@@ -132,7 +132,7 @@ class YubiKeyNeo(QtCore.QObject):
         try:
             self._mutex.lock()
             print "NOT IMPLEMENTED"
-            #TODO: change key
+            # TODO: change key
         finally:
             self._mutex.unlock()
 
@@ -143,7 +143,6 @@ class YubiKeyNeo(QtCore.QObject):
             return self._dev and self._dev.has_ccid
         finally:
             self._mutex.unlock()
-
 
     @property
     def mode(self):
@@ -167,7 +166,8 @@ class YubiKeyNeo(QtCore.QObject):
                 return []
             if self._apps is None:
                 apps = []
-                appletmanager = QtCore.QCoreApplication.instance().appletmanager
+                appletmanager = QtCore.QCoreApplication.instance() \
+                    .appletmanager
                 for applet in appletmanager.get_applets():
                     installed, version = applet.get_status(self)
                     if installed:

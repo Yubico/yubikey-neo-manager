@@ -116,7 +116,6 @@ class AppletManager(object):
             return json.loads(message.decode('base64'))
         raise ValueError("Invalid file signature!")
 
-
     def _read_db(self):
         try:
             with open(DB_FILE, 'r') as db:

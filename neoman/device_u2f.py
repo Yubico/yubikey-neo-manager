@@ -25,8 +25,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from neoman.u2fh import *
-from ctypes import (POINTER, byref, c_uint, c_size_t, c_ubyte,
-                    create_string_buffer)
+from ctypes import POINTER, byref, c_uint, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
 from neoman.exc import YkNeoMgrError
 from neoman.model.modes import MODE
@@ -38,7 +37,7 @@ def check(status):
         raise YkNeoMgrError(status)
 
 
-if u2fh_global_init(1 if os.environ.has_key('NEOMAN_DEBUG') else 0) != 0:
+if u2fh_global_init(1 if 'NEOMAN_DEBUG' not in os.environ else 0) != 0:
     raise Exception("Unable to initialize ykneomgr")
 
 
@@ -119,7 +118,7 @@ def open_all_devices():
         for index in range(max_index.value + 1):
             buf_size = c_size_t(1024)
             if u2fh_get_device_description(
-                devs, index, resp, byref(buf_size)) == 0:
+                    devs, index, resp, byref(buf_size)) == 0:
                 if resp.value.startswith('Yubikey NEO'):
                     devices.append(U2FDevice(devs, index))
                 elif resp.value.startswith('Security Key by Yubico'):
@@ -127,6 +126,6 @@ def open_all_devices():
         return devices
     else:
         # No devices!
-        #u2fh_devs_done(devs)
+        # u2fh_devs_done(devs)
         pass
     return []

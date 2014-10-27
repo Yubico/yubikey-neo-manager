@@ -35,7 +35,8 @@ from neoman.model.modes import MODE
 from neoman.view.tabs import TabWidgetWithAbout
 
 
-U2F_URL = "http://www.yubico.com/products/yubikey-hardware/yubikey-neo/yubikey-neo-u2f/"
+U2F_URL = "http://www.yubico.com/products/yubikey-hardware/yubikey-neo/" \
+    + "yubikey-neo-u2f/"
 
 
 class NeoPage(TabWidgetWithAbout):
