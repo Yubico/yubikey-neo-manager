@@ -4,6 +4,14 @@ once is supported, but only if CCID mode is active for all of them.
 
 Entypo pictograms by Daniel Bruce - www.entypo.com
 
+=== Installation
+The recommended way to install this software including dependencies is by using
+the provided precompiled binaries for your platform. For Windows and OS X,
+there are installers available for download
+https://developers.yubico.com/yubikey-neo-manager/Releases/[here].
+For Ubuntu we have a custom PPA with a package for it
+https://launchpad.net/~yubico/+archive/ubuntu/stable[here].
+
 === Dependencies
 YubiKey NEO Manager requires PySide, libykneomgr, yubikey-personalization and
 libu2f-host.
