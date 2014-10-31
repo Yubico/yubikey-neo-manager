@@ -25,7 +25,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from PySide import QtCore, QtGui
-from neoman.device import open_all_devices
+from neoman.device import open_all_devices, ResetStateException
 from neoman.storage import settings
 from functools import wraps
 
@@ -162,7 +162,7 @@ class YubiKeyNeo(QtCore.QObject):
     def list_apps(self):
         try:
             self._mutex.lock()
-            if not self.has_ccid:
+            if self.device_type != 'CCID':
                 return []
             if self._apps is None:
                 apps = []
@@ -216,13 +216,22 @@ class AvailableNeos(QtCore.QThread):
                 existing_devs.append(neo._dev)
                 neo._dev = None
 
-        discovered = open_all_devices(existing_devs)
+        try:
+            discovered = open_all_devices(existing_devs)
+        except ResetStateException as e:
+            self._mutex.lock()
+            self._neos = []
+            self._mutex.unlock()
+            self.changed.emit([])
+            self.msleep(3000)
+            return
 
         new_neos = []
         dead_neos = neos[:]
         for dev in discovered:
             for neo in dead_neos[:]:
-                if dev.serial == neo.serial and dev.version == neo.version:
+                if dev.serial == neo.serial and dev.version == neo.version \
+                        and dev.device_type == dev.device_type:
                     neo._set_device(dev)
                     neo._mutex.unlock()
                     dead_neos.remove(neo)

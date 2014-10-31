@@ -55,10 +55,12 @@ U2FHID_YUBIKEY_DEVICE_CONFIG = TYPE_INIT | U2F_VENDOR_FIRST
 
 
 class U2FDevice(BaseDevice):
+    device_type = 'U2F'
 
-    def __init__(self, devs, index):
+    def __init__(self, devs, index, mode=MODE.mode_for_flags(False, False, True)):
         self._devs = devs
         self._index = index
+        self._mode = mode
         self._serial = None
         self._version = (0, 0, 0)
 
@@ -68,7 +70,7 @@ class U2FDevice(BaseDevice):
 
     @property
     def mode(self):
-        return MODE.mode_for_flags(False, False, True)
+        return self._mode
 
     @property
     def serial(self):
@@ -80,7 +82,6 @@ class U2FDevice(BaseDevice):
 
     def _sendrecv(self, cmd, data):
         buf_size = c_size_t(1024)
-        #resp = (c_ubyte * buf_size.value)()
         resp = create_string_buffer(buf_size.value)
 
         check(u2fh_sendrecv(self._devs, self._index, cmd, data, len(data),
@@ -120,7 +121,12 @@ def open_all_devices():
             if u2fh_get_device_description(
                     devs, index, resp, byref(buf_size)) == 0:
                 if resp.value.startswith('Yubikey NEO'):
-                    devices.append(U2FDevice(devs, index))
+                    mode = MODE.mode_for_flags(
+                        'OTP' in resp.value,
+                        'CCID' in resp.value,
+                        'U2F' in resp.value
+                    )
+                    devices.append(U2FDevice(devs, index, mode))
                 elif resp.value.startswith('Security Key by Yubico'):
                     devices.append(SKYDevice(devs, index))
         return devices

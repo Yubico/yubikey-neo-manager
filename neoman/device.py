@@ -39,6 +39,10 @@ class BaseDevice(object):
         return True
 
     @property
+    def device_type(self):
+        raise NotImplementedError()
+
+    @property
     def mode(self):
         raise NotImplementedError()
 
@@ -66,44 +70,57 @@ class BaseDevice(object):
         return "NEO[mode=%x, serial=%s]" % (self.mode, self.serial)
 
 
+class ResetStateException(Exception):
+    def __init__(self, devs):
+        self.devices = devs
+
+
 def open_all_devices(existing=None):
     devices = []
-    has_otp = False
-    has_u2f = False
 
     # CCID devices
     try:
         from neoman.device_ccid import open_all_devices as open_ccid_all
         for dev in open_ccid_all(existing):
-            has_otp = has_otp or MODE.flags_for_mode(dev.mode)[0]
-            has_u2f = has_u2f or MODE.flags_for_mode(dev.mode)[2]
             devices.append(dev)
     except Exception:
         pass
 
-    # OTP devices
-    if not has_otp:
+    # OTP devices (only if no CCIDs were found)
+    if not devices:
+        dev = None
         try:
             from neoman.device_otp import (OTPDevice,
                                            open_first_device as open_otp)
             # Close any existing OTP devices as we are going to reopen them.
-            for dev in existing:
-                if isinstance(dev, OTPDevice):
-                    dev.close()
+            for e_dev in existing:
+                if isinstance(e_dev, OTPDevice):
+                    e_dev.close()
             dev = open_otp()
             devices.append(dev)
-            has_otp = True
         except Exception:
             pass
 
-    # U2F devices
-    if not has_u2f and not has_otp:
+        if dev and dev.has_ccid:
+            print "OTP device with CCID, sleep..."
+            # This key should have been picked up as CCID device,
+            # Make sure it gets a change to next time
+            raise ResetStateException(devices)
+
+    # U2F devices (No CCIDs nor OTPs)
+    if not devices:
+        u2f_devs = []
         try:
             from neoman.device_u2f import open_all_devices as open_u2f_all
-            devices.extend(open_u2f_all())
-            return devices
+            u2f_devs = open_u2f_all()
+            devices.extend(u2f_devs)
         except Exception:
-            raise
             pass
+
+        if filter(lambda x: x.has_ccid, u2f_devs):
+            print "U2F device with CCID, sleep..."
+            # This key should have been picked up as CCID device,
+            # Make sure it gets a change to next time
+            raise ResetStateException(devices)
 
     return devices

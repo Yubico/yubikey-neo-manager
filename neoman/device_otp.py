@@ -37,6 +37,7 @@ libversion = ykpers_check_version(None)
 
 
 class OTPDevice(BaseDevice):
+    device_type = 'OTP'
 
     def __init__(self, dev):
         self._dev = dev
@@ -51,7 +52,13 @@ class OTPDevice(BaseDevice):
         pid = c_int()
         try:
             yk_get_key_vid_pid(dev, byref(vid), byref(pid))
-            self._mode = 0x0f & pid.value
+            mode = 0x0f & pid.value
+            if mode == 1:  # mode 1 has PID 0112 and mode 2 has PID 0111
+                self._mode = 2
+            elif mode == 2:
+                self._mode = 1
+            else:  # all others have 011x where x = mode
+                self._mode = mode
         except:
             self._mode = MODE.mode_for_flags(True, False, False)
 

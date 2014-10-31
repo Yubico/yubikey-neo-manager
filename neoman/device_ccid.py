@@ -39,6 +39,7 @@ libversion = ykneomgr_check_version(None)
 
 
 class CCIDDevice(BaseDevice):
+    device_type = 'CCID'
 
     def __init__(self, dev, dev_str=None):
         self._dev = dev
