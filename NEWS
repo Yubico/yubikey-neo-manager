@@ -1,4 +1,9 @@
-* Version 0.2.5 (unreleased)
+* Version 0.2.5 (released 2014-11-03)
+
+  * Recover from getting into a bad state when CCID becomes temporarily
+    unavailable (which was causing problems on OS X Yosemite).
+
+  * Fixed modes being incorrectly reported under some circumstances.
 
 * Version 0.2.4 (released 2014-10-27)
 
