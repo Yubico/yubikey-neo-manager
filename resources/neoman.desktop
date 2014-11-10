@@ -8,4 +8,4 @@ StartupNotify=true
 Terminal=false
 Type=Application
 Categories=Utility;
-Keywords=YubiKey;NEO;Manager
+Keywords=YubiKey;NEO;Manager;
