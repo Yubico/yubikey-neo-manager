@@ -206,25 +206,6 @@ class ModeDialog(QtGui.QDialog):
         boxes.addWidget(self._u2f)
         layout.addLayout(boxes)
 
-        # Disable OTP in combination with U2F
-        # Remove the rest of this method to re-enable.
-        if neo.u2f_capable:
-            note = QtGui.QLabel(m.note_1 % m.otp_u2f_disabled)
-
-            def otp_clicked():
-                if self._otp.isChecked() and self._u2f.isChecked():
-                    note.setStyleSheet("QLabel { color: red; }")
-                    self._u2f.setChecked(False)
-            self._otp.clicked.connect(otp_clicked)
-
-            def u2f_clicked():
-                if self._otp.isChecked() and self._u2f.isChecked():
-                    note.setStyleSheet("QLabel { color: red; }")
-                    self._otp.setChecked(False)
-            self._u2f.clicked.connect(u2f_clicked)
-            layout.addWidget(note)
-        # End Disable OTP in combination with U2F
-
         buttons = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok |
                                          QtGui.QDialogButtonBox.Cancel)
         buttons.accepted.connect(self.accept)
