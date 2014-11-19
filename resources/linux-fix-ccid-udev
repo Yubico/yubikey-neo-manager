@@ -1,0 +1,81 @@
+#!/usr/bin/python
+
+import re
+import subprocess
+import os
+
+DEVICES = [
+    ('0x1050', '0x0111', 'Yubico Yubikey NEO OTP+CCID'),
+    ('0x1050', '0x0112', 'Yubico Yubikey NEO CCID'),
+    ('0x1050', '0x0115', 'Yubico Yubikey NEO U2F+CCID'),
+    ('0x1050', '0x0116', 'Yubico Yubikey NEO OTP+U2F+CCID')
+]
+
+FNAME = "/etc/libccid_Info.plist"
+
+UDEV = """
+ACTION!="add|change", GOTO="u2f_end"
+
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", ATTRS{idProduct}=="0113|0114|0115|0116|0120", TAG+="uaccess"
+
+LABEL="u2f_end"
+"""
+
+UDEV_FNAME = "/etc/udev/rules.d/70-u2f.rules"
+
+
+def add_device(dev, content):
+    # Parsing XML with regexes, what a wonderful idea!
+    names = re.search('<key>ifdFriendlyName</key>\s*<array>(.*?)</array>', content, re.DOTALL)
+
+    if names.group(1).find('<string>%s</string>' % dev[2]) > 0:
+        # Already added
+        return content
+
+    print "Adding: %s" % dev[2]
+
+    pos = names.start(1)
+    content = content[:pos] + '\n\t\t<string>%s</string>' % dev[2] + content[pos:]
+
+    vids = re.search('<key>ifdVendorID</key>\s*<array>(.*?)</array>', content, re.DOTALL)
+    pos = vids.start(1)
+    content = content[:pos] + '\n\t\t<string>%s</string>' % dev[0] + content[pos:]
+
+    pids = re.search('<key>ifdProductID</key>\s*<array>(.*?)</array>', content, re.DOTALL)
+    pos = pids.start(1)
+    content = content[:pos] + '\n\t\t<string>%s</string>' % dev[1] + content[pos:]
+
+    return content
+
+
+def restart_pcscd():
+    pid = subprocess.check_output("ps ax | grep pcscd | grep -v grep | awk '{ print $1 }'",
+                                  shell=True).strip()
+    if pid:
+        subprocess.call(['kill', '-9', pid])
+
+
+def main():
+    print "Updating %s..." % FNAME
+    with open(FNAME, 'r') as f:
+        content = f.read()
+
+    for dev in DEVICES:
+        content = add_device(dev, content)
+
+    with open(FNAME, 'w') as f:
+        f.write(content)
+
+    restart_pcscd()
+
+    # Add Udev rule:
+    if os.path.isfile(UDEV_FNAME):
+        print "Udev rule: %s already exists, skipping..." % UDEV_FNAME
+    else:
+        print "Adding Udev rule..."
+        with open(UDEV_FNAME, 'w') as f:
+            f.write(UDEV)
+    print "Done!"
+
+if __name__ == '__main__':
+    main()
