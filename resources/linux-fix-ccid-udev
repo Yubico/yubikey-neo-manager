@@ -47,14 +47,6 @@ def add_device(dev, content):
 
     return content
 
-
-def restart_pcscd():
-    pid = subprocess.check_output("ps ax | grep pcscd | grep -v grep | awk '{ print $1 }'",
-                                  shell=True).strip()
-    if pid:
-        subprocess.call(['kill', '-9', pid])
-
-
 def main():
     print "Updating %s..." % FNAME
     with open(FNAME, 'r') as f:
@@ -66,7 +58,9 @@ def main():
     with open(FNAME, 'w') as f:
         f.write(content)
 
-    restart_pcscd()
+    print "Restarting PCSCD..."
+    subprocess.call(['service', 'pcscd', 'restart'])
+
 
     # Add Udev rule:
     if os.path.isfile(UDEV_FNAME):
