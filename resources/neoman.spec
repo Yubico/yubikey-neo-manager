@@ -136,6 +136,7 @@ coll = COLLECT(exe,
 if OSX:
     app = BUNDLE(coll,
                  name="%s.app" % NAME,
+                 version=ver_str,
                  icon=ICON)
 
     from shutil import copy2 as copy
