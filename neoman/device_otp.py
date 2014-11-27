@@ -123,7 +123,7 @@ class YKStandardDevice(BaseDevice):
 
 class YKPlusDevice(YKStandardDevice):
     mode = MODE.mode_for_flags(True, False, True)
-    default_name = 'YubiKey Plus OTP+U2F'
+    default_name = 'YubiKey Plus'
 
 
 def open_first_device():
