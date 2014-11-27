@@ -107,6 +107,7 @@ class OTPDevice(BaseDevice):
 
 
 class YKStandardDevice(BaseDevice):
+    device_type = 'OTP'
     supported = False
     serial = None
     version = (0, 0, 0)
@@ -120,15 +121,23 @@ class YKStandardDevice(BaseDevice):
         return 'YubiKey %s' % '.'.join(map(str, self._version))
 
 
+class YKPlusDevice(YKStandardDevice):
+    mode = MODE.mode_for_flags(True, False, True)
+    default_name = 'YubiKey Plus OTP+U2F'
+
+
 def open_first_device():
     dev = yk_open_first_key()
     if not dev:
         raise Exception("Unable to open YubiKey NEO!")
 
     otp_device = OTPDevice(dev)
-    if otp_device.version[0] < 3:
+    if otp_device.version[0] != 3:
         try:
-            otp_device = YKStandardDevice(otp_device.version)
+            if otp_device.version == (4, 0, 0):
+                otp_device = YKPlusDevice(otp_device.version)
+            else:
+                otp_device = YKStandardDevice(otp_device.version)
         except Exception as e:
             print e
 

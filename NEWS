@@ -1,4 +1,8 @@
-* Version 1.0.1 (unreleased)
+* Version 1.1.0 (unreleased)
+
+  * Added support for recognizing YubiKey Plus.
+
+  * Fixed support for displaying standard YubiKeys.
 
 * Version 1.0.0 (released 2014-11-19)
 
