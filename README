@@ -75,5 +75,6 @@ There is also a project file for use with Packages
 This can be used to create an installer for distribution, which you should sign
 prior to distribution:
 
+  packagesbuild resources/neoman.pkgproj
   productsign --sign 'Developer ID Installer' dist/YubiKey\ NEO\ Manager.pkg dist/yubikey-neo-manager-mac.pkg
 

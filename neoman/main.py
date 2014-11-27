@@ -43,11 +43,14 @@ else:
     # we are running in a normal Python environment
     basedir = os.path.dirname(__file__)
 
-# Font fix for OSX Mavericks
+# Font fix for OSX
 if sys.platform == 'darwin':
     from platform import mac_ver
-    if tuple(mac_ver()[0].split('.')) >= (10, 9):
+    mac_version = tuple(mac_ver()[0].split('.'))
+    if (10, 9) <= mac_version < (10, 10):  # Mavericks
         QtGui.QFont.insertSubstitution(".Lucida Grande UI", "Lucida Grande")
+    if (10, 10) <= mac_version:  # Yosemite
+        QtGui.QFont.insertSubstitution(".Helvetica Neue DeskInterface", "Helvetica Neue")
 
 
 class NeomanApplication(QtGui.QApplication):
