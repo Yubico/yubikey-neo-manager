@@ -1,72 +1,48 @@
 * Version 1.1.0 (released 2014-12-01)
-
-  * Fixed font on OS X 10.10.
-
-  * Added support for recognizing YubiKey Plus.
-
-  * Fixed support for displaying standard YubiKeys.
+ ** Fixed font on OS X 10.10.
+ ** Added support for recognizing YubiKey Plus.
+ ** Fixed support for displaying standard YubiKeys.
 
 * Version 1.0.0 (released 2014-11-19)
-
-  * 1.x.x version (no changes from 0.2.6).
+ ** 1.x.x version (no changes from 0.2.6).
 
 * Version 0.2.6 (released 2014-11-18)
-
-  * Re-enable OTP in combination with U2F.
+ ** Re-enable OTP in combination with U2F.
 
 * Version 0.2.5 (released 2014-11-03)
-
-  * Recover from getting into a bad state when CCID becomes temporarily
+ ** Recover from getting into a bad state when CCID becomes temporarily
     unavailable (which was causing problems on OS X Yosemite).
-
-  * Fixed modes being incorrectly reported under some circumstances.
+ ** Fixed modes being incorrectly reported under some circumstances.
 
 * Version 0.2.4 (released 2014-10-27)
-
-  * Build and release related stuff, no new features.
+ ** Build and release related stuff, no new features.
 
 * Version 0.2.3 (released 2014-10-14)
-
-  * Use image assets from code instead of external files.
+ ** Use image assets from code instead of external files.
 
 * Version 0.2.2 (released 2014-09-26)
-
-  * Better handle multiple devices with no serial set.
-
-  * Don't display OTP/U2F note for devices without U2F support.
+ ** Better handle multiple devices with no serial set.
+ ** Don't display OTP/U2F note for devices without U2F support.
 
 * Version 0.2.1 (released 2014-09-26)
-
-  * Correctly display mode for OTP+U2F devices.
-
-  * Don't display firmware in modes where firmware cannot be read.
-
-  * Display unsupported Yubico devices.
-
-  * Disable OTP+U2F combinations as they aren't currently usable.
+ ** Correctly display mode for OTP+U2F devices.
+ ** Don't display firmware in modes where firmware cannot be read.
+ ** Display unsupported Yubico devices.
+ ** Disable OTP+U2F combinations as they aren't currently usable.
 
 * Version 0.2.0 (released 2014-09-16)
-
-  * Removed usage of card manager keys for normal use.
-
-  * Added support for U2F modes (if hardware supports it).
-
-  * Better support for composite devices.
+ ** Removed usage of card manager keys for normal use.
+ ** Added support for U2F modes (if hardware supports it).
+ ** Better support for composite devices.
 
 * Version 0.1.0 (released 2014-03-25)
-
-  * Added the ability to view installed applet versions.
-
-  * Updated ykneomgr with ability to send custom APDUs.
+ ** Added the ability to view installed applet versions.
+ ** Updated ykneomgr with ability to send custom APDUs.
 
 * Version 0.0.2 (released 2014-03-20)
-
-  * Support for installing/removing applets.
-
-  * Support for multiple NEOs.
-
-  * Better support for platform specific packaging.
+ ** Support for installing/removing applets.
+ ** Support for multiple NEOs.
+ ** Better support for platform specific packaging.
 
 * Version 0.0.1 (released 2013-11-13)
-
-  * Initial release supporting mode changing.
+ ** Initial release supporting mode changing.
