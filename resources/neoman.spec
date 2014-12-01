@@ -146,7 +146,7 @@ if OSX:
 if WIN:
     os.system('makensis.exe -D"NEOMAN_VERSION=%s" resources/neoman.nsi' %
               ver_str)
-    installer = "dist/yubikey-neo-manager-%s.exe" % ver_str
+    installer = "dist/yubikey-neo-manager-%s-win.exe" % ver_str
     os.system("signtool.exe sign /f neoman.pfx /p %s /t http://timestamp.verisign.com/scripts/timstamp.dll \"%s\"" %
              (pfx_pass, installer))
     print "Installer created: %s" % installer
