@@ -48,6 +48,7 @@ setup(
     maintainer='Yubico Open Source Maintainers',
     maintainer_email='ossmaint@yubico.com',
     url='https://github.com/Yubico/yubikey-neo-manager',
+    description='Tool for managing your YubiKey NEO configuration.',
     license='BSD 2 clause',
     packages=['neoman', 'neoman.model', 'neoman.view'],
     package_data={'neoman': ['appletdb.json', 'js_api.js']},
