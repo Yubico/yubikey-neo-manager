@@ -8,13 +8,6 @@
   ],
   "applets": [
     {
-      "name": "Manager",
-      "description": "YubiKey NEO Manager applet.",
-      "aid": "a0000005273001",
-      "version": "0.1.0",
-      "allow_uninstall": false,
-      "js_version": "Neo.select.slice(0,3).join('.')"
-    }, {
       "name": "YubiKey OTP",
       "description": "YubiKey One Time Passwords.",
       "aid": "a0000005272001",
@@ -34,10 +27,10 @@
       "aid": "a0000005271002",
       "js_version": "Neo.select.slice(0,3).join('.')"
     }, {
-      "name": "Yubico Bitcoin",
-      "description": "A Bitcoin wallet",
-      "aid": "a0000005272102",
-      "js_version": "Neo.select.slice(0,3).join('.')"
+      "name": "Yubico U2F",
+      "description": "FIDO U2F for YubiKey NEO.",
+      "aid": "a0000006472f0001",
+      "js_version": "Neo.send_ok('00420000').slice(0,3).join('.')"
     }, {
       "name": "OpenPGP",
       "description": "OpenPGP applet for use with the GNU Privacy Guard.",
