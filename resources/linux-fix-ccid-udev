@@ -48,25 +48,29 @@ def add_device(dev, content):
     return content
 
 def main():
-    print "Updating %s..." % FNAME
-    with open(FNAME, 'r') as f:
-        content = f.read()
+    # Patch libccid file:
+    if os.path.isfile(FNAME):
+        print "Updating %s..." % FNAME
+        with open(FNAME, 'r') as f:
+            content = f.read()
 
-    for dev in DEVICES:
-        content = add_device(dev, content)
+        for dev in DEVICES:
+            content = add_device(dev, content)
 
-    with open(FNAME, 'w') as f:
-        f.write(content)
+        with open(FNAME, 'w') as f:
+            f.write(content)
 
-    print "Restarting PCSCD..."
-    subprocess.call(['service', 'pcscd', 'restart'])
+        print "Restarting PCSCD..."
+        subprocess.call(['service', 'pcscd', 'restart'])
+    else:
+        print "libccid_Info.plist not found, skipping..."
 
 
     # Add Udev rule:
     if os.path.isfile(UDEV_FNAME):
         print "Udev rule: %s already exists, skipping..." % UDEV_FNAME
     else:
-        print "Adding Udev rule..."
+        print "Adding Udev rule for U2F..."
         with open(UDEV_FNAME, 'w') as f:
             f.write(UDEV)
     print "Done!"
