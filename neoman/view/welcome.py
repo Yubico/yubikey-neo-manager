@@ -29,19 +29,13 @@ from neoman import messages as m
 from neoman.view.tabs import TabWidgetWithAbout
 
 
-TEXT = """No device found.
-
-Please insert a YubiKey NEO to continue...
-"""
-
-
 class WelcomePage(TabWidgetWithAbout):
 
     def __init__(self):
         super(WelcomePage, self).__init__()
 
         layout = QtGui.QVBoxLayout()
-        layout.addWidget(QtGui.QLabel(TEXT))
+        layout.addWidget(QtGui.QLabel(m.welcome_desc))
         widget = QtGui.QWidget()
         widget.setLayout(layout)
         self.addTab(widget, m.welcome)

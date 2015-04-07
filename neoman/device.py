@@ -47,12 +47,12 @@ class BaseDevice(object):
         raise NotImplementedError()
 
     @property
-    def has_ccid(self):
-        return MODE.flags_for_mode(self.mode)[1]
+    def allowed_modes(self):
+        return (True, True, self.version >= (3, 3, 0))
 
     @property
-    def u2f_capable(self):
-        return self.version >= (3, 3, 0)
+    def has_ccid(self):
+        return MODE.flags_for_mode(self.mode)[1]
 
     @property
     def serial(self):

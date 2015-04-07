@@ -37,7 +37,7 @@ def check(status):
         raise YkNeoMgrError(status)
 
 
-if u2fh_global_init(1 if 'NEOMAN_DEBUG' not in os.environ else 0) != 0:
+if u2fh_global_init(1 if 'NEOMAN_DEBUG' in os.environ else 0) != 0:
     raise Exception("Unable to initialize ykneomgr")
 
 
@@ -56,6 +56,7 @@ U2FHID_YUBIKEY_DEVICE_CONFIG = TYPE_INIT | U2F_VENDOR_FIRST
 
 class U2FDevice(BaseDevice):
     device_type = 'U2F'
+    allowed_modes = (False, False, True)
 
     def __init__(self, devs, index, mode=MODE.mode_for_flags(False, False, True)):
         self._devs = devs
@@ -63,10 +64,6 @@ class U2FDevice(BaseDevice):
         self._mode = mode
         self._serial = None
         self._version = (0, 0, 0)
-
-    @property
-    def u2f_capable(self):
-        return True
 
     @property
     def mode(self):
@@ -109,6 +106,11 @@ class SKYDevice(U2FDevice):
     default_name = 'Security Key by Yubico'
 
 
+class EdgeDevice(U2FDevice):
+    default_name = 'YubiKey Edge'
+    allowed_modes = (True, False, True)
+
+
 def open_all_devices():
     max_index = c_uint()
     status = u2fh_devs_discover(devs, byref(max_index))
@@ -127,6 +129,13 @@ def open_all_devices():
                         'U2F' in resp.value
                     )
                     devices.append(U2FDevice(devs, index, mode))
+                elif resp.value.startswith('Yubikey 4'):
+                    mode = MODE.mode_for_flags(
+                        'OTP' in resp.value,
+                        'CCID' in resp.value,
+                        'U2F' in resp.value
+                    )
+                    devices.append(EdgeDevice(devs, index, mode))
                 elif resp.value.startswith('Security Key by Yubico'):
                     devices.append(SKYDevice(devs, index))
         return devices

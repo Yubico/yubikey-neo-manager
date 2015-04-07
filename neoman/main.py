@@ -26,6 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 import os
 import sys
+import time
 import argparse
 import neoman.qt_resources
 from PySide import QtGui, QtCore
@@ -110,5 +111,7 @@ class NeomanApplication(QtGui.QApplication):
 def main():
     app = NeomanApplication(sys.argv)
     status = app.exec_()
+    app.worker.thread().quit()
     app.deleteLater()
+    time.sleep(0.01)
     sys.exit(status)

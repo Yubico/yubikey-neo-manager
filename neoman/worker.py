@@ -51,6 +51,8 @@ class QtWorker(QtCore.QObject):
         self.busy.setWindowTitle(m.wait)
         self.busy.setWindowModality(QtCore.Qt.WindowModal)
         self.busy.setMinimumDuration(0)
+        self.busy.setWindowFlags(self.busy.windowFlags()
+                                 ^ QtCore.Qt.WindowContextHelpButtonHint)
         self.busy.setAutoClose(True)
 
         self.work_thread = QtCore.QThread()

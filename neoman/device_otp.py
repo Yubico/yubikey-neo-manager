@@ -36,11 +36,27 @@ if not yk_init():
 libversion = ykpers_check_version(None)
 
 
+def read_version(dev):
+    status = ykds_alloc()
+    try:
+        if yk_get_status(dev, status):
+            return (
+                ykds_version_major(status),
+                ykds_version_minor(status),
+                ykds_version_build(status)
+            )
+        else:
+            return (0, 0, 0)
+    finally:
+        ykds_free(status)
+
+
 class OTPDevice(BaseDevice):
     device_type = 'OTP'
 
-    def __init__(self, dev):
+    def __init__(self, dev, version):
         self._dev = dev
+        self._version = version
 
         ser = c_uint()
         if yk_get_serial(dev, 0, 0, byref(ser)):
@@ -48,32 +64,22 @@ class OTPDevice(BaseDevice):
         else:
             self._serial = None
 
+        self._mode = self._read_mode(dev)
+
+    def _read_mode(self, dev):
         vid = c_int()
         pid = c_int()
         try:
             yk_get_key_vid_pid(dev, byref(vid), byref(pid))
             mode = 0x0f & pid.value
             if mode == 1:  # mode 1 has PID 0112 and mode 2 has PID 0111
-                self._mode = 2
+                return 2
             elif mode == 2:
-                self._mode = 1
+                return 1
             else:  # all others have 011x where x = mode
-                self._mode = mode
-        except:
-            self._mode = MODE.mode_for_flags(True, False, False)
-
-        status = ykds_alloc()
-        try:
-            if yk_get_status(dev, status):
-                self._version = (
-                    ykds_version_major(status),
-                    ykds_version_minor(status),
-                    ykds_version_build(status)
-                )
-            else:
-                self._version = (0, 0, 0)
-        finally:
-            ykds_free(status)
+                return mode
+        except:  # We know we at least have OTP enabled...
+            return MODE.mode_for_flags(True, False, False)
 
     @property
     def mode(self):
@@ -113,12 +119,18 @@ class YKStandardDevice(BaseDevice):
     version = (0, 0, 0)
     mode = MODE.mode_for_flags(True, False, False)
 
-    def __init__(self, version):
+    def __init__(self, dev, version):
+        self._dev = dev
         self._version = version
 
     @property
     def default_name(self):
         return 'YubiKey %s' % '.'.join(map(str, self._version))
+
+    def close(self):
+        if hasattr(self, '_dev'):
+            yk_close_key(self._dev)
+            del self._dev
 
 
 class YKPlusDevice(YKStandardDevice):
@@ -126,19 +138,35 @@ class YKPlusDevice(YKStandardDevice):
     default_name = 'YubiKey Plus'
 
 
+class YKEdgeDevice(OTPDevice):
+    default_name = 'YubiKey Edge'
+    allowed_modes = (True, False, True)
+    has_ccid = False
+
+    def _read_mode(self, dev):
+        vid = c_int()
+        pid = c_int()
+        try:
+            yk_get_key_vid_pid(dev, byref(vid), byref(pid))
+            mode = 0x0f & pid.value
+            return MODE.mode_for_flags(bool(mode & 1), bool(mode & 4),
+                                       bool(mode & 2))
+        except:  # We know we at least have OTP enabled...
+            return MODE.mode_for_flags(True, False, False)
+
+
 def open_first_device():
     dev = yk_open_first_key()
     if not dev:
         raise Exception("Unable to open YubiKey NEO!")
 
-    otp_device = OTPDevice(dev)
-    if otp_device.version[0] != 3:
-        try:
-            if otp_device.version == (4, 0, 0):
-                otp_device = YKPlusDevice(otp_device.version)
-            else:
-                otp_device = YKStandardDevice(otp_device.version)
-        except Exception as e:
-            print e
+    version = read_version(dev)
 
-    return otp_device
+    if version >= (4, 1, 0):
+        return YKEdgeDevice(dev, version)
+    elif version >= (4, 0, 0):
+        return YKPlusDevice(dev, version)
+    elif version >= (3, 0, 0):
+        return OTPDevice(dev, version)
+    else:
+        return YKStandardDevice(dev, version)

@@ -38,10 +38,10 @@ ABOUT_TEXT = """
 %s<br>
 %s
 <h4>%s</h4>
-%s
+%%s
 <br><br>
 %s
-""" % (m.app_name, m.copyright, m.version_1, m.libraries, '%s',
+""" % (m.app_name, m.copyright, m.version_1, m.libraries,
        m.about_link_1 % FORUM_URL)
 
 
