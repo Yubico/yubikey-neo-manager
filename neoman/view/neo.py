@@ -29,6 +29,7 @@ from PySide import QtGui, QtCore
 from functools import partial
 from neoman import messages as m
 from neoman.storage import settings
+from neoman.exc import ModeSwitchError
 from neoman.model.neo import YubiKeyNeo
 from neoman.model.applet import Applet
 from neoman.model.modes import MODE
@@ -185,7 +186,13 @@ class SettingsTab(QtGui.QWidget):
         mode = ModeDialog.change_mode(self._neo, self)
 
         if mode is not None:
-            self._neo.set_mode(mode)
+            try:
+                self._neo.set_mode(mode)
+            except ModeSwitchError:
+                QtGui.QMessageBox.critical(self, m.mode_error,
+                                           m.mode_error_desc)
+                return
+
             self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(mode))
 
             remove_dialog = QtGui.QMessageBox(self)

@@ -27,7 +27,7 @@
 from neoman.ykneomgr import *
 from ctypes import POINTER, byref, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
-from neoman.exc import YkNeoMgrError
+from neoman.exc import YkNeoMgrError, ModeSwitchError
 import os
 
 
@@ -93,7 +93,8 @@ class CCIDDevice(BaseDevice):
         self._locked = False
 
     def set_mode(self, mode):
-        self.check(ykneomgr_modeswitch(self._dev, mode))
+        if ykneomgr_modeswitch(self._dev, mode) != 0:
+            raise ModeSwitchError()
         self._mode = mode
 
     def send_apdu(self, apdu):

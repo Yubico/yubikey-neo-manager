@@ -27,7 +27,7 @@
 from neoman.u2fh import *
 from ctypes import POINTER, byref, c_uint, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
-from neoman.exc import YkNeoMgrError
+from neoman.exc import YkNeoMgrError, ModeSwitchError
 from neoman.model.modes import MODE
 import os
 
@@ -87,7 +87,11 @@ class U2FDevice(BaseDevice):
 
     def set_mode(self, mode):
         data = ('%02x0f0000' % mode).decode('hex')
-        self._sendrecv(U2FHID_YUBIKEY_DEVICE_CONFIG, data)
+        try:
+            self._sendrecv(U2FHID_YUBIKEY_DEVICE_CONFIG, data)
+            self._mode = mode
+        except YkNeoMgrError:
+            raise ModeSwitchError()
 
     def list_apps(self):
         return []

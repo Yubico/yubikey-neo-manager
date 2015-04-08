@@ -72,6 +72,10 @@ change_mode_desc = ("Set the connection mode used by your YubiKey.\nFor "
 remove_device = "\nRemove your YubiKey now.\n"
 mode_note = ("To be able to list/manage apps, your YubiKey must have CCID "
              "enabled.")
+mode_error = "Error setting mode"
+mode_error_desc = "Failed setting the mode. If you have an Access Code " \
+    "protecting either of the YubiKey slots, you will need to disable this " \
+    "before you can change the mode."
 name = "Name"
 name_1 = "Name: %s"
 serial_1 = "Serial: %s"

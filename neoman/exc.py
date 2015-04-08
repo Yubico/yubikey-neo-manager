@@ -34,3 +34,9 @@ class YkNeoMgrError(Exception):
     def __init__(self, code):
         super(YkNeoMgrError, self).__init__("ykneomgr error: %d" % code)
         self.status = code
+
+
+class ModeSwitchError(Exception):
+    def __init__(self):
+        super(ModeSwitchError, self).__init__(
+            "Unable to set mode, is configuration locked?")

@@ -26,6 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from neoman.ykpers import *
 from ctypes import byref, c_uint, c_int
+from neoman.exc import ModeSwitchError
 from neoman.device import BaseDevice
 from neoman.model.modes import MODE
 
@@ -95,13 +96,16 @@ class OTPDevice(BaseDevice):
 
     def set_mode(self, mode):
         if self.version[0] < 3:
-            raise Exception("Mode Switching requires version >= 3")
+            raise ValueError("Mode Switching requires version >= 3")
 
         config = ykp_alloc_device_config()
         ykp_set_device_mode(config, mode)
-        if not yk_write_device_config(self._dev, config):
-            raise Exception("Failed writing device config!")
-        ykp_free_device_config(config)
+        try:
+            if not yk_write_device_config(self._dev, config):
+                raise ModeSwitchError()
+        finally:
+            ykp_free_device_config(config)
+        self._mode = mode
 
     def list_apps(self):
         return []
