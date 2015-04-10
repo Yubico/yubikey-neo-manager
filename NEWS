@@ -1,3 +1,6 @@
+* Version 1.2.1 (released 2015-04-10)
+ ** Bugfix release: Fix mode switching when in U2F-only mode.
+
 * Version 1.2.0 (released 2015-04-10)
  ** Added support for YubiKey Edge.
  ** Get rid of help buttons in Windows dialogs.
