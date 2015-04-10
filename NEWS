@@ -1,6 +1,7 @@
-* Version 1.2.0 (unreleased)
+* Version 1.2.0 (released 2015-04-10)
  ** Added support for YubiKey Edge.
  ** Get rid of help buttons in Windows dialogs.
+ ** Better error handling when switching modes.
 
 * Version 1.1.0 (released 2014-12-01)
  ** Fixed font on OS X 10.10.
