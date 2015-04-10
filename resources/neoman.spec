@@ -150,18 +150,3 @@ if WIN:
     os.system("signtool.exe sign /f neoman.pfx /p %s /t http://timestamp.verisign.com/scripts/timstamp.dll \"%s\"" %
              (pfx_pass, installer))
     print "Installer created: %s" % installer
-
-# Create zip
-import platform
-import zipfile
-os_name = 'win%s' % platform.architecture()[
-    0][:2] if WIN else 'mac' if OSX else 'linux'
-zip_file = 'dist/yubikey-neo-manager-%s-%s.zip' % (ver_str, os_name)
-zip = zipfile.ZipFile(zip_file, 'w')
-for root, dirs, files in os.walk('dist'):
-    if root.startswith(os.path.join('dist', '%s.app' % NAME if OSX else NAME)):
-        for file in files:
-            path = os.path.join(root, file)
-            zip.write(path, path[5:])
-zip.close()
-print "zip file written:", zip_file
