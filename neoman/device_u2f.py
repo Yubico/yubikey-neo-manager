@@ -56,7 +56,7 @@ U2FHID_YUBIKEY_DEVICE_CONFIG = TYPE_INIT | U2F_VENDOR_FIRST
 
 class U2FDevice(BaseDevice):
     device_type = 'U2F'
-    allowed_modes = (False, False, True)
+    allowed_modes = (True, True, True)
 
     def __init__(self, devs, index, mode=MODE.mode_for_flags(False, False, True)):
         self._devs = devs
