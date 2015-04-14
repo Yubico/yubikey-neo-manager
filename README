@@ -33,7 +33,7 @@ When building binaries for Windows or OS X, you will need to include
 libu2f-host projects. Create a subdirectory called "lib" in the release
 directory.
 Download the correct binary release for your architecture for each of the 
-aforementioned projects from http://developers.yubico.com/ and extract the 
+aforementioned projects from https://developers.yubico.com/ and extract the 
 .dll/.dylib files for each of them together with the included dependencies to
 the "lib" directory you created previously.
 
