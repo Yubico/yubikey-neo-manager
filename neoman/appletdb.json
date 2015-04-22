@@ -18,7 +18,7 @@
       "description": "YubiKey OATH applet for Yubico Authenticator.",
       "aid": "a0000005272101",
       "version": "0.2.1",
-      "cap_url": "https://developers.yubico.com/ykneo-oath/releases/ykneo-oath-0.2.1.cap",
+      "cap_url": "https://developers.yubico.com/ykneo-oath/Releases/ykneo-oath-0.2.1.cap",
       "cap_sha1": "56e599f48ed5dcf28e370c14c118ec2db3b3e10f",
       "js_version": "Neo.select.slice(2,5).join('.')"
     }, {
@@ -35,10 +35,10 @@
       "name": "OpenPGP",
       "description": "OpenPGP applet for use with the GNU Privacy Guard.",
       "aid": "d27600012401",
-      "version": "1.0.8",
-      "cap_url": "https://developers.yubico.com/ykneo-openpgp/releases/ykneo-openpgp-1.0.8.cap",
-      "cap_sha1": "5d4902d11a87795c1f2d53e0479ac87e438f200a",
-      "js_version": "Neo.send_ok('00f10000').slice(0,3).join('.')"
+      "version": "1.0.10",
+      "cap_url": "https://developers.yubico.com/ykneo-openpgp/Releases/ykneo-openpgp-1.0.10.cap",
+      "cap_sha1": "59c71d80080fa41e38787adc8d7ba086f9a0a93c",
+      "js_version": "Neo.send_ok('00f10000').slice(0,3).map(function(x){return x.toString(16)}).join('.')"
     }, {
       "name": "Yubico PIV",
       "description": "The YubiKey PIV applet implements SP800-73-3.",
