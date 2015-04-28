@@ -4,6 +4,12 @@ once is supported, but only if CCID mode is active for all of them.
 
 Entypo pictograms by Daniel Bruce - www.entypo.com
 
+[IMPORTANT]
+====
+Yubico has learned of a security issue with the OpenPGP Card applet project that is used in the YubiKey NEO. This vulnerability applies to you only if you are using OpenPGP, and you have the OpenPGP applet version 1.0.9 or earlier.
+link:https://developers.yubico.com/ykneo-openpgp/SecurityAdvisory%202015-04-14.html[SecurityAdvisory 2015-04-14]
+====
+
 === Installation
 The recommended way to install this software including dependencies is by using
 the provided precompiled binaries for your platform. For Windows and OS X,
