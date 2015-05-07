@@ -1,4 +1,5 @@
 * Version 1.2.2 (unreleased)
+ ** Updated applet definitions to fix incorrect OpenPGP applet version.
 
 * Version 1.2.1 (released 2015-04-10)
  ** Bugfix release: Fix mode switching when in U2F-only mode.
