@@ -1,5 +1,7 @@
 * Version 1.2.2 (unreleased)
  ** Updated applet definitions to fix incorrect OpenPGP applet version.
+ ** Fix displaying wrong firmware version in CCID mode.
+ ** Base U2F support on if applet is available (CCID).
 
 * Version 1.2.1 (released 2015-04-10)
  ** Bugfix release: Fix mode switching when in U2F-only mode.
