@@ -8,7 +8,6 @@ import os
 import sys
 import re
 from glob import glob
-from getpass import getpass
 
 NAME = "YubiKey NEO Manager"
 
@@ -114,15 +113,8 @@ exe = EXE(pyz,
           version=VERSION,
           icon=ICON)
 
-pfx_pass = ""
-
 if WIN:
-    if not os.path.isfile("neoman.pfx"):
-        print "neoman.pfx not found, not signing executable!"
-    else:
-        pfx_pass = getpass('Enter password for PFX file: ')
-        os.system("signtool.exe sign /f neoman.pfx /p %s /t http://timestamp.verisign.com/scripts/timstamp.dll \"%s\"" %
-                 (pfx_pass, exe.name))
+      os.system("signtool.exe sign /t http://timestamp.verisign.com/scripts/timstamp.dll \"%s\"" % exe.name)
 
 coll = COLLECT(exe,
                a.binaries,
@@ -147,6 +139,5 @@ if WIN:
     os.system('makensis.exe -D"NEOMAN_VERSION=%s" resources/neoman.nsi' %
               ver_str)
     installer = "dist/yubikey-neo-manager-%s-win.exe" % ver_str
-    os.system("signtool.exe sign /f neoman.pfx /p %s /t http://timestamp.verisign.com/scripts/timstamp.dll \"%s\"" %
-             (pfx_pass, installer))
+    os.system("signtool.exe sign /t http://timestamp.verisign.com/scripts/timstamp.dll \"%s\"" % installer)
     print "Installer created: %s" % installer
