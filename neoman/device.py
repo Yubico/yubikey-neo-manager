@@ -48,7 +48,7 @@ class BaseDevice(object):
 
     @property
     def allowed_modes(self):
-        return (True, True, self.version >= (3, 3, 0))
+        return (False, False, False)
 
     @property
     def has_ccid(self):

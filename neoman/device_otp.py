@@ -87,6 +87,10 @@ class OTPDevice(BaseDevice):
         return self._mode
 
     @property
+    def allowed_modes(self):
+        return (True, True, self._version >= (3, 3, 0))
+
+    @property
     def serial(self):
         return self._serial
 

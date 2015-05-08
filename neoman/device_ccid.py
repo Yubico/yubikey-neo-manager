@@ -38,8 +38,13 @@ if ykneomgr_global_init(1 if 'NEOMAN_DEBUG' in os.environ else 0) != 0:
 libversion = ykneomgr_check_version(None)
 
 
+U2F_SELECT_1 = '00a4040008a0000006472f0001'.decode('hex')
+U2F_SELECT_2 = '00a4040007a0000005271002'.decode('hex')
+
+
 class CCIDDevice(BaseDevice):
     device_type = 'CCID'
+    version = (0, 0, 0)
 
     def __init__(self, dev, dev_str=None):
         self._dev = dev
@@ -48,18 +53,27 @@ class CCIDDevice(BaseDevice):
         self._locked = True
         self._serial = ykneomgr_get_serialno(dev) or None
         self._mode = ykneomgr_get_mode(dev)
-        self._version = (
-            ykneomgr_get_version_major(dev),
-            ykneomgr_get_version_minor(dev),
-            ykneomgr_get_version_build(dev)
-        )
+        # self._version = (
+        #     ykneomgr_get_version_major(dev),
+        #     ykneomgr_get_version_minor(dev),
+        #     ykneomgr_get_version_build(dev)
+        # )
+        self._supports_u2f = self._has_u2f_applet()
         self._apps = None
         self._broken = False
+
+    def _has_u2f_applet(self):
+        return '\x90\x00' in [self.send_apdu(U2F_SELECT_1)[-2:],
+                              self.send_apdu(U2F_SELECT_2)[-2:]]
 
     def check(self, status):
         if status != 0:
             self._broken = True
             raise YkNeoMgrError(status)
+
+    @property
+    def allowed_modes(self):
+        return (True, True, self._supports_u2f)
 
     @property
     def key(self):
@@ -80,10 +94,6 @@ class CCIDDevice(BaseDevice):
     @property
     def serial(self):
         return self._serial
-
-    @property
-    def version(self):
-        return self._version
 
     def unlock(self):
         self._locked = True

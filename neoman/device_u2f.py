@@ -56,14 +56,15 @@ U2FHID_YUBIKEY_DEVICE_CONFIG = TYPE_INIT | U2F_VENDOR_FIRST
 
 class U2FDevice(BaseDevice):
     device_type = 'U2F'
+    version = (0, 0, 0)
     allowed_modes = (True, True, True)
 
-    def __init__(self, devs, index, mode=MODE.mode_for_flags(False, False, True)):
+    def __init__(self, devs, index,
+                 mode=MODE.mode_for_flags(False, False, True)):
         self._devs = devs
         self._index = index
         self._mode = mode
         self._serial = None
-        self._version = (0, 0, 0)
 
     @property
     def mode(self):
@@ -72,10 +73,6 @@ class U2FDevice(BaseDevice):
     @property
     def serial(self):
         return self._serial
-
-    @property
-    def version(self):
-        return self._version
 
     def _sendrecv(self, cmd, data):
         buf_size = c_size_t(1024)
