@@ -6,7 +6,7 @@
 Name "YubiKey NEO Manager"
 
 ; The file to write
-OutFile "../dist/yubikey-neo-manager-${NEOMAN_VERSION}.exe"
+OutFile "../dist/yubikey-neo-manager-${NEOMAN_VERSION}-win.exe"
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\Yubico\YubiKey NEO Manager"
