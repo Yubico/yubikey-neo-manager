@@ -43,9 +43,6 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.build_ui())
 
         self.resize(settings.value('window/size', QtCore.QSize(0, 0)))
-        pos = settings.value('window/pos')
-        if pos:
-            self.move(pos)
 
     def build_ui(self):
         widget = QtGui.QWidget()
@@ -81,7 +78,6 @@ class MainWindow(QtGui.QMainWindow):
 
     def closeEvent(self, event):
         settings.setValue('window/size', self.size())
-        settings.setValue('window/pos', self.pos())
         event.accept()
 
     def customEvent(self, event):
