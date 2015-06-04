@@ -10,3 +10,6 @@ neoman/qt_resources.py
 .DS_Store
 Yubikey Neo Manager.app
 Yubikey NEO Manager.pkg
+
+# IntelliJ
+.idea/
