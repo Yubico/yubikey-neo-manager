@@ -30,38 +30,17 @@ import time
 import argparse
 import neoman.qt_resources
 from PySide import QtGui, QtCore
-from neoman.view.main import MainWindow
+from neoman.view.main import CentralWidget
 from neoman.model.neo import AvailableNeos
 from neoman.model.applet import AppletManager
-from neoman.worker import Worker
 from neoman import __version__ as version, messages as m
+from neoman.yubicommon import qt
 
 
-if getattr(sys, 'frozen', False):
-    # we are running in a PyInstaller bundle
-    basedir = sys._MEIPASS
-else:
-    # we are running in a normal Python environment
-    basedir = os.path.dirname(__file__)
-
-# Font fix for OSX
-if sys.platform == 'darwin':
-    from platform import mac_ver
-    mac_version = tuple(mac_ver()[0].split('.'))
-    if (10, 9) <= mac_version < (10, 10):  # Mavericks
-        QtGui.QFont.insertSubstitution(".Lucida Grande UI", "Lucida Grande")
-    if (10, 10) <= mac_version:  # Yosemite
-        QtGui.QFont.insertSubstitution(".Helvetica Neue DeskInterface", "Helvetica Neue")
-
-
-class NeomanApplication(QtGui.QApplication):
+class NeomanApplication(qt.Application):
 
     def __init__(self, argv):
-        super(NeomanApplication, self).__init__(argv)
-
-        self._set_basedir()
-
-        m._translate(self)
+        super(NeomanApplication, self).__init__(m)
 
         QtCore.QCoreApplication.setOrganizationName(m.organization)
         QtCore.QCoreApplication.setOrganizationDomain(m.domain)
@@ -75,10 +54,8 @@ class NeomanApplication(QtGui.QApplication):
         self.aboutToQuit.connect(self.available_neos.stop)
 
         self.appletmanager = AppletManager()
-        self.window = self._create_window()
+        self._init_window()
 
-        self.worker = Worker(self.window)
-        self.aboutToQuit.connect(self.worker.work_thread.quit)
         self.appletmanager.update()
 
     def _parse_args(self):
@@ -91,21 +68,12 @@ class NeomanApplication(QtGui.QApplication):
 
         return parser.parse_args()
 
-    def _set_basedir(self):
-        if getattr(sys, 'frozen', False):
-            # we are running in a PyInstaller bundle
-            self.basedir = sys._MEIPASS
-        else:
-            # we are running in a normal Python environment
-            self.basedir = os.path.dirname(__file__)
-
-    def _create_window(self):
-        window = MainWindow()
-        window.setWindowTitle(m.win_title_1 % version)
-        window.setWindowIcon(QtGui.QIcon(':/neoman.png'))
-        window.show()
-        window.raise_()
-        return window
+    def _init_window(self):
+        self.window.setWindowTitle(m.win_title_1 % version)
+        self.window.setWindowIcon(QtGui.QIcon(':/neoman.png'))
+        self.window.setCentralWidget(CentralWidget())
+        self.window.show()
+        self.window.raise_()
 
 
 def main():

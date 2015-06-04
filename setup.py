@@ -25,24 +25,12 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from setuptools import setup
-from release import release
-from qt_resources import qt_resources, qt_sdist
-import re
+from neoman.yubicommon.qt import qt_resources, qt_sdist
+from neoman.yubicommon import setup
 
-VERSION_PATTERN = re.compile(r"(?m)^__version__\s*=\s*['\"](.+)['\"]$")
-
-
-def get_version():
-    """Return the current version as defined by neoman/__init__.py."""
-
-    with open('neoman/__init__.py', 'r') as f:
-        match = VERSION_PATTERN.search(f.read())
-        return match.group(1)
 
 setup(
     name='yubikey-neo-manager',
-    version=get_version(),
     author='Dain Nilsson',
     author_email='dain@yubico.com',
     maintainer='Yubico Open Source Maintainers',
@@ -58,8 +46,8 @@ setup(
     install_requires=['PySide', 'pycrypto'],
     test_suite='nose.collector',
     tests_require=[''],
-    cmdclass={'release': release, 'qt_resources': qt_resources,
-              'sdist': qt_sdist},
+    yc_requires=['ctypes', 'qt'],
+    cmdclass={'qt_resources': qt_resources('neoman'), 'sdist': qt_sdist},
     classifiers=[
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',

@@ -30,6 +30,7 @@ from Crypto.Signature import PKCS1_PSS
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from neoman.model.jsapi import JS_API, AppletNotInstalledException
+from neoman.networker import NetWorker
 from neoman.storage import CONFIG_HOME, capstore
 from neoman import messages as m
 import os
@@ -89,7 +90,8 @@ class AppletManager(object):
 
     def update(self):
         worker = QtCore.QCoreApplication.instance().worker
-        worker.download_bg(self._db_url, self._updated)
+        networker = NetWorker(worker)
+        networker.download_bg(self._db_url, self._updated)
 
     def _updated(self, data):
         if not isinstance(data, QtNetwork.QNetworkReply.NetworkError):

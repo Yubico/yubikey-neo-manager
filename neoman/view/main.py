@@ -35,27 +35,22 @@ from neoman.view.applet import AppletPage
 from neoman.storage import settings
 
 
-class MainWindow(QtGui.QMainWindow):
+class CentralWidget(QtGui.QWidget):
 
     def __init__(self):
-        super(MainWindow, self).__init__()
+        super(CentralWidget, self).__init__()
+        self.build_ui()
 
-        self.setCentralWidget(self.build_ui())
-
-        self.resize(settings.value('window/size', QtCore.QSize(0, 0)))
+        # self.resize(settings.value('window/size', QtCore.QSize(0, 0))) # TODO
 
     def build_ui(self):
-        widget = QtGui.QWidget()
-        layout = QtGui.QHBoxLayout()
+        layout = QtGui.QHBoxLayout(self)
         layout.addWidget(self.build_nav())
         layout.addWidget(self.build_main())
 
         self._nav.subpage.connect(self._main.setContent)
         self._main.setContent(self._nav.current)
         self._main.current.connect(self._nav.setCurrent)
-        widget.setLayout(layout)
-
-        return widget
 
     def build_nav(self):
         layout = QtGui.QVBoxLayout()
@@ -79,9 +74,6 @@ class MainWindow(QtGui.QMainWindow):
     def closeEvent(self, event):
         settings.setValue('window/size', self.size())
         event.accept()
-
-    def customEvent(self, event):
-        event.callback()
 
 
 class ContentWidget(QtGui.QStackedWidget):
