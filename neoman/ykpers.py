@@ -26,7 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from ctypes import (Structure, POINTER, c_int, c_uint8, c_uint, c_ubyte,
                     c_char_p)
-from neoman.libloader import load_library
+from neoman.yubicommon.ctypes.libloader import load_library
 
 _lib = load_library('ykpers-1', '1')
 

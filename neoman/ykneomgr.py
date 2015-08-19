@@ -26,7 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from ctypes import (Structure, POINTER,
                     c_int, c_uint, c_uint8, c_char_p, c_size_t)
-from neoman.libloader import load_library
+from neoman.yubicommon.ctypes.libloader import load_library
 
 _lib = load_library('ykneomgr', '0')
 
