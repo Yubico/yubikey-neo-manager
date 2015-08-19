@@ -33,6 +33,7 @@ from neoman.view.welcome import WelcomePage
 from neoman.view.neo import NeoPage
 from neoman.view.applet import AppletPage
 from neoman.storage import settings
+from PySide.QtGui import QSizePolicy
 
 
 class CentralWidget(QtGui.QWidget):
@@ -62,8 +63,8 @@ class CentralWidget(QtGui.QWidget):
         widget.setLayout(layout)
 
         widget.setMaximumWidth(200)
-        widget.setSizePolicy(QtGui.QSizePolicy.Fixed,
-                             QtGui.QSizePolicy.Expanding)
+        widget.setSizePolicy(QSizePolicy.Fixed,
+                             QSizePolicy.Expanding)
         return widget
 
     def build_main(self):
@@ -100,8 +101,8 @@ class ContentWidget(QtGui.QStackedWidget):
         self.addWidget(self._app_page)
 
         self.setMinimumSize(420, 240)
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                           QtGui.QSizePolicy.Expanding)
+        self.setSizePolicy(QSizePolicy.Expanding,
+                           QSizePolicy.Expanding)
 
     @QtCore.Slot(YubiKeyNeo)
     @QtCore.Slot(Applet)

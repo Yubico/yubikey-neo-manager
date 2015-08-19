@@ -24,13 +24,13 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-import os
 import sys
 import time
 import argparse
 import signal
 import neoman.qt_resources
 from PySide import QtGui, QtCore
+
 from neoman.view.main import CentralWidget
 from neoman.model.neo import AvailableNeos
 from neoman.model.applet import AppletManager

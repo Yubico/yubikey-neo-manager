@@ -58,10 +58,9 @@ class TabWidgetWithAbout(QtGui.QTabWidget):
         self.setCornerWidget(btn)
 
     def _libversions(self):
-        libs = []
-        libs.append('libykneomgr: %s' % ykneomgr_version)
-        libs.append('ykpers: %s' % ykpers_version)
-        libs.append('libu2f-host: %s' % u2fh_version)
+        libs = ['libykneomgr: ' + ykneomgr_version,
+                'ykpers: ' + ykpers_version,
+                'libu2f-host: ' + u2fh_version]
         return '<br>'.join(libs)
 
     def _about(self):
