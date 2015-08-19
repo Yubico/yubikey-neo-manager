@@ -43,17 +43,14 @@ setup(
     entry_points={
         'gui_scripts': ['neoman=neoman.__main__:main']
     },
-    setup_requires=['nose>=1.0'],
     install_requires=['PySide', 'pycrypto'],
-    test_suite='nose.collector',
-    tests_require=[''],
     yc_requires=['ctypes', 'qt'],
     cmdclass={'executable': executable, 'qt_resources': qt_resources('neoman')},
     classifiers=[
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: X11 Applications :: Qt',
         'Intended Audience :: End Users/Desktop',
         'Topic :: Security :: Cryptography',
