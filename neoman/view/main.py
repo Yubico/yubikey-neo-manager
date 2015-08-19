@@ -40,8 +40,7 @@ class CentralWidget(QtGui.QWidget):
     def __init__(self):
         super(CentralWidget, self).__init__()
         self.build_ui()
-
-        # self.resize(settings.value('window/size', QtCore.QSize(0, 0))) # TODO
+        self.resize(settings.value('window/size', QtCore.QSize(0, 0)))
 
     def build_ui(self):
         layout = QtGui.QHBoxLayout(self)
