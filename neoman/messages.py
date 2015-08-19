@@ -58,7 +58,6 @@ otp_u2f_ccid = "OTP+U2F+CCID"
 ccid_touch_eject = "CCID with touch eject"
 requires_ccid = "Requires CCID mode"
 settings = "Settings"
-installed_apps = "Installed apps"
 change_name = "Change name"
 change_name_desc = "Change the name of the device."
 manage_keys = "Manage transport keys"
@@ -118,7 +117,7 @@ unsupported_device = "The %s doesn't support this device." % app_name
 about_1 = "About: %s"
 libraries = "Library versions"
 about_link_1 = "For help and discussion, see our <a href=\"%s\">forum</a>."
-copyright = "Copyright &copy; 2014 Yubico"
+copyright = "Copyright &copy; Yubico"
 
 
 def _translate(qt):

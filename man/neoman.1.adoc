@@ -1,0 +1,19 @@
+neoman(1)
+===========
+:doctype: manpage
+:man source: neoman
+:man manual: YubiKey NEO Manager Manual
+
+== Name
+neoman - Graphical tool for configuring a YubiKey NEO
+
+== Synopsis
+*neoman*
+
+== Description
+YubiKey NEO manager is a graphical utility to configure and program YubiKey NEO
+devices.
+
+== Bugs
+Report bugs in the issue tracker (https://github.com/Yubico/yubikey-neo-manager/issues)
+

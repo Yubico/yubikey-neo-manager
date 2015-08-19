@@ -33,29 +33,24 @@ from neoman.view.welcome import WelcomePage
 from neoman.view.neo import NeoPage
 from neoman.view.applet import AppletPage
 from neoman.storage import settings
+from PySide.QtGui import QSizePolicy
 
 
-class MainWindow(QtGui.QMainWindow):
+class CentralWidget(QtGui.QWidget):
 
     def __init__(self):
-        super(MainWindow, self).__init__()
-
-        self.setCentralWidget(self.build_ui())
-
+        super(CentralWidget, self).__init__()
+        self.build_ui()
         self.resize(settings.value('window/size', QtCore.QSize(0, 0)))
 
     def build_ui(self):
-        widget = QtGui.QWidget()
-        layout = QtGui.QHBoxLayout()
+        layout = QtGui.QHBoxLayout(self)
         layout.addWidget(self.build_nav())
         layout.addWidget(self.build_main())
 
         self._nav.subpage.connect(self._main.setContent)
         self._main.setContent(self._nav.current)
         self._main.current.connect(self._nav.setCurrent)
-        widget.setLayout(layout)
-
-        return widget
 
     def build_nav(self):
         layout = QtGui.QVBoxLayout()
@@ -68,8 +63,8 @@ class MainWindow(QtGui.QMainWindow):
         widget.setLayout(layout)
 
         widget.setMaximumWidth(200)
-        widget.setSizePolicy(QtGui.QSizePolicy.Fixed,
-                             QtGui.QSizePolicy.Expanding)
+        widget.setSizePolicy(QSizePolicy.Fixed,
+                             QSizePolicy.Expanding)
         return widget
 
     def build_main(self):
@@ -79,9 +74,6 @@ class MainWindow(QtGui.QMainWindow):
     def closeEvent(self, event):
         settings.setValue('window/size', self.size())
         event.accept()
-
-    def customEvent(self, event):
-        event.callback()
 
 
 class ContentWidget(QtGui.QStackedWidget):
@@ -109,8 +101,8 @@ class ContentWidget(QtGui.QStackedWidget):
         self.addWidget(self._app_page)
 
         self.setMinimumSize(420, 240)
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                           QtGui.QSizePolicy.Expanding)
+        self.setSizePolicy(QSizePolicy.Expanding,
+                           QSizePolicy.Expanding)
 
     @QtCore.Slot(YubiKeyNeo)
     @QtCore.Slot(Applet)

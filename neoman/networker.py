@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Yubico AB
+# Copyright (c) 2015 Yubico AB
 # All rights reserved.
 #
 #   Redistribution and use in source and binary forms, with or
@@ -25,48 +25,44 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from setuptools import Command
-from distutils.errors import DistutilsSetupError
-from setuptools.command.sdist import sdist
-import os
+from PySide import QtCore, QtNetwork
+from time import sleep
 
 
-class qt_sdist(sdist):
-    def run(self):
-        self.run_command('qt_resources')
+class NetWorker:
 
-        sdist.run(self)
+    def __init__(self, worker):
+        self._done = None
+        self._dl = None
+        self._worker = worker
+        self._manager = QtNetwork.QNetworkAccessManager()
+        self._manager.finished.connect(self._dl_done)
 
+    def download(self, url, callback=None):
+        self._done = False
 
-class qt_resources(Command):
-    description = "convert file resources into code"
-    user_options = []
-    boolean_options = []
+        def mark_done(result):
+            self._done = True
+            callback(result)
 
-    def initialize_options(self):
-        pass
+        def dl():
+            self.download_bg(url, mark_done)
+            while not self._done:
+                sleep(0.1)
+        self._worker.post('Downloading...', dl)
 
-    def finalize_options(self):
-        self.cwd = os.getcwd()
-        self.source = os.path.join(self.cwd, 'qt_resources')
-        self.target = os.path.join(self.cwd, 'neoman', 'qt_resources.py')
+    def download_bg(self, url, callback=None):
+        url = QtCore.QUrl(url)
+        request = QtNetwork.QNetworkRequest(url)
+        response = self._manager.get(request)
+        self._dl = (request, response, callback)
 
-    def _create_qrc(self):
-        qrc = os.path.join(self.source, 'qt_resources.qrc')
-        with open(qrc, 'w') as f:
-            f.write('<RCC>\n<qresource>\n')
-            for fname in os.listdir(self.source):
-                f.write('<file>%s</file>\n' % fname)
-            f.write('</qresource>\n</RCC>\n')
-        return qrc
-
-    def run(self):
-        if os.getcwd() != self.cwd:
-            raise DistutilsSetupError("Must be in package root!")
-
-        qrc = self._create_qrc()
-        self.execute(os.system,
-                     ('pyside-rcc "%s" -o "%s"' % (qrc, self.target),))
-        os.unlink(qrc)
-
-        self.announce("QT resources compiled into %s" % self.target)
+    def _dl_done(self):
+        (req, resp, callback) = self._dl
+        del self._dl
+        if callback:
+            result = resp.error()
+            if result is QtNetwork.QNetworkReply.NoError:
+                result = resp.readAll()
+            resp.close()
+            callback(result)

@@ -24,25 +24,13 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+from neoman.yubicommon.setup.exe import executable
+from neoman.yubicommon.setup.qt import qt_resources
+from neoman.yubicommon.setup import setup
 
-from setuptools import setup
-from release import release
-from qt_resources import qt_resources, qt_sdist
-import re
-
-VERSION_PATTERN = re.compile(r"(?m)^__version__\s*=\s*['\"](.+)['\"]$")
-
-
-def get_version():
-    """Return the current version as defined by neoman/__init__.py."""
-
-    with open('neoman/__init__.py', 'r') as f:
-        match = VERSION_PATTERN.search(f.read())
-        return match.group(1)
 
 setup(
     name='yubikey-neo-manager',
-    version=get_version(),
     author='Dain Nilsson',
     author_email='dain@yubico.com',
     maintainer='Yubico Open Source Maintainers',
@@ -52,19 +40,17 @@ setup(
     license='BSD 2 clause',
     packages=['neoman', 'neoman.model', 'neoman.view'],
     package_data={'neoman': ['appletdb.json', 'js_api.js']},
-    #include_package_data=True,
-    scripts=['scripts/neoman'],
-    setup_requires=['nose>=1.0'],
+    entry_points={
+        'gui_scripts': ['neoman=neoman.__main__:main']
+    },
     install_requires=['PySide', 'pycrypto'],
-    test_suite='nose.collector',
-    tests_require=[''],
-    cmdclass={'release': release, 'qt_resources': qt_resources,
-              'sdist': qt_sdist},
+    yc_requires=['ctypes', 'qt'],
+    cmdclass={'executable': executable, 'qt_resources': qt_resources('neoman')},
     classifiers=[
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: X11 Applications :: Qt',
         'Intended Audience :: End Users/Desktop',
         'Topic :: Security :: Cryptography',
