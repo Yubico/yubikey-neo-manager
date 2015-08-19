@@ -28,6 +28,7 @@ import os
 import sys
 import time
 import argparse
+import signal
 import neoman.qt_resources
 from PySide import QtGui, QtCore
 from neoman.view.main import CentralWidget
@@ -83,3 +84,8 @@ def main():
     app.deleteLater()
     time.sleep(0.01)
     sys.exit(status)
+
+
+if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    main()
