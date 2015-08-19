@@ -5,7 +5,7 @@ include NEWS
 include ChangeLog
 include neoman/js_api.js
 include neoman/appletdb.json
-include scripts/*.1
 include resources/*
 include qt_resources/*
 include doc/*.adoc
+include man/*

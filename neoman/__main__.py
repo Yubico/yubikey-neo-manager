@@ -78,6 +78,7 @@ class NeomanApplication(qt.Application):
 
 
 def main():
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = NeomanApplication(sys.argv)
     status = app.exec_()
     app.worker.thread().quit()
@@ -87,5 +88,4 @@ def main():
 
 
 if __name__ == '__main__':
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
     main()

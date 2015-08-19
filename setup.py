@@ -24,9 +24,9 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-
-from neoman.yubicommon.qt import qt_resources, qt_sdist
-from neoman.yubicommon import setup
+from neoman.yubicommon.setup.exe import executable
+from neoman.yubicommon.setup.qt import qt_resources
+from neoman.yubicommon.setup import setup
 
 
 setup(
@@ -48,7 +48,7 @@ setup(
     test_suite='nose.collector',
     tests_require=[''],
     yc_requires=['ctypes', 'qt'],
-    cmdclass={'qt_resources': qt_resources('neoman'), 'sdist': qt_sdist},
+    cmdclass={'executable': executable, 'qt_resources': qt_resources('neoman')},
     classifiers=[
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
