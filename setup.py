@@ -40,8 +40,6 @@ setup(
     license='BSD 2 clause',
     packages=['neoman', 'neoman.model', 'neoman.view'],
     package_data={'neoman': ['appletdb.json', 'js_api.js']},
-    #include_package_data=True,
-    #scripts=['scripts/neoman'],
     entry_points={
         'gui_scripts': ['neoman=neoman.__main__:main']
     },
