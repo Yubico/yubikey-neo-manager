@@ -25,15 +25,12 @@ class NetWorker:
         self._worker.post('Downloading...', dl)
 
     def download_bg(self, url, callback=None):
-        print 'download_bg start'
         url = QtCore.QUrl(url)
         request = QtNetwork.QNetworkRequest(url)
         response = self._manager.get(request)
         self._dl = (request, response, callback)
-        print 'download_bg done'
 
     def _dl_done(self):
-        print 'dl done' # TODO: Never getting here
         (req, resp, callback) = self._dl
         del self._dl
         if callback:

@@ -87,11 +87,10 @@ class AppletManager(object):
         self._hidden = []
         self._applets = []
         self._read_db()
+        self.networker = NetWorker(QtCore.QCoreApplication.instance().worker)
 
     def update(self):
-        worker = QtCore.QCoreApplication.instance().worker
-        networker = NetWorker(worker)
-        networker.download_bg(self._db_url, self._updated)
+        self.networker.download_bg(self._db_url, self._updated)
 
     def _updated(self, data):
         if not isinstance(data, QtNetwork.QNetworkReply.NetworkError):
