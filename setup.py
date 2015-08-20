@@ -38,7 +38,6 @@ setup(
     url='https://github.com/Yubico/yubikey-neo-manager',
     description='Tool for managing your YubiKey NEO configuration.',
     license='BSD 2 clause',
-    packages=['neoman', 'neoman.model', 'neoman.view'],
     package_data={'neoman': ['appletdb.json', 'js_api.js']},
     entry_points={
         'gui_scripts': ['neoman=neoman.__main__:main']
