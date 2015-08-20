@@ -1,12 +1,12 @@
 !include "MUI2.nsh"
 
-!define MUI_ICON "neoman.ico"
+!define MUI_ICON "yubikey-neo-manager.ico"
 
 ; The name of the installer
 Name "YubiKey NEO Manager"
 
 ; The file to write
-OutFile "../dist/yubikey-neo-manager-${NEOMAN_VERSION}-win.exe"
+OutFile "../dist/yubikey-neo-manager-${VERSION}-win.exe"
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\Yubico\YubiKey NEO Manager"
@@ -67,7 +67,7 @@ Section
   WriteRegStr       HKLM $MYTMP "DisplayName"     "YubiKey NEO Manager"
   WriteRegExpandStr HKLM $MYTMP "UninstallString" '"$INSTDIR\uninstall.exe"'
   WriteRegExpandStr HKLM $MYTMP "InstallLocation" "$INSTDIR"
-  WriteRegStr       HKLM $MYTMP "DisplayVersion"  "${NEOMAN_VERSION}"
+  WriteRegStr       HKLM $MYTMP "DisplayVersion"  "${VERSION}"
   WriteRegStr       HKLM $MYTMP "Publisher"       "Yubico AB"
   WriteRegStr       HKLM $MYTMP "URLInfoAbout"    "http://www.yubico.com"
   WriteRegDWORD     HKLM $MYTMP "NoModify"        "1"
