@@ -31,6 +31,7 @@ from neoman.yubicommon.setup import setup
 
 setup(
     name='yubikey-neo-manager',
+    longname='YubiKey NEO Manager',
     author='Dain Nilsson',
     author_email='dain@yubico.com',
     maintainer='Yubico Open Source Maintainers',
