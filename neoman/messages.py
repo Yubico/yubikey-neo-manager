@@ -68,6 +68,7 @@ change_mode_1 = "Change connection mode [%s]"
 change_mode_desc = ("Set the connection mode used by your YubiKey.\nFor "
                     "this setting to take effect, you will need to unplug, "
                     "and re-attach your YubiKey.")
+configure_slot_2 = "Configure long press"
 remove_device = "\nRemove your YubiKey now.\n"
 mode_note = ("To be able to list/manage apps, your YubiKey must have CCID "
              "enabled.")

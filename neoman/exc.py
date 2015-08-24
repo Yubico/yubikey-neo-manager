@@ -40,3 +40,15 @@ class ModeSwitchError(Exception):
     def __init__(self):
         super(ModeSwitchError, self).__init__(
             "Unable to set mode, is configuration locked?")
+
+class DeviceLockedError(Exception):
+
+    def __init__(self):
+        super(DeviceLockedError, self).__init__('Device is locked!')
+
+
+class InvalidSlotError(Exception):
+
+    def __init__(self):
+        super(InvalidSlotError, self).__init__(
+            'The selected slot does not contain a valid OATH credential.')

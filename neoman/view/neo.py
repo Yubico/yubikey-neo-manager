@@ -139,6 +139,10 @@ class SettingsTab(QtGui.QWidget):
         # TODO: Re-add when implemented:
         # layout.addWidget(button)
 
+        self._slot2_btn = QtGui.QPushButton(m.configure_slot_2)
+        #self._mode_btn.clicked.connect(self.change_mode)
+        layout.addWidget(self._slot2_btn)
+
         self._mode_btn = QtGui.QPushButton(m.change_mode)
         self._mode_btn.clicked.connect(self.change_mode)
         layout.addWidget(self._mode_btn)
