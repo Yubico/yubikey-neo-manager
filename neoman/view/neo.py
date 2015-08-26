@@ -27,7 +27,9 @@
 import os
 from PySide import QtGui, QtCore
 from functools import partial
+from PySide.QtGui import QHBoxLayout
 from neoman import messages as m
+from neoman.configuration_wizard import ConfigWizard
 from neoman.storage import settings
 from neoman.exc import ModeSwitchError
 from neoman.model.neo import YubiKeyNeo
@@ -79,11 +81,8 @@ class NeoPage(TabWidgetWithAbout):
     def setNeo(self, neo):
         self._supported = neo and neo.supported
         self.clear()
-        if self._supported:
-            for (tab, title) in self._tabs:
-                super(NeoPage, self).addTab(tab, title)
-        else:
-            super(NeoPage, self).addTab(self._unsupported_tab, m.settings)
+        for (tab, title) in self._tabs:
+            super(NeoPage, self).addTab(tab, title)
 
         self._neo.emit(neo)
 
@@ -139,9 +138,16 @@ class SettingsTab(QtGui.QWidget):
         # TODO: Re-add when implemented:
         # layout.addWidget(button)
 
-        self._slot2_btn = QtGui.QPushButton(m.configure_slot_2)
-        #self._mode_btn.clicked.connect(self.change_mode)
-        layout.addWidget(self._slot2_btn)
+        hbox = QHBoxLayout()
+        self._slot1_btn = QtGui.QPushButton(m.configure_slot1)
+        self._slot1_btn.clicked.connect(self.configure_slot1)
+        hbox.addWidget(self._slot1_btn)
+
+        self._slot2_btn = QtGui.QPushButton(m.configure_slot2)
+        self._slot2_btn.clicked.connect(self.configure_slot2)
+        hbox.addWidget(self._slot2_btn)
+
+        layout.addLayout(hbox)
 
         self._mode_btn = QtGui.QPushButton(m.change_mode)
         self._mode_btn.clicked.connect(self.change_mode)
@@ -160,6 +166,7 @@ class SettingsTab(QtGui.QWidget):
         if not neo:
             return
 
+        self._mode_btn.setDisabled(neo.version[0] < 3)
         self._name_btn.setDisabled(neo.serial is None)
         self._name.setText(m.name_1 % neo.name)
         self._serial.setText(m.serial_1 % neo.serial)
@@ -185,6 +192,16 @@ class SettingsTab(QtGui.QWidget):
 
     def manage_keys(self):
         print m.manage_keys
+
+    def configure_slot1(self):
+        self.configure_slot(1)
+
+    def configure_slot2(self):
+        self.configure_slot(2)
+
+    def configure_slot(self, slot):
+        wizard = ConfigWizard(slot, self._neo, self)
+        wizard.show()
 
     def change_mode(self):
         mode = ModeDialog.change_mode(self._neo, self)

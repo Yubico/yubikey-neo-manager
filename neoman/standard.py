@@ -24,7 +24,7 @@
 # non-source form of such a combination shall include the source code
 # for the parts of OpenSSL used as well as that of the covered work.
 
-from exc import CardError, DeviceLockedError
+from exc import DeviceLockedError
 from utils import (der_read, der_pack, hmac_sha1, derive_key, get_random_bytes,
                     time_challenge, parse_truncated, format_code)
 from hashlib import sha1

@@ -37,14 +37,14 @@ otp_u2f_disabled = "OTP and U2F modes cannot currently both be active."
 
 organization = "Yubico"
 domain = "yubico.com"
-app_name = "YubiKey NEO Manager"
-win_title_1 = "YubiKey NEO Manager (%s)"
+app_name = "YubiKey Manager"
+win_title_1 = "YubiKey Manager (%s)"
 ok = "OK"
 cancel = "Cancel"
 wait = "Please wait..."
 welcome = "Welcome"
 welcome_desc = "No device found.\n\n\n" \
-    "Please insert a YubiKey to continue..."
+    "Insert a YubiKey to continue..."
 
 note_1 = "NOTE: %s"
 overview = "Overview"
@@ -68,7 +68,8 @@ change_mode_1 = "Change connection mode [%s]"
 change_mode_desc = ("Set the connection mode used by your YubiKey.\nFor "
                     "this setting to take effect, you will need to unplug, "
                     "and re-attach your YubiKey.")
-configure_slot_2 = "Configure long press"
+configure_slot1 = "Configure short press"
+configure_slot2 = "Configure long press"
 remove_device = "\nRemove your YubiKey now.\n"
 mode_note = ("To be able to list/manage apps, your YubiKey must have CCID "
              "enabled.")
