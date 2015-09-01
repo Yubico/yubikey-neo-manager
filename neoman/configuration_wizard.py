@@ -10,17 +10,26 @@ from neoman.legacy_otp import StaticPassword, open_otp
 
 
 MODHEX_ALPHABET = 'cbdefghijklnrtuv'
+HEX_ALPHABET = '0123456789ABCDEF'
 
 
 class ConfigWizard(QtGui.QWizard):
+
+    Page_Function = 1
+    Page_StaticPassword = 2
+    Page_ChallengeResponse = 3
+    Page_Results = 4
+
     def __init__(self, slot, neo, parent=None):
         super(ConfigWizard, self).__init__(parent)
         self.slot = slot
         self.neo = neo
-        self.addPage(FunctionPage(self))
-        self.addPage(StaticPasswordPage(self))
-        self.addPage(ResultsPage(slot, neo, self))
-        self.setWindowTitle('Configuration')
+        self.setWindowTitle('Slot Configuration')
+
+        self.setPage(ConfigWizard.Page_Function, FunctionPage(self))
+        self.setPage(ConfigWizard.Page_StaticPassword, StaticPasswordPage(self))
+        self.setPage(ConfigWizard.Page_ChallengeResponse, ChallengeResponsePage(self))
+        self.setPage(ConfigWizard.Page_Results, ResultsPage(slot, neo, self))
 
 
 class FunctionPage(QWizardPage):
@@ -32,22 +41,28 @@ class FunctionPage(QWizardPage):
 
         groupBox = QGroupBox("Functionality")
 
-        static = QRadioButton("&Static password")
-        otp = QRadioButton("YubiKey &OTP")
-        hotp = QRadioButton("OATH-&HOTP")
+        self.static = QRadioButton("&Static password")
+        self.challenge = QRadioButton("&Challenge-response")
+        self.otp = QRadioButton("YubiKey &OTP")
 
-        static.setChecked(True)
+        self.static.setChecked(True)
 
         vbox = QVBoxLayout()
-        vbox.addWidget(static)
-        vbox.addWidget(otp)
-        vbox.addWidget(hotp)
+        vbox.addWidget(self.static)
+        vbox.addWidget(self.challenge)
+        vbox.addWidget(self.otp)
 
         groupBox.setLayout(vbox)
 
         root = QVBoxLayout()
         root.addWidget(groupBox)
         self.setLayout(root)
+
+    def nextId(self):
+        if self.static.isChecked():
+            return ConfigWizard.Page_StaticPassword
+        if self.challenge.isChecked():
+            return ConfigWizard.Page_ChallengeResponse
 
 
 class StaticPasswordPage(QWizardPage):
@@ -62,9 +77,6 @@ class StaticPasswordPage(QWizardPage):
         self.password_field = QLineEdit()
         self.password_field.setMaxLength(38)
         self.password_field.setValidator(ModhexValidator())
-
-        self.scancodes = QLineEdit()
-        self.scancodes.setReadOnly(True)
 
         form = QFormLayout()
         form.addRow(self.tr('&Password:'), self.password_field)
@@ -82,14 +94,59 @@ class StaticPasswordPage(QWizardPage):
 
     def randomize_password(self):
         random = SystemRandom()
-        password = ''.join([MODHEX_ALPHABET[random.randrange(16)] for i in xrange(38)])
+        password = ''.join([MODHEX_ALPHABET[random.randrange(len(MODHEX_ALPHABET))] for i in xrange(38)])
         self.password_field.setText(password)
+
+    def nextId(self):
+        return ConfigWizard.Page_Results
 
 
 class ModhexValidator(QtGui.QRegExpValidator):
     def __init__(self, parent=None):
         rx = QRegExp('[c|b|d|e|f|g|h|i|j|k|l|n|r|t|u|v]*')
         super(ModhexValidator, self).__init__(rx, parent)
+
+
+class ChallengeResponsePage(QWizardPage):
+    def __init__(self, parent=None):
+        super(ChallengeResponsePage, self).__init__(parent)
+
+        self.setTitle('Challenge-response')
+        self.setSubTitle('When given a challenge, the YubiKey will perform a HMAC-SHA1 operation using the configured secret and return the result.')
+        self.setCommitPage(True)
+        self.setButtonText(QWizard.CommitButton, 'Write config')
+
+        self.secret_field = QLineEdit()
+        self.secret_field.setValidator(HexValidator())
+        self.secret_field.setInputMask('HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH')
+
+        form = QFormLayout()
+        form.addRow(self.tr('&Password:'), self.secret_field)
+
+        randomize = QPushButton('Randomize')
+        randomize.clicked.connect(self.randomize_password)
+
+        vbox = QVBoxLayout()
+        vbox.addLayout(form)
+        vbox.addWidget(randomize)
+
+        self.setLayout(vbox)
+
+        self.registerField('hmac_secret', self.secret_field)
+
+    def randomize_password(self):
+        random = SystemRandom()
+        password = ''.join([HEX_ALPHABET[random.randrange(len(HEX_ALPHABET))] for i in xrange(32)])
+        self.secret_field.setText(password)
+
+    def nextId(self):
+        return ConfigWizard.Page_Results
+
+
+class HexValidator(QtGui.QRegExpValidator):
+    def __init__(self, parent=None):
+        rx = QRegExp('[\d|a-f|A-F]*')
+        super(HexValidator, self).__init__(rx, parent)
 
 
 class ResultsPage(QWizardPage):
