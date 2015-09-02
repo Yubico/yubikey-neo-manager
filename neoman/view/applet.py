@@ -74,11 +74,12 @@ class OverviewTab(QtGui.QWidget):
 
         available = QtCore.QCoreApplication.instance().available_neos
         available.changed.connect(self.data_changed)
+        '''
         self._neo_selector = QtGui.QComboBox()
         self._neo_selector.activated.connect(self.neo_selected)
         for neo in available.get():
             self._neo_selector.addItem(neo.name, neo)
-
+        '''
         self._install_button = QtGui.QPushButton()
         self._install_button.clicked.connect(self.install_button_click)
 
@@ -90,7 +91,7 @@ class OverviewTab(QtGui.QWidget):
         col_1.addWidget(self._status)
         #col_1.addWidget(self._aid)
 
-        col_2.addWidget(self._neo_selector)
+        #col_2.addWidget(self._neo_selector)
         if QtCore.QCoreApplication.instance().devmode:
             col_1.addWidget(self._latest_version)
             col_2.addWidget(self._install_button)
@@ -173,8 +174,10 @@ class OverviewTab(QtGui.QWidget):
     def set_neo(self, neo):
         if neo and neo.has_ccid:
             self._neo = neo
+            '''
             self._neo_selector.setCurrentIndex(
                 self._neo_selector.findData(neo))
+            '''
             self.neo_or_applet_changed(neo, self._applet)
 
     def neo_or_applet_changed(self, neo, applet):
@@ -201,16 +204,19 @@ class OverviewTab(QtGui.QWidget):
 
     @QtCore.Slot(int)
     def neo_selected(self, index):
-        self.set_neo(self._neo_selector.itemData(index))
+        pass
+        # self.set_neo(self._neo_selector.itemData(index))
 
     @QtCore.Slot(list)
     def data_changed(self, new_neos):
-        self._neo_selector.clear()
+        #self._neo_selector.clear()
         new_neos = [neo for neo in new_neos if neo.has_ccid]
         for neo in new_neos:
-            self._neo_selector.addItem(neo.name, neo)
+            pass
+            #self._neo_selector.addItem(neo.name, neo)
         if self._neo in new_neos:
-            self._neo_selector.setCurrentIndex(new_neos.index(self._neo))
+            pass
+            #self._neo_selector.setCurrentIndex(new_neos.index(self._neo))
         else:
             self._neo = None if not new_neos else new_neos[0]
             self.neo_or_applet_changed(self._neo, self._applet)
