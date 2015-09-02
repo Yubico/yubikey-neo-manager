@@ -6,7 +6,7 @@ from PySide.QtCore import QRegExp
 from PySide.QtGui import QWizardPage, QVBoxLayout, QGroupBox, QRadioButton, \
     QLineEdit, QFormLayout, QWizard, QLabel, QPushButton
 
-from neoman.legacy_otp import StaticPassword, open_otp
+from neoman.legacy_otp import StaticPassword, open_otp, ChallengeResponse
 
 
 MODHEX_ALPHABET = 'cbdefghijklnrtuv'
@@ -26,31 +26,32 @@ class ConfigWizard(QtGui.QWizard):
         self.neo = neo
         self.setWindowTitle('Slot Configuration')
 
-        self.setPage(ConfigWizard.Page_Function, FunctionPage(self))
+        self.setPage(ConfigWizard.Page_Function, FunctionPage(slot, self))
         self.setPage(ConfigWizard.Page_StaticPassword, StaticPasswordPage(self))
         self.setPage(ConfigWizard.Page_ChallengeResponse, ChallengeResponsePage(self))
         self.setPage(ConfigWizard.Page_Results, ResultsPage(slot, neo, self))
 
 
 class FunctionPage(QWizardPage):
-    def __init__(self, parent=None):
+    def __init__(self, slot, parent=None):
         super(FunctionPage, self).__init__(parent)
 
         self.setTitle('Functionality')
-        self.setSubTitle('The function to be invoked when long-pressing the YubiKey button.')
+        self.setSubTitle('The function to be configured for slot %s.' % slot)
 
         groupBox = QGroupBox("Functionality")
 
         self.static = QRadioButton("&Static password")
         self.challenge = QRadioButton("&Challenge-response")
-        self.otp = QRadioButton("YubiKey &OTP")
+
+        self.registerField('staticpass_radio', self.static)
+        self.registerField('challengeresponse_radio', self.challenge)
 
         self.static.setChecked(True)
 
         vbox = QVBoxLayout()
         vbox.addWidget(self.static)
         vbox.addWidget(self.challenge)
-        vbox.addWidget(self.otp)
 
         groupBox.setLayout(vbox)
 
@@ -72,7 +73,7 @@ class StaticPasswordPage(QWizardPage):
         self.setTitle('Static Password')
         self.setSubTitle('The password that the YubiKey should emit. Only characters from the modhex alphabet (c, b, d, e, f, g, h, i, j, k, l, n, r, t, u, v) may be used.')
         self.setCommitPage(True)
-        self.setButtonText(QWizard.CommitButton, 'Write config')
+        self.setButtonText(QWizard.CommitButton, '&Write config')
 
         self.password_field = QLineEdit()
         self.password_field.setMaxLength(38)
@@ -81,7 +82,7 @@ class StaticPasswordPage(QWizardPage):
         form = QFormLayout()
         form.addRow(self.tr('&Password:'), self.password_field)
 
-        randomize = QPushButton('Randomize')
+        randomize = QPushButton('&Randomize')
         randomize.clicked.connect(self.randomize_password)
 
         vbox = QVBoxLayout()
@@ -114,16 +115,17 @@ class ChallengeResponsePage(QWizardPage):
         self.setTitle('Challenge-response')
         self.setSubTitle('When given a challenge, the YubiKey will perform a HMAC-SHA1 operation using the configured secret and return the result.')
         self.setCommitPage(True)
-        self.setButtonText(QWizard.CommitButton, 'Write config')
+        self.setButtonText(QWizard.CommitButton, '&Write config')
 
         self.secret_field = QLineEdit()
         self.secret_field.setValidator(HexValidator())
-        self.secret_field.setInputMask('HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH')
+        self.secret_field.setInputMask('HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH')
+        self.secret_field.setText('0' * 40)
 
         form = QFormLayout()
-        form.addRow(self.tr('&Password:'), self.secret_field)
+        form.addRow(self.tr('&Secret (hexadecimal):'), self.secret_field)
 
-        randomize = QPushButton('Randomize')
+        randomize = QPushButton('&Randomize')
         randomize.clicked.connect(self.randomize_password)
 
         vbox = QVBoxLayout()
@@ -132,11 +134,11 @@ class ChallengeResponsePage(QWizardPage):
 
         self.setLayout(vbox)
 
-        self.registerField('hmac_secret', self.secret_field)
+        self.registerField('challenge_secret', self.secret_field)
 
     def randomize_password(self):
         random = SystemRandom()
-        password = ''.join([HEX_ALPHABET[random.randrange(len(HEX_ALPHABET))] for i in xrange(32)])
+        password = ''.join([HEX_ALPHABET[random.randrange(len(HEX_ALPHABET))] for i in xrange(40)])
         self.secret_field.setText(password)
 
     def nextId(self):
@@ -161,8 +163,14 @@ class ResultsPage(QWizardPage):
 
         self.neo._mutex.lock()
         try:
-            static_pass = StaticPassword(open_otp())
-            static_pass.put(self.slot, self.field('static_password'), True)
+            if self.field('staticpass_radio'):
+                static_pass = StaticPassword(open_otp())
+                static_pass.put(self.slot, self.field('static_password'), True)
+            elif self.field('challengeresponse_radio'):
+                secret = self.field('challenge_secret')
+                print secret.replace(' ', '').lower()
+                chal_resp = ChallengeResponse(open_otp())
+                chal_resp.put(self.slot, secret.replace(' ', '').lower())
             self.label.setText('Successfully wrote configuration!')
         except Exception as e:
             self.label.setText('Error when writing configuration: ' + e.message)

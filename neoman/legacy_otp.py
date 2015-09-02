@@ -97,15 +97,23 @@ ykp_configure_version = define('ykp_configure_version',
 ykp_set_fixed = define('ykp_set_fixed',
                        [POINTER(YKP_CONFIG), c_char_p, c_size_t], bool)
 ykp_set_uid = define('ykp_set_uid',
-                       [POINTER(YKP_CONFIG), c_char_p, c_size_t], bool)
+                     [POINTER(YKP_CONFIG), c_char_p, c_size_t], bool)
 ykp_AES_key_from_raw = define('ykp_AES_key_from_raw',
-                       [POINTER(YKP_CONFIG), c_char_p, c_size_t], bool)
+                              [POINTER(YKP_CONFIG), c_char_p], bool)
+ykp_HMAC_key_from_hex = define('ykp_HMAC_key_from_hex',
+                              [POINTER(YKP_CONFIG), c_char_p], bool)
 ykp_set_cfgflag_STATIC_TICKET = define('ykp_set_cfgflag_STATIC_TICKET',
                                        [POINTER(YKP_CONFIG), c_bool], bool)
-ykp_set_tktflag_APPEND_CR = define('ykp_set_tktflag_APPEND_CR',
+ykp_set_cfgflag_HMAC_LT64 = define('ykp_set_cfgflag_HMAC_LT64',
                                        [POINTER(YKP_CONFIG), c_bool], bool)
+ykp_set_tktflag_APPEND_CR = define('ykp_set_tktflag_APPEND_CR',
+                                   [POINTER(YKP_CONFIG), c_bool], bool)
 ykp_set_cfgflag_SHORT_TICKET = define('ykp_set_cfgflag_SHORT_TICKET',
                                       [POINTER(YKP_CONFIG), c_bool], bool)
+ykp_set_cfgflag_CHAL_HMAC = define('ykp_set_cfgflag_CHAL_HMAC',
+                                   [POINTER(YKP_CONFIG), c_bool], bool)
+ykp_set_tktflag_CHAL_RESP = define('ykp_set_tktflag_CHAL_RESP',
+                                   [POINTER(YKP_CONFIG), c_bool], bool)
 ykp_set_extflag_SERIAL_API_VISIBLE = define(
     'ykp_set_extflag_SERIAL_API_VISIBLE', [POINTER(YKP_CONFIG), c_bool], bool)
 ykp_set_extflag_ALLOW_UPDATE = define('ykp_set_extflag_ALLOW_UPDATE',
@@ -136,20 +144,7 @@ def yk_get_usb_errno():
     return yk_usb_strerror()
 
 
-class YkWrapper(object):
-    def __init__(self, key):
-        self.key = key
-
-    def __del__(self):
-        yk_close_key(self.key)
-        del self.key
-
-
 class StaticPassword(object):
-    """
-    OTP interface to a legacy OATH-enabled YubiKey.
-    """
-
     def __init__(self, device):
         if device is None:
             raise TypeError('Device missing')
@@ -171,7 +166,8 @@ class StaticPassword(object):
             raise ValueError(
                 'YubiKey slots cannot handle static passwords over 38 bytes')
 
-        fixed, uid, key = [to_scancodes(fragment) for fragment in split_password(password)]
+        fixed, uid, key = [to_scancodes(fragment) for fragment in
+                           split_password(password)]
 
         slot = SLOT_CONFIG if slot == 1 else SLOT_CONFIG2
 
@@ -185,12 +181,51 @@ class StaticPassword(object):
         if uid:
             ykp_set_uid(cfg, uid, len(uid))
         if key:
-            ykp_AES_key_from_raw(cfg, key, len(key))
+            ykp_AES_key_from_raw(cfg, key)
 
         print ykp_set_tktflag_APPEND_CR(cfg, append_enter)
 
         print ykp_set_cfgflag_SHORT_TICKET(cfg, True)
         print ykp_set_cfgflag_STATIC_TICKET(cfg, False)
+        print ykp_set_extflag_SERIAL_API_VISIBLE(cfg, True)
+        print ykp_set_extflag_ALLOW_UPDATE(cfg, True)
+
+        ycfg = ykp_core_config(cfg)
+        try:
+            print 'writing'
+            if not yk_write_command(self._device, ycfg, slot, None):
+                print 'ERROR:', yk_get_errno(), yk_get_usb_errno()
+                raise ValueError("Error writing configuration to key")
+        finally:
+            ykp_free_config(cfg)
+            yk_close_key(self._device)
+            print 'closed key'
+
+
+class ChallengeResponse(object):
+    def __init__(self, device):
+        if device is None:
+            raise TypeError('Device missing')
+        self._device = device
+
+    def put(self, slot, secret_as_hex):
+        if len(secret_as_hex) > 40:
+            raise ValueError('Secrets cannot be longer than 20 bytes')
+
+        slot = SLOT_CONFIG if slot == 1 else SLOT_CONFIG2
+
+        st = ykds_alloc()
+        print yk_get_status(self._device, st)
+        cfg = ykp_alloc()
+        print ykp_configure_version(cfg, st)
+        print ykds_free(st)
+
+        print ykp_HMAC_key_from_hex(cfg, secret_as_hex)
+
+        print ykp_set_tktflag_CHAL_RESP(cfg, True)
+        print ykp_set_cfgflag_CHAL_HMAC(cfg, True)
+        print ykp_set_cfgflag_HMAC_LT64(cfg, True)
+
         print ykp_set_extflag_SERIAL_API_VISIBLE(cfg, True)
         print ykp_set_extflag_ALLOW_UPDATE(cfg, True)
 
@@ -217,7 +252,7 @@ def open_otp():
 
         def cb(ref):
             _refs.remove(ref)
-            #print yk_close_key(key_p)
+            # print yk_close_key(key_p)
 
 
         _refs.append(weakref.ref(key, cb))
@@ -232,7 +267,9 @@ KEY_SIZE = 16
 
 def split_password(password):
     assert len(password) <= 38
-    return password[:FIXED_SIZE], password[FIXED_SIZE:FIXED_SIZE+UID_SIZE], password[FIXED_SIZE+UID_SIZE:]
+    return password[:FIXED_SIZE], password[
+                                  FIXED_SIZE:FIXED_SIZE + UID_SIZE], password[
+                                                                     FIXED_SIZE + UID_SIZE:]
 
 
 if __name__ == '__main__':
