@@ -45,7 +45,7 @@ ABOUT_TEXT = """
        m.about_link_1 % FORUM_URL)
 
 
-class TabWidgetWithAbout(QtGui.QTabWidget):
+class TabWidgetWithAbout(QtGui.QWidget):
     def __init__(self):
         super(TabWidgetWithAbout, self).__init__()
 
@@ -53,9 +53,6 @@ class TabWidgetWithAbout(QtGui.QTabWidget):
 
         icon = QtGui.QIcon(':/icon_about.png')
         btn.setIcon(icon)
-        btn.clicked.connect(self._about)
-
-        self.setCornerWidget(btn)
 
     def _libversions(self):
         libs = ['libykneomgr: ' + ykneomgr_version,

@@ -57,7 +57,7 @@ class CentralWidget(QtGui.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         self._nav = NavTree()
-        layout.addWidget(self._nav)
+        #layout.addWidget(self._nav)
 
         widget = QtGui.QWidget()
         widget.setLayout(layout)

@@ -36,6 +36,4 @@ class WelcomePage(TabWidgetWithAbout):
 
         layout = QtGui.QVBoxLayout()
         layout.addWidget(QtGui.QLabel(m.welcome_desc))
-        widget = QtGui.QWidget()
-        widget.setLayout(layout)
-        self.addTab(widget, m.welcome)
+        self.setLayout(layout)

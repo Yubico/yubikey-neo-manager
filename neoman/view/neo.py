@@ -27,7 +27,7 @@
 import os
 from PySide import QtGui, QtCore
 from functools import partial
-from PySide.QtGui import QHBoxLayout
+from PySide.QtGui import QHBoxLayout, QGridLayout, QGroupBox, QLabel
 from neoman import messages as m
 from neoman.configuration_wizard import ConfigWizard
 from neoman.storage import settings
@@ -62,9 +62,12 @@ class NeoPage(TabWidgetWithAbout):
 
         self._unsupported_tab = UnsupportedTab()
 
-        settings_tab = SettingsTab()
+        settings_tab = SettingsWidget()
         self._neo.connect(settings_tab.set_neo)
-        self.addTab(settings_tab, m.settings)
+
+        grid = QGridLayout()
+        grid.addWidget(settings_tab)
+        self.setLayout(grid)
 
         if QtCore.QCoreApplication.instance().devmode:
             apps = AppsTab(self, 1)
@@ -72,15 +75,10 @@ class NeoPage(TabWidgetWithAbout):
             apps.applet.connect(self._set_applet)
             self.addTab(apps, m.installed_apps)
 
-    def addTab(self, tab, title):
-        self._tabs.append((tab, title))
-        if self._supported:
-            super(NeoPage, self).addTab(tab, title)
-
     @QtCore.Slot(YubiKeyNeo)
     def setNeo(self, neo):
         self._supported = neo and neo.supported
-        self.clear()
+        #self.clear()
         for (tab, title) in self._tabs:
             super(NeoPage, self).addTab(tab, title)
 
@@ -101,10 +99,10 @@ class UnsupportedTab(QtGui.QWidget):
         self.setLayout(layout)
 
 
-class SettingsTab(QtGui.QWidget):
+class SettingsWidget(QtGui.QWidget):
 
     def __init__(self):
-        super(SettingsTab, self).__init__()
+        super(SettingsWidget, self).__init__()
 
         self._neo = None
         self._name = QtGui.QLabel()
@@ -128,6 +126,14 @@ class SettingsTab(QtGui.QWidget):
         self._u2f_row = QtGui.QHBoxLayout()
         self._u2f_row.addWidget(QtGui.QLabel())
         self._u2f_row.addWidget(self._u2f)
+
+        overview_group = QGroupBox(flat=True, title='YubiKey edition')
+        features_group = QGroupBox(flat=True, title='Fixed features')
+
+        layout.addWidget(overview_group)
+        layout.addWidget(self.slots_group())
+        layout.addWidget(self.features_group())
+        layout.addWidget(self.connectionmode_group())
 
         layout.addLayout(name_row)
         layout.addLayout(details_row)
@@ -159,6 +165,38 @@ class SettingsTab(QtGui.QWidget):
 
         layout.addStretch()
         self.setLayout(layout)
+
+    def features_group(self):
+        grid = QGridLayout()
+        grid.addWidget(QLabel('FIDO U2F:'), 0, 0)
+        grid.addWidget(QLabel('?'), 0, 1)
+        grid.addWidget(QLabel('OpenPGP:'), 1, 0)
+        grid.addWidget(QLabel('?'), 1, 1)
+        grid.addWidget(QLabel('OATH:'), 2, 0)
+        grid.addWidget(QLabel('?'), 2, 1)
+        grid.addWidget(QLabel('NFC:'), 3, 0)
+        grid.addWidget(QLabel('?'), 3, 1)
+        group = QGroupBox(flat=True, title='Fixed features')
+        group.setLayout(grid)
+        return group
+
+    def slots_group(self):
+        grid = QGridLayout()
+        grid.addWidget(QLabel('Slot 1 (short press):'), 0, 0)
+        grid.addWidget(QLabel('<a href="#configure-slot1">Configure</a>'), 0, 1)
+        grid.addWidget(QLabel('Slot 2 (long press):'), 1, 0)
+        grid.addWidget(QLabel('<a href="#configure-slot2">Configure</a>'), 1, 1)
+        group = QGroupBox(flat=True, title='Configurable features')
+        group.setLayout(grid)
+        return group
+
+    def connectionmode_group(self):
+        grid = QGridLayout()
+        grid.addWidget(QLabel('foo'), 0, 0)
+        grid.addWidget(QLabel('bar'), 0, 1)
+        group = QGroupBox(flat=True, title='Active USB protocols')
+        group.setLayout(grid)
+        return group
 
     @QtCore.Slot(YubiKeyNeo)
     def set_neo(self, neo):

@@ -45,7 +45,7 @@ class AppletPage(TabWidgetWithAbout):
         overview.install_status.connect(self._install_status_changed)
         self._applet.connect(overview.set_applet)
         self._neo.connect(overview.set_neo)
-        self.addTab(overview, m.overview)
+        #self.addTab(overview, m.overview)
 
     def _install_status_changed(self, applet, installed):
         self.applet_status.emit(applet)
