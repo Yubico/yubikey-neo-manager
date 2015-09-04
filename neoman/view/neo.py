@@ -192,8 +192,12 @@ class SettingsWidget(QtGui.QWidget):
 
     def connectionmode_group(self):
         grid = QGridLayout()
-        grid.addWidget(QLabel('foo'), 0, 0)
-        grid.addWidget(QLabel('bar'), 0, 1)
+        self.connection_modes = QLabel('foo')
+        grid.addWidget(self.connection_modes, 0, 0)
+        edit = QLabel('<a href="#edit-connection-mode">Edit</a>',
+                         openExternalLinks=False)
+        edit.linkActivated.connect(self.change_mode)
+        grid.addWidget(edit, 0, 1)
         group = QGroupBox(flat=True, title='Active USB protocols')
         group.setLayout(grid)
         return group
@@ -219,6 +223,7 @@ class SettingsWidget(QtGui.QWidget):
         else:
             self._u2f.setText(m.u2f_1 % m.u2f_not_supported_1 % U2F_URL)
         self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(neo.mode))
+        self.connection_modes.setText(MODE.name_for_mode(neo.mode))
         self._mode_note.setVisible(neo.version < (4, 1, 0))
 
     def change_name(self):
