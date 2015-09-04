@@ -30,13 +30,13 @@ from neoman.yubicommon.setup import setup
 
 
 setup(
-    name='yubikey-neo-manager',
-    author='Dain Nilsson',
-    author_email='dain@yubico.com',
+    name='yubikey-manager',
+    author='Henrik Strath',
+    author_email='henrik@yubico.com',
     maintainer='Yubico Open Source Maintainers',
     maintainer_email='ossmaint@yubico.com',
-    url='https://github.com/Yubico/yubikey-neo-manager',
-    description='Tool for managing your YubiKey NEO configuration.',
+    url='https://github.com/Yubico/yubikey-manager',
+    description='Tool for managing your YubiKey configuration.',
     license='BSD 2 clause',
     packages=['neoman', 'neoman.model', 'neoman.view'],
     package_data={'neoman': ['appletdb.json', 'js_api.js']},

@@ -55,7 +55,7 @@ class YubiKeyNeo(QtCore.QObject):
         self._version = device.version
         self._apps = None
 
-        self._group = self._serial if self._serial else "NOSERIAL"
+        self._group = self._serial or "NOSERIAL"
 
         self._set_device(device)
 

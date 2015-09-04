@@ -1,8 +1,8 @@
 # Copyright (c) 2013 Yubico AB
 # All rights reserved.
 #
-#   Redistribution and use in source and binary forms, with or
-#   without modification, are permitted provided that the following
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
 #   conditions are met:
 #
 #    1. Redistributions of source code must retain the above copyright
@@ -30,6 +30,7 @@ from functools import partial
 from PySide.QtGui import QHBoxLayout, QGridLayout, QGroupBox, QLabel
 from neoman import messages as m
 from neoman.configuration_wizard import ConfigWizard
+from neoman.device_details import DeviceDetailsDialog
 from neoman.storage import settings
 from neoman.exc import ModeSwitchError
 from neoman.model.neo import YubiKeyNeo
@@ -39,7 +40,7 @@ from neoman.view.tabs import TabWidgetWithAbout
 
 
 U2F_URL = "http://www.yubico.com/products/yubikey-hardware/yubikey-neo/" \
-    + "yubikey-neo-u2f/"
+          + "yubikey-neo-u2f/"
 
 
 def get_text(*args, **kwargs):
@@ -90,7 +91,6 @@ class NeoPage(TabWidgetWithAbout):
 
 
 class UnsupportedTab(QtGui.QWidget):
-
     def __init__(self):
         super(UnsupportedTab, self).__init__()
 
@@ -100,76 +100,43 @@ class UnsupportedTab(QtGui.QWidget):
 
 
 class SettingsWidget(QtGui.QWidget):
-
     def __init__(self):
         super(SettingsWidget, self).__init__()
 
         self._neo = None
         self._name = QtGui.QLabel()
-        self._serial = QtGui.QLabel()
-        self._firmware = QtGui.QLabel()
         self._u2f = QtGui.QLabel()
         self._u2f.setOpenExternalLinks(True)
 
         layout = QtGui.QVBoxLayout()
 
-        name_row = QtGui.QHBoxLayout()
-        name_row.addWidget(self._name)
-        self._name_btn = QtGui.QPushButton(m.change_name)
-        self._name_btn.clicked.connect(self.change_name)
-        name_row.addWidget(self._name_btn)
-
-        details_row = QtGui.QHBoxLayout()
-        details_row.addWidget(self._serial)
-        details_row.addWidget(self._firmware)
-
-        self._u2f_row = QtGui.QHBoxLayout()
-        self._u2f_row.addWidget(QtGui.QLabel())
-        self._u2f_row.addWidget(self._u2f)
-
-        overview_group = QGroupBox(flat=True, title='YubiKey edition')
-        features_group = QGroupBox(flat=True, title='Fixed features')
-
-        layout.addWidget(overview_group)
+        layout.addWidget(self.overview_group())
         layout.addWidget(self.slots_group())
         layout.addWidget(self.features_group())
         layout.addWidget(self.connectionmode_group())
 
-        layout.addLayout(name_row)
-        layout.addLayout(details_row)
-        layout.addLayout(self._u2f_row)
-
-        button = QtGui.QPushButton(m.manage_keys)
-        button.clicked.connect(self.manage_keys)
-        # TODO: Re-add when implemented:
-        # layout.addWidget(button)
-
-        hbox = QHBoxLayout()
-        self._slot1_btn = QtGui.QPushButton(m.configure_slot1)
-        self._slot1_btn.clicked.connect(self.configure_slot1)
-        hbox.addWidget(self._slot1_btn)
-
-        self._slot2_btn = QtGui.QPushButton(m.configure_slot2)
-        self._slot2_btn.clicked.connect(self.configure_slot2)
-        hbox.addWidget(self._slot2_btn)
-
-        layout.addLayout(hbox)
-
-        self._mode_btn = QtGui.QPushButton(m.change_mode)
-        self._mode_btn.clicked.connect(self.change_mode)
-        layout.addWidget(self._mode_btn)
-
-        self._mode_note = QtGui.QLabel(m.note_1 % m.mode_note)
-        self._mode_note.setWordWrap(True)
-        layout.addWidget(self._mode_note)
-
         layout.addStretch()
         self.setLayout(layout)
+
+    def overview_group(self):
+        grid = QGridLayout()
+        grid.addWidget(self._name, 0, 0)
+        device_details = QLabel('<a href="#">Details</a>', openExternalLinks=False)
+        device_details.linkActivated.connect(self.details_dialog)
+        grid.addWidget(device_details, 1, 0)
+        group = QGroupBox(flat=True, title='YubiKey edition')
+        group.setLayout(grid)
+        return group
+
+    def details_dialog(self):
+        dialog = DeviceDetailsDialog(self._neo)
+        dialog.exec_()
 
     def features_group(self):
         grid = QGridLayout()
         grid.addWidget(QLabel('FIDO U2F:'), 0, 0)
-        grid.addWidget(QLabel('?'), 0, 1)
+        self.u2f_supported = QLabel('?')
+        grid.addWidget(self.u2f_supported, 0, 1)
         grid.addWidget(QLabel('OpenPGP:'), 1, 0)
         grid.addWidget(QLabel('?'), 1, 1)
         grid.addWidget(QLabel('OATH:'), 2, 0)
@@ -183,21 +150,24 @@ class SettingsWidget(QtGui.QWidget):
     def slots_group(self):
         grid = QGridLayout()
         grid.addWidget(QLabel('Slot 1 (short press):'), 0, 0)
-        grid.addWidget(QLabel('<a href="#configure-slot1">Configure</a>'), 0, 1)
+        configure_slot1 = QLabel('<a href="#">Configure</a>', openExternalLinks=False)
+        configure_slot1.linkActivated.connect(self.configure_slot1)
+        grid.addWidget(configure_slot1, 0, 1)
         grid.addWidget(QLabel('Slot 2 (long press):'), 1, 0)
-        grid.addWidget(QLabel('<a href="#configure-slot2">Configure</a>'), 1, 1)
+        configure_slot2 = QLabel('<a href="#">Configure</a>', openExternalLinks=False)
+        configure_slot2.linkActivated.connect(self.configure_slot2)
+        grid.addWidget(configure_slot2, 1, 1)
         group = QGroupBox(flat=True, title='Configurable features')
         group.setLayout(grid)
         return group
 
     def connectionmode_group(self):
         grid = QGridLayout()
-        self.connection_modes = QLabel('foo')
+        self.connection_modes = QLabel('N/A')
         grid.addWidget(self.connection_modes, 0, 0)
-        edit = QLabel('<a href="#edit-connection-mode">Edit</a>',
-                         openExternalLinks=False)
-        edit.linkActivated.connect(self.change_mode)
-        grid.addWidget(edit, 0, 1)
+        self.edit_mode = QLabel('<a href="#">Edit</a>', openExternalLinks=False)
+        self.edit_mode.linkActivated.connect(self.change_mode)
+        grid.addWidget(self.edit_mode, 0, 1)
         group = QGroupBox(flat=True, title='Active USB protocols')
         group.setLayout(grid)
         return group
@@ -207,34 +177,15 @@ class SettingsWidget(QtGui.QWidget):
         self._neo = neo
         if not neo:
             return
+        
+        self.edit_mode.setVisible(neo.version[0] >= 3)
 
-        self._mode_btn.setDisabled(neo.version[0] < 3)
-        self._name_btn.setDisabled(neo.serial is None)
-        self._name.setText(m.name_1 % neo.name)
-        self._serial.setText(m.serial_1 % neo.serial)
-        show_firmware = neo.version != (0, 0, 0)
-        self._u2f_row.setDirection(
-            QtGui.QBoxLayout.LeftToRight if show_firmware else
-            QtGui.QBoxLayout.RightToLeft)
-        self._firmware.setVisible(show_firmware)
-        self._firmware.setText(m.firmware_1 % '.'.join(map(str, neo.version)))
+        self._name.setText(neo.name)
         if neo.allowed_modes[2]:
-            self._u2f.setText(m.u2f_1 % m.u2f_supported)
+            self.u2f_supported.setText('Yes')
         else:
-            self._u2f.setText(m.u2f_1 % m.u2f_not_supported_1 % U2F_URL)
-        self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(neo.mode))
+            self.u2f_supported.setText('No')
         self.connection_modes.setText(MODE.name_for_mode(neo.mode))
-        self._mode_note.setVisible(neo.version < (4, 1, 0))
-
-    def change_name(self):
-        name, ok = get_text(self, m.name, m.change_name_desc,
-                            text=self._neo.name)
-        if ok:
-            self._neo.name = name
-            self._name.setText(m.name_1 % name)
-
-    def manage_keys(self):
-        print m.manage_keys
 
     def configure_slot1(self):
         self.configure_slot(1)
@@ -257,7 +208,7 @@ class SettingsWidget(QtGui.QWidget):
                                            m.mode_error_desc)
                 return
 
-            self._mode_btn.setText(m.change_mode_1 % MODE.name_for_mode(mode))
+            self.connection_modes.setText(MODE.name_for_mode(mode))
 
             remove_dialog = QtGui.QMessageBox(self)
             remove_dialog.setWindowTitle(m.change_mode)
@@ -315,7 +266,7 @@ class ModeDialog(QtGui.QDialog):
     @property
     def flags(self):
         return self._otp.isChecked(), self._ccid.isChecked(), \
-            self._u2f.isChecked()
+               self._u2f.isChecked()
 
     @property
     def mode(self):
