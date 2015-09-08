@@ -111,13 +111,11 @@ class SettingsWidget(QtGui.QWidget):
 
         self._neo = None
         self._name = QtGui.QLabel()
-        self._u2f = QtGui.QLabel()
-        self._u2f.setOpenExternalLinks(True)
-
         layout = QtGui.QVBoxLayout()
 
         layout.addWidget(self.overview_group())
-        layout.addWidget(self.slots_group())
+        self.slots_group = self.slots_group()
+        layout.addWidget(self.slots_group)
         layout.addWidget(self.features_group())
         layout.addWidget(self.connectionmode_group())
 
@@ -156,12 +154,12 @@ class SettingsWidget(QtGui.QWidget):
     def slots_group(self):
         grid = QGridLayout()
         grid.addWidget(QLabel('Slot 1 (short press):'), 0, 0)
-        self.configure_slot1_link = QLabel(link('Configure'), openExternalLinks=False)
+        self.configure_slot1_link = QLabel('Not supported', openExternalLinks=False)
         self.configure_slot1_link.linkActivated.connect(self.configure_slot1)
         grid.addWidget(self.configure_slot1_link, 0, 1)
 
         grid.addWidget(QLabel('Slot 2 (long press):'), 1, 0)
-        self.configure_slot2_link = QLabel(link('Configure'), openExternalLinks=False)
+        self.configure_slot2_link = QLabel('Not supported', openExternalLinks=False)
         self.configure_slot2_link.linkActivated.connect(self.configure_slot2)
         grid.addWidget(self.configure_slot2_link, 1, 1)
         group = QGroupBox(flat=True, title='Configurable features')
@@ -194,9 +192,13 @@ class SettingsWidget(QtGui.QWidget):
             self.u2f_supported.setText('No')
         self.connection_modes.setText(MODE.name_for_mode(neo.mode))
 
-        self.slot1_configured, slot2_configured = slot_status(open_otp())
-        self.configure_slot1_link.setText(link('Reconfigure' if self.slot1_configured else 'Configure'))
-        self.configure_slot2_link.setText(link('Reconfigure' if slot2_configured else 'Configure'))
+        otp_device = open_otp()
+        if otp_device is None:
+            self.slots_group.setDisabled(True)
+        else:
+            self.slot1_configured, slot2_configured = slot_status(otp_device)
+            self.configure_slot1_link.setText(link('Reconfigure' if self.slot1_configured else 'Configure'))
+            self.configure_slot2_link.setText(link('Reconfigure' if slot2_configured else 'Configure'))
 
     def configure_slot1(self):
         self.configure_slot(1)
