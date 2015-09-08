@@ -27,10 +27,12 @@
 import os
 from PySide import QtGui, QtCore
 from functools import partial
-from PySide.QtGui import QHBoxLayout, QGridLayout, QGroupBox, QLabel
+from PySide.QtGui import QHBoxLayout, QGridLayout, QGroupBox, QLabel, \
+    QApplication
 from neoman import messages as m
 from neoman.configuration_wizard import ConfigWizard
 from neoman.device_details import DeviceDetailsDialog
+from neoman.legacy_otp import open_otp, slot_status
 from neoman.storage import settings
 from neoman.exc import ModeSwitchError
 from neoman.model.neo import YubiKeyNeo
@@ -99,6 +101,10 @@ class UnsupportedTab(QtGui.QWidget):
         self.setLayout(layout)
 
 
+def link(text):
+    return '<a href="#">%s</a>' % text
+
+
 class SettingsWidget(QtGui.QWidget):
     def __init__(self):
         super(SettingsWidget, self).__init__()
@@ -121,7 +127,7 @@ class SettingsWidget(QtGui.QWidget):
     def overview_group(self):
         grid = QGridLayout()
         grid.addWidget(self._name, 0, 0)
-        device_details = QLabel('<a href="#">Details</a>', openExternalLinks=False)
+        device_details = QLabel(link('Details'), openExternalLinks=False)
         device_details.linkActivated.connect(self.details_dialog)
         grid.addWidget(device_details, 1, 0)
         group = QGroupBox(flat=True, title='YubiKey edition')
@@ -150,13 +156,14 @@ class SettingsWidget(QtGui.QWidget):
     def slots_group(self):
         grid = QGridLayout()
         grid.addWidget(QLabel('Slot 1 (short press):'), 0, 0)
-        configure_slot1 = QLabel('<a href="#">Configure</a>', openExternalLinks=False)
-        configure_slot1.linkActivated.connect(self.configure_slot1)
-        grid.addWidget(configure_slot1, 0, 1)
+        self.configure_slot1_link = QLabel(link('Configure'), openExternalLinks=False)
+        self.configure_slot1_link.linkActivated.connect(self.configure_slot1)
+        grid.addWidget(self.configure_slot1_link, 0, 1)
+
         grid.addWidget(QLabel('Slot 2 (long press):'), 1, 0)
-        configure_slot2 = QLabel('<a href="#">Configure</a>', openExternalLinks=False)
-        configure_slot2.linkActivated.connect(self.configure_slot2)
-        grid.addWidget(configure_slot2, 1, 1)
+        self.configure_slot2_link = QLabel(link('Configure'), openExternalLinks=False)
+        self.configure_slot2_link.linkActivated.connect(self.configure_slot2)
+        grid.addWidget(self.configure_slot2_link, 1, 1)
         group = QGroupBox(flat=True, title='Configurable features')
         group.setLayout(grid)
         return group
@@ -165,7 +172,7 @@ class SettingsWidget(QtGui.QWidget):
         grid = QGridLayout()
         self.connection_modes = QLabel('N/A')
         grid.addWidget(self.connection_modes, 0, 0)
-        self.edit_mode = QLabel('<a href="#">Edit</a>', openExternalLinks=False)
+        self.edit_mode = QLabel(link('Edit'), openExternalLinks=False)
         self.edit_mode.linkActivated.connect(self.change_mode)
         grid.addWidget(self.edit_mode, 0, 1)
         group = QGroupBox(flat=True, title='Active USB protocols')
@@ -177,7 +184,7 @@ class SettingsWidget(QtGui.QWidget):
         self._neo = neo
         if not neo:
             return
-        
+
         self.edit_mode.setVisible(neo.version[0] >= 3)
 
         self._name.setText(neo.name)
@@ -187,6 +194,10 @@ class SettingsWidget(QtGui.QWidget):
             self.u2f_supported.setText('No')
         self.connection_modes.setText(MODE.name_for_mode(neo.mode))
 
+        self.slot1_configured, slot2_configured = slot_status(open_otp())
+        self.configure_slot1_link.setText(link('Reconfigure' if self.slot1_configured else 'Configure'))
+        self.configure_slot2_link.setText(link('Reconfigure' if slot2_configured else 'Configure'))
+
     def configure_slot1(self):
         self.configure_slot(1)
 
@@ -194,7 +205,7 @@ class SettingsWidget(QtGui.QWidget):
         self.configure_slot(2)
 
     def configure_slot(self, slot):
-        wizard = ConfigWizard(slot, self._neo, self)
+        wizard = ConfigWizard(slot, self._neo, self.slot1_configured, self)
         wizard.show()
 
     def change_mode(self):

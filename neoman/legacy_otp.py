@@ -260,6 +260,17 @@ def open_otp():
     return None
 
 
+def slot_status(device):
+    st = ykds_alloc()
+    yk_get_status(device, st)
+    tl = ykds_touch_level(st)
+    ykds_free(st)
+
+    return (
+        bool(tl & CONFIG1_VALID == CONFIG1_VALID),
+        bool(tl & CONFIG2_VALID == CONFIG2_VALID)
+    )
+
 FIXED_SIZE = 16
 UID_SIZE = 6
 KEY_SIZE = 16

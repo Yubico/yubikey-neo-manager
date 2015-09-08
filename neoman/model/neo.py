@@ -26,6 +26,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from PySide import QtCore, QtGui
 from neoman.device import open_all_devices, ResetStateException
+from neoman.legacy_otp import ykds_alloc, ykds_touch_level, ykds_free, \
+    CONFIG1_VALID, CONFIG2_VALID
+from neoman.legacy_otp import yk_get_status
 from neoman.storage import settings
 from functools import wraps
 

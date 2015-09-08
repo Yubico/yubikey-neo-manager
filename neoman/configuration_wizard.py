@@ -15,21 +15,37 @@ HEX_ALPHABET = '0123456789ABCDEF'
 
 class ConfigWizard(QtGui.QWizard):
 
-    Page_Function = 1
-    Page_StaticPassword = 2
-    Page_ChallengeResponse = 3
-    Page_Results = 4
+    Page_Warning = 1
+    Page_Function = 2
+    Page_StaticPassword = 3
+    Page_ChallengeResponse = 4
+    Page_Results = 5
 
-    def __init__(self, slot, neo, parent=None):
+    def __init__(self, slot, neo, slot1_configured, parent=None):
         super(ConfigWizard, self).__init__(parent)
         self.slot = slot
         self.neo = neo
         self.setWindowTitle('Slot Configuration')
 
+        if slot == 1 and slot1_configured:
+            self.setPage(ConfigWizard.Page_Warning, WarningPage(self))
         self.setPage(ConfigWizard.Page_Function, FunctionPage(slot, self))
         self.setPage(ConfigWizard.Page_StaticPassword, StaticPasswordPage(self))
         self.setPage(ConfigWizard.Page_ChallengeResponse, ChallengeResponsePage(self))
         self.setPage(ConfigWizard.Page_Results, ResultsPage(slot, neo, self))
+
+
+class WarningPage(QWizardPage):
+    def __init__(self, parent=None):
+        super(WarningPage, self).__init__(parent)
+
+        self.setTitle('Warning')
+        self.setSubTitle('Slot 1 reconfiguration')
+
+        label = QLabel("The first slot of YubiKeys is configured in factory. If you proceed, that configuration will be overwritten and you might not be able to restore it.", wordWrap=True)
+        vbox = QVBoxLayout()
+        vbox.addWidget(label)
+        self.setLayout(vbox)
 
 
 class FunctionPage(QWizardPage):
@@ -41,13 +57,11 @@ class FunctionPage(QWizardPage):
 
         groupBox = QGroupBox("Functionality")
 
-        self.static = QRadioButton("&Static password")
+        self.static = QRadioButton("&Static password", checked=True)
         self.challenge = QRadioButton("&Challenge-response")
 
         self.registerField('staticpass_radio', self.static)
         self.registerField('challengeresponse_radio', self.challenge)
-
-        self.static.setChecked(True)
 
         vbox = QVBoxLayout()
         vbox.addWidget(self.static)
@@ -75,8 +89,7 @@ class StaticPasswordPage(QWizardPage):
         self.setCommitPage(True)
         self.setButtonText(QWizard.CommitButton, '&Write config')
 
-        self.password_field = QLineEdit()
-        self.password_field.setMaxLength(38)
+        self.password_field = QLineEdit(maxLength=38)
         self.password_field.setValidator(ModhexValidator())
 
         form = QFormLayout()
@@ -117,10 +130,9 @@ class ChallengeResponsePage(QWizardPage):
         self.setCommitPage(True)
         self.setButtonText(QWizard.CommitButton, '&Write config')
 
-        self.secret_field = QLineEdit()
+        self.secret_field = QLineEdit(text='0' * 40,
+                                      inputMask='HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH')
         self.secret_field.setValidator(HexValidator())
-        self.secret_field.setInputMask('HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH HH')
-        self.secret_field.setText('0' * 40)
 
         form = QFormLayout()
         form.addRow(self.tr('&Secret (hexadecimal):'), self.secret_field)
