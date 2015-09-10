@@ -12,7 +12,7 @@ link:https://developers.yubico.com/ykneo-openpgp/SecurityAdvisory%202015-04-14.h
 
 === Installation
 The recommended way to install this software including dependencies is by using
-the provided precompiled binaries for your platform. For Windows and OS X,
+the provided precompiled binaries for your platform. For Windows and OS X (10.7 and above),
 there are installers available for download
 https://developers.yubico.com/yubikey-neo-manager/Releases/[here].
 For Ubuntu we have a custom PPA with a package for it
