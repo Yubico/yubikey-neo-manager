@@ -1,3 +1,5 @@
+== YubiKey NEO Manager Manual
+
 === Change connection mode
 In order to enable or disable modes on your YubiKey NEO or NEO-n, you
 need to download the newest version of the Yubico NEO Manager. The NEO
