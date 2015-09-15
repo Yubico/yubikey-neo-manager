@@ -83,6 +83,7 @@ def open_all_devices(existing=None):
         from neoman.device_ccid import open_all_devices as open_ccid_all
         for dev in open_ccid_all(existing):
             devices.append(dev)
+            print 'neo', dev
     except Exception:
         pass
 
@@ -97,6 +98,7 @@ def open_all_devices(existing=None):
                 if isinstance(e_dev, OTPDevice):
                     e_dev.close()
             dev = open_otp()
+            print 'otp', dev
             devices.append(dev)
         except Exception:
             pass

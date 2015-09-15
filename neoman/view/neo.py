@@ -196,6 +196,7 @@ class SettingsWidget(QtGui.QWidget):
         if otp_device is None:
             self.slots_group.setDisabled(True)
         else:
+            self.slots_group.setDisabled(False)
             self.slot1_configured, slot2_configured = slot_status(otp_device)
             self.configure_slot1_link.setText(link('Reconfigure' if self.slot1_configured else 'Configure'))
             self.configure_slot2_link.setText(link('Reconfigure' if slot2_configured else 'Configure'))

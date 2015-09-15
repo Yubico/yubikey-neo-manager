@@ -104,6 +104,8 @@ ykp_HMAC_key_from_hex = define('ykp_HMAC_key_from_hex',
                               [POINTER(YKP_CONFIG), c_char_p], bool)
 ykp_set_cfgflag_STATIC_TICKET = define('ykp_set_cfgflag_STATIC_TICKET',
                                        [POINTER(YKP_CONFIG), c_bool], bool)
+ykp_set_tktflag_OATH_HOTP = define('ykp_set_tktflag_OATH_HOTP',
+                                       [POINTER(YKP_CONFIG), c_bool], bool)
 ykp_set_cfgflag_HMAC_LT64 = define('ykp_set_cfgflag_HMAC_LT64',
                                        [POINTER(YKP_CONFIG), c_bool], bool)
 ykp_set_tktflag_APPEND_CR = define('ykp_set_tktflag_APPEND_CR',
@@ -225,6 +227,43 @@ class ChallengeResponse(object):
         print ykp_set_tktflag_CHAL_RESP(cfg, True)
         print ykp_set_cfgflag_CHAL_HMAC(cfg, True)
         print ykp_set_cfgflag_HMAC_LT64(cfg, True)
+
+        print ykp_set_extflag_SERIAL_API_VISIBLE(cfg, True)
+        print ykp_set_extflag_ALLOW_UPDATE(cfg, True)
+
+        ycfg = ykp_core_config(cfg)
+        try:
+            print 'writing'
+            if not yk_write_command(self._device, ycfg, slot, None):
+                print 'ERROR:', yk_get_errno(), yk_get_usb_errno()
+                raise ValueError("Error writing configuration to key")
+        finally:
+            ykp_free_config(cfg)
+            yk_close_key(self._device)
+            print 'closed key'
+
+
+class Hotp(object):
+    def __init__(self, device):
+        if device is None:
+            raise TypeError('Device missing')
+        self._device = device
+
+    def put(self, slot, secret_as_hex):
+        if len(secret_as_hex) > 40:
+            raise ValueError('Secrets cannot be longer than 20 bytes')
+
+        slot = SLOT_CONFIG if slot == 1 else SLOT_CONFIG2
+
+        st = ykds_alloc()
+        print yk_get_status(self._device, st)
+        cfg = ykp_alloc()
+        print ykp_configure_version(cfg, st)
+        print ykds_free(st)
+
+        print ykp_HMAC_key_from_hex(cfg, secret_as_hex)
+
+        print ykp_set_tktflag_OATH_HOTP(cfg, True)
 
         print ykp_set_extflag_SERIAL_API_VISIBLE(cfg, True)
         print ykp_set_extflag_ALLOW_UPDATE(cfg, True)

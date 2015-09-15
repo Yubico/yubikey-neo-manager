@@ -41,6 +41,8 @@ libversion = ykneomgr_check_version(None)
 U2F_SELECT_1 = '00a4040008a0000006472f0001'.decode('hex')
 U2F_SELECT_2 = '00a4040007a0000005271002'.decode('hex')
 
+WRONG_PIN_1 = '00200081084040404040404040'.decode('hex')
+WRONG_ADMIN_PIN_1 = '00200083084040404040404040'.decode('hex')
 
 class CCIDDevice(BaseDevice):
     device_type = 'CCID'
@@ -65,6 +67,9 @@ class CCIDDevice(BaseDevice):
     def _has_u2f_applet(self):
         return '\x90\x00' in [self.send_apdu(U2F_SELECT_1)[-2:],
                               self.send_apdu(U2F_SELECT_2)[-2:]]
+
+    def send_wrong_pin(self):
+        print self.send_apdu(WRONG_PIN_1).encode('hex')
 
     def check(self, status):
         if status != 0:
