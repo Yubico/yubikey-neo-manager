@@ -1,3 +1,4 @@
+=== Change connection mode
 In order to enable or disable modes on your YubiKey NEO or NEO-n, you
 need to download the newest version of the Yubico NEO Manager. The NEO
 Manager is available for Windows, OSX and Linux, and installers can be
@@ -20,18 +21,8 @@ be plugged into your computer.
 
 image:image2.PNG[image]
 
-The NEO Manager will allow you to optionally set a unique name for your
-YubiKey NEO or NEO-n, in order to better identify it when you have
-multiple YubiKeys. This can be done by clicking
-image:image3.PNG[image] – doing so will open a new window
-allowing you to change the name of the YubiKey NEO or NEO-n. Please note
-that if you have NEO Manager installed on multiple computers, the name
-change will only be reflected on the computer the change was made on.
-
-image:image4.PNG[image]
-
 To enable any desired combination of U2F, OTP and CCID modes, you will
-need to clickimage:image5.PNG[image].
+need to click image:image5.PNG[image].
 
 image:image6.PNG[image]
 
@@ -62,9 +53,16 @@ selected modes.
 
 image:image10.PNG[image]
 
-Your YubiKey NEO or NEO-n will now work in the selected modes. You can
-test functionality at the following websites:
+Your YubiKey NEO or NEO-n will now work in the selected modes.
 
-OTP: http://demo.yubico.com
 
-U2F: http://demo.yubico.com/u2f
+=== Renaming a YubiKey
+The NEO Manager will allow you to optionally set a unique name for your
+YubiKey NEO or NEO-n, in order to better identify it when you have
+multiple YubiKeys. This can be done by clicking
+image:image3.PNG[image] – doing so will open a new window
+allowing you to change the name of the YubiKey NEO or NEO-n. Please note
+that if you have NEO Manager installed on multiple computers, the name
+change will only be reflected on the computer the change was made on.
+
+image:image4.PNG[image]
