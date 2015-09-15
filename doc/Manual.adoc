@@ -11,35 +11,35 @@ Once downloaded, you will need to install the NEO Manager using the
 default options. Once installed, launch the NEO Manager application to
 proceed.
 
-image:images/media/image1.PNG[image]
+image:image1.PNG[image]
 
 If a YubiKey NEO or NEO-n is not inserted in your PC, the NEO Manager
 will prompt you to insert your YubiKey to continue. In order to change
 settings with the NEO Manager, only one YubiKey NEO or NEO-n device can
 be plugged into your computer.
 
-image:images/media/image2.PNG[image]
+image:image2.PNG[image]
 
 The NEO Manager will allow you to optionally set a unique name for your
 YubiKey NEO or NEO-n, in order to better identify it when you have
 multiple YubiKeys. This can be done by clicking
-image:images/media/image3.PNG[image] – doing so will open a new window
+image:image3.PNG[image] – doing so will open a new window
 allowing you to change the name of the YubiKey NEO or NEO-n. Please note
 that if you have NEO Manager installed on multiple computers, the name
 change will only be reflected on the computer the change was made on.
 
-image:images/media/image4.PNG[image]
+image:image4.PNG[image]
 
 To enable any desired combination of U2F, OTP and CCID modes, you will
-need to clickimage:images/media/image5.PNG[image].
+need to clickimage:image5.PNG[image].
 
-image:images/media/image6.PNG[image]
+image:image6.PNG[image]
 
-Clicking image:images/media/image5.PNG[image] will open up a window
+Clicking image:image5.PNG[image] will open up a window
 allowing you to check boxes for OTP, CCID and U2F. Checking the boxes
 will enable that functionality on the YubiKey NEO and NEO-n.
 
-image:images/media/image7.PNG[image]
+image:image7.PNG[image]
 
 * The OTP mode refers to the YubiKey functions the NEO shares with the
 standard YubiKey, including two Configuration Slots that can be
@@ -52,15 +52,15 @@ NEO-n, and includes the NEO applets such as OpenPGP, PIV and YubiOATH.
 * The U2F Mode refers to the Universal 2^nd^ Factor (U2F) functionality
 of the YubiKey NEO and NEO-n.
 
-image:images/media/image8.PNG[image]
+image:image8.PNG[image]
 
 Once the desired modes are selected, click
-image:images/media/image9.PNG[image] to confirm the selections. The NEO
+image:image9.PNG[image] to confirm the selections. The NEO
 Manager will instruct you to remove your YubiKey from the USB slot, then
 plug it back in. This will allow the YubiKey to initialize all of the
 selected modes.
 
-image:images/media/image10.PNG[image]
+image:image10.PNG[image]
 
 Your YubiKey NEO or NEO-n will now work in the selected modes. You can
 test functionality at the following websites:
