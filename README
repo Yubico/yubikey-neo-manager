@@ -15,8 +15,10 @@ The recommended way to install this software including dependencies is by using
 the provided precompiled binaries for your platform. For Windows and OS X (10.7 and above),
 there are installers available for download
 https://developers.yubico.com/yubikey-neo-manager/Releases/[here].
-For Ubuntu we have a custom PPA with a package for it
-https://launchpad.net/~yubico/+archive/ubuntu/stable[here].
+For Ubuntu we have a
+https://launchpad.net/~yubico/+archive/ubuntu/stable[custom PPA] containing the 
+https://launchpad.net/~yubico/+archive/ubuntu/stable/+packages?field.name_filter=yubikey-neo-manager&field.status_filter=published&field.series_filter=[yubikey-neo-manager]
+package.
 
 === Dependencies
 YubiKey NEO Manager requires PySide, libykneomgr, yubikey-personalization and
