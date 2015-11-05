@@ -25,7 +25,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from neoman.ykpers import *
-from ctypes import byref, c_uint, c_int
+from ctypes import byref, c_uint, c_int, c_size_t, create_string_buffer
 from neoman.exc import ModeSwitchError
 from neoman.device import BaseDevice
 from neoman.model.modes import MODE
@@ -35,6 +35,13 @@ if not yk_init():
 
 
 libversion = ykpers_check_version(None)
+
+
+YK4_CAPA_TAG = 0x01
+YK4_SERIAL_TAG = 0x01
+YK4_CAPA1_OTP = 0x01
+YK4_CAPA1_U2F = 0x02
+YK4_CAPA1_CCID = 0x04
 
 
 def read_version(dev):
@@ -54,6 +61,7 @@ def read_version(dev):
 
 class OTPDevice(BaseDevice):
     device_type = 'OTP'
+    allowed_modes = (True, False, False)
 
     def __init__(self, dev, version):
         self._dev = dev
@@ -66,6 +74,7 @@ class OTPDevice(BaseDevice):
             self._serial = None
 
         self._mode = self._read_mode(dev)
+        self.allowed_modes = (True, True, version >= (3, 3, 0))
 
     def _read_mode(self, dev):
         vid = c_int()
@@ -85,10 +94,6 @@ class OTPDevice(BaseDevice):
     @property
     def mode(self):
         return self._mode
-
-    @property
-    def allowed_modes(self):
-        return (True, True, self._version >= (3, 3, 0))
 
     @property
     def serial(self):
@@ -146,10 +151,24 @@ class YKPlusDevice(YKStandardDevice):
     default_name = 'YubiKey Plus'
 
 
-class YKEdgeDevice(OTPDevice):
-    default_name = 'YubiKey Edge'
-    allowed_modes = (True, False, True)
-    has_ccid = False
+def parse_tlv_list(data):
+    parsed = {}
+    while data:
+        t, l, data = ord(data[0]), ord(data[1]), data[2:]
+        parsed[t], data = data[:l], data[l:]
+    return parsed
+
+
+class YK4Device(OTPDevice):
+    default_name = 'YubiKey 4'
+
+    def __init__(self, dev, version):
+        super(YK4Device, self).__init__(dev, version)
+        self._read_capabilities()
+
+        if self._cap == 0x07:  # YK Edge should now allow CCID.
+            self.default_name = 'YubiKey Edge'
+            self.allowed_modes = (True, False, True)
 
     def _read_mode(self, dev):
         vid = c_int()
@@ -162,6 +181,19 @@ class YKEdgeDevice(OTPDevice):
         except:  # We know we at least have OTP enabled...
             return MODE.mode_for_flags(True, False, False)
 
+    def _read_capabilities(self):
+        buf_size = c_size_t(1024)
+        resp = create_string_buffer(buf_size.value)
+        yk_get_capabilities(self._dev, 0, 0, resp, byref(buf_size))
+        resp = resp.raw
+        self._cap_data = parse_tlv_list(resp[1:ord(resp[0]) + 1])
+        self._cap = int(self._cap_data.get(YK4_CAPA_TAG, '0').encode('hex'), 16)
+        self.allowed_modes = (
+            bool(self._cap & YK4_CAPA1_OTP),
+            bool(self._cap & YK4_CAPA1_CCID),
+            bool(self._cap & YK4_CAPA1_U2F)
+        )
+
 
 def open_first_device():
     dev = yk_open_first_key()
@@ -171,7 +203,7 @@ def open_first_device():
     version = read_version(dev)
 
     if version >= (4, 1, 0):
-        return YKEdgeDevice(dev, version)
+        return YK4Device(dev, version)
     elif version >= (4, 0, 0):
         return YKPlusDevice(dev, version)
     elif version >= (3, 0, 0):

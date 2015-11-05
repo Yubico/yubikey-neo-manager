@@ -124,7 +124,6 @@ def parse_tlv_list(data):
 
 class YK4Device(U2FDevice):
     default_name = 'YubiKey 4'
-    allowed_modes = (True, True, True)
 
     def __init__(self, devs, index, mode):
         super(YK4Device, self).__init__(devs, index, mode)
