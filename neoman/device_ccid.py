@@ -41,23 +41,32 @@ libversion = ykneomgr_check_version(None)
 U2F_SELECT_1 = '00a4040008a0000006472f0001'.decode('hex')
 U2F_SELECT_2 = '00a4040007a0000005271002'.decode('hex')
 
+YK4_SELECT_MGMT = '00a4040008a000000527471117'.decode('hex')
+YK4_GET_CAPA = '001d0000'.decode('hex')
+
+YK4_CAPA_TAG = 0x01
+YK4_SERIAL_TAG = 0x01
+YK4_CAPA1_OTP = 0x01
+YK4_CAPA1_U2F = 0x02
+YK4_CAPA1_CCID = 0x04
+
 
 class CCIDDevice(BaseDevice):
     device_type = 'CCID'
     version = (0, 0, 0)
 
-    def __init__(self, dev, dev_str=None):
+    def __init__(self, dev, version=None, dev_str=None):
         self._dev = dev
         self._dev_str = dev_str
         self._key = None
         self._locked = True
         self._serial = ykneomgr_get_serialno(dev) or None
         self._mode = ykneomgr_get_mode(dev)
-        # self._version = (
-        #     ykneomgr_get_version_major(dev),
-        #     ykneomgr_get_version_minor(dev),
-        #     ykneomgr_get_version_build(dev)
-        # )
+        self._version = (
+            ykneomgr_get_version_major(dev),
+            ykneomgr_get_version_minor(dev),
+            ykneomgr_get_version_build(dev)
+        )
         self._supports_u2f = self._has_u2f_applet()
         self._apps = None
         self._broken = False
@@ -147,9 +156,59 @@ class CCIDDevice(BaseDevice):
             del self._dev
 
 
+def parse_tlv_list(data):
+    parsed = {}
+    while data:
+        t, l, data = ord(data[0]), ord(data[1]), data[2:]
+        parsed[t], data = data[:l], data[l:]
+    return parsed
+
+
+class YK4Device(CCIDDevice):
+    default_name = 'YubiKey 4'
+    allowed_modes = (False, False, False)
+
+    def __init__(self, dev, version, dev_str):
+        super(YK4Device, self).__init__(dev, version, dev_str)
+        self._read_capabilities()
+
+        if self._cap == 0x07:  # YK Edge should not allow CCID.
+            self.default_name = 'YubiKey Edge'
+            self.allowed_modes = (True, False, True)
+
+    def _read_capabilities(self):
+        self.send_apdu(YK4_SELECT_MGMT)
+        resp = self.send_apdu(YK4_GET_CAPA)
+        resp, status = resp[:-2], resp[-2:]
+        if status != '\x90\x00':
+            resp = '\x00'
+        self._cap_data = parse_tlv_list(resp[1:ord(resp[0]) + 1])
+        self._cap = int(self._cap_data.get(YK4_CAPA_TAG, '0').encode('hex'), 16)
+        self.allowed_modes = (
+            bool(self._cap & YK4_CAPA1_OTP),
+            bool(self._cap & YK4_CAPA1_CCID),
+            bool(self._cap & YK4_CAPA1_U2F)
+        )
+
+    @property
+    def version(self):
+        return self._version
+
+
 def check(status):
     if status != 0:
         raise YkNeoMgrError(status)
+
+
+def create_device(dev, dev_str=None):
+    version = (
+        ykneomgr_get_version_major(dev),
+        ykneomgr_get_version_minor(dev),
+        ykneomgr_get_version_build(dev)
+    )
+    if version[0] == 4:
+        return YK4Device(dev, version, dev_str)
+    return CCIDDevice(dev, version, dev_str)
 
 
 def open_first_device():
@@ -161,7 +220,7 @@ def open_first_device():
         ykneomgr_done(dev)
         raise
 
-    return CCIDDevice(dev)
+    return create_device(dev)
 
 
 def open_all_devices(existing=None):
@@ -185,7 +244,7 @@ def open_all_devices(existing=None):
             dev = POINTER(ykneomgr_dev)()
             check(ykneomgr_init(byref(dev)))
         if ykneomgr_connect(dev, create_string_buffer(name)) == 0:
-            devices.append(CCIDDevice(dev, name))
+            devices.append(create_device(dev, name))
             dev = None
     if dev:
         ykneomgr_done(dev)

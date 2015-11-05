@@ -166,7 +166,7 @@ class YK4Device(OTPDevice):
         super(YK4Device, self).__init__(dev, version)
         self._read_capabilities()
 
-        if self._cap == 0x07:  # YK Edge should now allow CCID.
+        if self._cap == 0x07:  # YK Edge should not allow CCID.
             self.default_name = 'YubiKey Edge'
             self.allowed_modes = (True, False, True)
 
