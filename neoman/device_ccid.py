@@ -28,6 +28,8 @@ from neoman.ykneomgr import *
 from ctypes import POINTER, byref, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
 from neoman.exc import YkNeoMgrError, ModeSwitchError
+from neoman.yk4_utils import (parse_tlv_list, YK4_CAPA_TAG, YK4_CAPA1_OTP,
+                              YK4_CAPA1_CCID, YK4_CAPA1_U2F)
 import os
 
 
@@ -43,12 +45,6 @@ U2F_SELECT_2 = '00a4040007a0000005271002'.decode('hex')
 
 YK4_SELECT_MGMT = '00a4040008a000000527471117'.decode('hex')
 YK4_GET_CAPA = '001d0000'.decode('hex')
-
-YK4_CAPA_TAG = 0x01
-YK4_SERIAL_TAG = 0x01
-YK4_CAPA1_OTP = 0x01
-YK4_CAPA1_U2F = 0x02
-YK4_CAPA1_CCID = 0x04
 
 
 class CCIDDevice(BaseDevice):
@@ -154,14 +150,6 @@ class CCIDDevice(BaseDevice):
         if hasattr(self, '_dev'):
             ykneomgr_done(self._dev)
             del self._dev
-
-
-def parse_tlv_list(data):
-    parsed = {}
-    while data:
-        t, l, data = ord(data[0]), ord(data[1]), data[2:]
-        parsed[t], data = data[:l], data[l:]
-    return parsed
 
 
 class YK4Device(CCIDDevice):

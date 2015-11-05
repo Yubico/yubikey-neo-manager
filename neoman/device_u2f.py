@@ -29,6 +29,8 @@ from ctypes import POINTER, byref, c_uint, c_size_t, create_string_buffer
 from neoman.device import BaseDevice
 from neoman.exc import YkNeoMgrError, ModeSwitchError
 from neoman.model.modes import MODE
+from neoman.yk4_utils import (parse_tlv_list, YK4_CAPA_TAG, YK4_CAPA1_OTP,
+                              YK4_CAPA1_CCID, YK4_CAPA1_U2F)
 import os
 
 
@@ -53,12 +55,6 @@ TYPE_INIT = 0x80
 U2FHID_PING = TYPE_INIT | 0x01
 U2FHID_YUBIKEY_DEVICE_CONFIG = TYPE_INIT | U2F_VENDOR_FIRST
 U2FHID_YK4_CAPABILITIES = TYPE_INIT | U2F_VENDOR_FIRST + 2
-
-YK4_CAPA_TAG = 0x01
-YK4_SERIAL_TAG = 0x01
-YK4_CAPA1_OTP = 0x01
-YK4_CAPA1_U2F = 0x02
-YK4_CAPA1_CCID = 0x04
 
 
 class U2FDevice(BaseDevice):
@@ -112,14 +108,6 @@ class U2FDevice(BaseDevice):
 class SKYDevice(U2FDevice):
     supported = False
     default_name = 'Security Key by Yubico'
-
-
-def parse_tlv_list(data):
-    parsed = {}
-    while data:
-        t, l, data = ord(data[0]), ord(data[1]), data[2:]
-        parsed[t], data = data[:l], data[l:]
-    return parsed
 
 
 class YK4Device(U2FDevice):

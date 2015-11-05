@@ -29,19 +29,14 @@ from ctypes import byref, c_uint, c_int, c_size_t, create_string_buffer
 from neoman.exc import ModeSwitchError
 from neoman.device import BaseDevice
 from neoman.model.modes import MODE
+from neoman.yk4_utils import (parse_tlv_list, YK4_CAPA_TAG, YK4_CAPA1_OTP,
+                              YK4_CAPA1_CCID, YK4_CAPA1_U2F)
 
 if not yk_init():
     raise Exception("Unable to initialize ykpers")
 
 
 libversion = ykpers_check_version(None)
-
-
-YK4_CAPA_TAG = 0x01
-YK4_SERIAL_TAG = 0x01
-YK4_CAPA1_OTP = 0x01
-YK4_CAPA1_U2F = 0x02
-YK4_CAPA1_CCID = 0x04
 
 
 def read_version(dev):
@@ -149,14 +144,6 @@ class YKStandardDevice(BaseDevice):
 class YKPlusDevice(YKStandardDevice):
     mode = MODE.mode_for_flags(True, False, True)
     default_name = 'YubiKey Plus'
-
-
-def parse_tlv_list(data):
-    parsed = {}
-    while data:
-        t, l, data = ord(data[0]), ord(data[1]), data[2:]
-        parsed[t], data = data[:l], data[l:]
-    return parsed
 
 
 class YK4Device(OTPDevice):
