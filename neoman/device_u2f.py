@@ -52,6 +52,13 @@ U2F_VENDOR_FIRST = 0x40
 TYPE_INIT = 0x80
 U2FHID_PING = TYPE_INIT | 0x01
 U2FHID_YUBIKEY_DEVICE_CONFIG = TYPE_INIT | U2F_VENDOR_FIRST
+U2FHID_YK4_CAPABILITIES = TYPE_INIT | U2F_VENDOR_FIRST + 2
+
+YK4_CAPA_TAG = 0x01
+YK4_SERIAL_TAG = 0x01
+YK4_CAPA1_OTP = 0x01
+YK4_CAPA1_U2F = 0x02
+YK4_CAPA1_CCID = 0x04
 
 
 class U2FDevice(BaseDevice):
@@ -107,9 +114,36 @@ class SKYDevice(U2FDevice):
     default_name = 'Security Key by Yubico'
 
 
-class EdgeDevice(U2FDevice):
-    default_name = 'YubiKey Edge'
-    allowed_modes = (True, False, True)
+def parse_tlv_list(data):
+    parsed = {}
+    while data:
+        t, l, data = ord(data[0]), ord(data[1]), data[2:]
+        parsed[t], data = data[:l], data[l:]
+    return parsed
+
+
+class YK4Device(U2FDevice):
+    default_name = 'YubiKey 4'
+    allowed_modes = (True, True, True)
+
+    def __init__(self, devs, index, mode):
+        super(YK4Device, self).__init__(devs, index, mode)
+        self._read_capabilities()
+
+        if self._cap == 0x07:  # YK Edge should now allow CCID.
+            self.default_name = 'YubiKey Edge'
+            self.allowed_modes = (True, False, True)
+
+    def _read_capabilities(self):
+        data = '\0'
+        resp = self._sendrecv(U2FHID_YK4_CAPABILITIES, data)
+        self._cap_data = parse_tlv_list(resp[1:ord(resp[0]) + 1])
+        self._cap = int(self._cap_data.get(YK4_CAPA_TAG, '0').encode('hex'), 16)
+        self.allowed_modes = (
+            bool(self._cap & YK4_CAPA1_OTP),
+            bool(self._cap & YK4_CAPA1_CCID),
+            bool(self._cap & YK4_CAPA1_U2F)
+        )
 
 
 def open_all_devices():
@@ -136,7 +170,7 @@ def open_all_devices():
                         'CCID' in resp.value,
                         'U2F' in resp.value
                     )
-                    devices.append(EdgeDevice(devs, index, mode))
+                    devices.append(YK4Device(devs, index, mode))
                 elif resp.value.startswith('Security Key by Yubico'):
                     devices.append(SKYDevice(devs, index))
         return devices
