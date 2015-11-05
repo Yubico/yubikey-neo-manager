@@ -1,3 +1,7 @@
+* Version 1.4.0 (unreleased)
+ ** Added support for YK4 based devices.
+ ** Fixed refresh of device name after change.
+
 * Version 1.3.0 (released 2015-05-18)
  ** Updated applet definitions to fix incorrect OpenPGP applet version.
  ** Fix displaying wrong firmware version in CCID mode.
