@@ -9,7 +9,7 @@
   "applets": [
     {
       "name": "YubiKey OTP",
-      "description": "YubiKey One Time Passwords.",
+      "description": "YubiKey One-Time Passwords.",
       "aid": "a0000005272001",
       "allow_uninstall": false,
       "js_version": "Neo.select.slice(0,3).join('.')"
@@ -23,12 +23,12 @@
       "js_version": "Neo.select.slice(2,5).join('.')"
     }, {
       "name": "Yubico U2F",
-      "description": "FIDO U2F for YubiKey NEO.",
+      "description": "FIDO U2F for YubiKey.",
       "aid": "a0000005271002",
       "js_version": "Neo.select.slice(0,3).join('.')"
     }, {
       "name": "Yubico U2F",
-      "description": "FIDO U2F for YubiKey NEO.",
+      "description": "FIDO U2F for YubiKey.",
       "aid": "a0000006472f0001",
       "js_version": "Neo.send_ok('00420000').slice(0,3).join('.')"
     }, {
@@ -41,7 +41,7 @@
       "js_version": "Neo.send_ok('00f10000').slice(0,3).map(function(x){return x.toString(16)}).join('.')"
     }, {
       "name": "Yubico PIV",
-      "description": "The YubiKey PIV applet implements SP800-73-3.",
+      "description": "The YubiKey PIV applet implements NIST SP800-73-3.",
       "aid": "a000000308",
       "allow_uninstall": false,
       "js_version": "Neo.send_ok('00fd0000').slice(0,3).join('.')"
