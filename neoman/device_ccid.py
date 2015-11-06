@@ -170,6 +170,8 @@ class YK4Device(CCIDDevice):
         resp, status = resp[:-2], resp[-2:]
         if status != '\x90\x00':
             resp = '\x00'
+        if self.version == (4, 2, 4):  # 4.2.4 has a bug with capabilities.
+            resp = '0301013f'.decode('hex')
         self._cap_data = parse_tlv_list(resp[1:ord(resp[0]) + 1])
         self._cap = int(self._cap_data.get(YK4_CAPA_TAG, '0').encode('hex'), 16)
         self.allowed_modes = (
