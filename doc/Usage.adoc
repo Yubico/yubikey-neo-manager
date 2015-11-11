@@ -1,5 +1,15 @@
 == YubiKey NEO Manager Manual
 
+=== Using CCID on OSX and Linux
+To be able to use any of the smartcard functionality of your YubiKey
+NEO, you will need an up to date version of libccid (1.4.20 or later
+is recommended). Often an older version will work, but will require
+modification to detect the YubiKey in certain modes. To make this
+modification easier, we provide a
+link:https://github.com/Yubico/ifd-yubico/releases/download/ifd-yubico-1.0.0/ifd-yubico.pkg[packaged installer for OSX],as well as a
+link:https://github.com/Yubico/yubikey-neo-manager/blob/master/resources/linux-fix-ccid-udev[script for Linux].
+Windows users do not need to take any action.
+
 === Change connection mode
 In order to enable or disable modes on your YubiKey NEO or NEO-n, you
 need to download the newest version of the Yubico NEO Manager. The NEO
