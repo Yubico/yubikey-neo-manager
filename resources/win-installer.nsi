@@ -48,6 +48,8 @@ Var STARTMENU_FOLDER
 ;--------------------------------
 
 Section "YubiKey NEO Manager"
+  ; Remove all
+  DELETE "$INSTDIR\*"
   SectionIn RO
   SetOutPath $INSTDIR
   FILE "..\dist\YubiKey NEO Manager\*"
@@ -78,7 +80,7 @@ Section
 ;Create shortcuts
   SetShellVarContext all
   SetOutPath "$SMPROGRAMS\$STARTMENU_FOLDER"
-  CreateShortCut "YubiKey NEO Manager.lnk" "$INSTDIR\YubiKey NEO Manager.exe" "" "$INSTDIR\YubiKey NEO Manager.exe" 0
+  CreateShortCut "YubiKey NEO Manager.lnk" "$INSTDIR\neoman.exe" "" "$INSTDIR\neoman.exe" 0
   CreateShortCut "Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 1
   WriteINIStr "$SMPROGRAMS\$STARTMENU_FOLDER\Yubico Web page.url" \
                    "InternetShortcut" "URL" "http://www.yubico.com/"
