@@ -54,7 +54,7 @@ To sign the executable you will need signtool.exe (from the Windows SDK) either
 copied into the root as well or in a location in your PATH, as well as a
 certificate in the Windows certificate store that you wish to sign with.
 
-Run "pyinstaller.exe resources/neoman.spec" from the main release directory.
+Run "python setup.py executable" from the main release directory."
 
 With NSIS installed, a Windows installer will be built as well.
 
@@ -71,7 +71,7 @@ NOTE: Homebrew will build backwards-incompatible binaries, so the resulting
 build will not run on an older version of OSX. For building distributable
 releases you can use MacPorts instead.
 
-Run "pyinstaller resources/neoman.spec" from the main release directory. This
+Run "python setup.py executable" from the main release directory. This
 will create an .app in the dist directory.
 
 Sign the code using codesign:
@@ -84,6 +84,6 @@ located at `resources/neoman.pkgproj`.
 This can be used to create an installer for distribution, which you should sign
 prior to distribution:
 
-  packagesbuild resources/neoman.pkgproj
+  packagesbuild resources/osx-installer.pkgproj
   productsign --sign 'Developer ID Installer' dist/YubiKey\ NEO\ Manager.pkg dist/yubikey-neo-manager-mac.pkg
 
