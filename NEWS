@@ -1,4 +1,4 @@
-* Version 1.4.0 (unreleased)
+* Version 1.4.0 (released 2015-11-12)
  ** Added support for YK4 based devices.
  ** Fixed refresh of device name after change.
 
