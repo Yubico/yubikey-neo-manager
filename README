@@ -1,6 +1,11 @@
 == YubiKey NEO Manager
+
+NOTE: This project is deprecated and is no longer being maintained.
+Use YubiKey Manager (https://developers.yubico.com/yubikey-manager-qt/[GUI], https://developers.yubico.com/yubikey-manager/[CLI]) to configure a YubiKey device.
+
 Tool for managing your YubiKey NEO configuration. Connecting multiple keys at
 once is supported, but only if CCID mode is active for all of them.
+
 
 Entypo pictograms by Daniel Bruce - www.entypo.com
 
